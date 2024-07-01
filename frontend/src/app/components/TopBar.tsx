@@ -17,12 +17,12 @@ export default function TopBar(){
             
             <div className="w-full h-[70px] items-center flex-1">
                 <label className="input input-bordered flex items-center gap-2 h-[70px] border-none">
-                <input type="text" className="w-full text-base-content text-2xl font-semibold min-w-24" placeholder="Search" />
+                <input type="text" className="w-full text-base-content text-2xl font-semibold min-w-24 placeholder:text-opacity-25 placeholder:text-base-content" placeholder="Search" />
                 <Search color="black" size={40}/>
                 </label>
             </div>
 
-            <div className="beforeLogined flex items-center">                
+            {/* <div className="afterLogined flex items-center">                
                 <div className="flex text-base-content px-3 sm:px-5 2xl:px-10 userInfo">
                     <span className="whitespace-nowrap hidden 2xl:inline 2xl:text-4xl">Xin chào, Văn A</span>
                 </div>
@@ -32,6 +32,15 @@ export default function TopBar(){
                         <ShoppingCart color="black" size={40}/>
                         <span className="text-base-content hidden sm:text-4xl sm:inline px-4">2</span>
                     </div>
+                </button>
+            </div> */}
+
+            <div className="beforeLogined flex items-center pl-5 pr-12 xl:pr-20">                
+                <button className="h-[70px] text-xl font-semibold text-base-content hover:text-accent lg:w-44 xl:text-2xl xl:w-52">
+                    <Link href="/">Đăng nhập</Link>
+                </button>
+                <button className="h-[70px] font-semibold text-accent-content bg-accent hover:bg-red-500 hidden lg:inline lg:text-xl lg:w-44 xl:text-2xl xl:w-52">
+                    <Link href="/">Đăng ký</Link>
                 </button>
             </div>
 
