@@ -31,3 +31,10 @@ body {
     text-wrap: balance;
   }
 }
+
+input::placeholder {
+  color: inherit; /* Inherit color from parent */
+  font-size: inherit; /* Inherit font size from parent */
+  font-family: inherit; /* Inherit font family from parent */
+  /* Add any other necessary styles */
+}

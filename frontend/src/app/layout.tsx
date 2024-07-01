@@ -5,7 +5,7 @@ import "./globals.css";
 const sora = Sora({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "BOROSHOP",
+  title: "BoRo Shop",
   description: "Your destination for basketball world",
   icons: {
     icon: '/inversed_logo.svg',
