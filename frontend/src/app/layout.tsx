@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
-import { Sora } from "next/font/google";
+import { Archivo } from "next/font/google";
 import "./globals.css";
 
-const sora = Sora({ subsets: ["latin"] });
+const archivo = Archivo({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: "BoRo Shop",
@@ -19,9 +19,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={sora.className}>
+      <body className={archivo.className}>
         <link rel="icon" href="/inversed_logo.svg" sizes="any" />
-        {children}</body>
+        {children}
+      </body>
     </html>
   );
 }

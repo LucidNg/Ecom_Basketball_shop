@@ -25,7 +25,7 @@ const config: Config = {
           "secondary-content": "#083d77",
           "accent": "#d72638",
           "accent-content": "#fffbfa",
-          "neutral": "#fffbfa",
+          "neutral": "#083d77",
           "neutral-content": "#ebebd3",
           "base-100": "#fffbfa",
           "base-200": "#ebebd3",
