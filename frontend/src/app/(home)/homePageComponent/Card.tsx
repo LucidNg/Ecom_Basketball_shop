@@ -16,13 +16,14 @@ export default async function Card () {
     return (
         <>
         {products.map(product => (
-          <div key={product.productID} className="bg-primary flex flex-col h-[400px] w-72 m-2">
+          <div key={product.productID} className="bg-primary flex flex-col h-[400px] w-72">
             <Image 
               src={product.imageURL} 
               alt={product.productName} 
               width={150} 
               height={150} 
-              className="p-5 min-w-72" 
+              className="p-5 min-w-72 object-cover"
+              loading="lazy" 
             />
             <span className="text-base-content font-semibold w-72 px-5 text-lg">
               {product.productName}
@@ -31,7 +32,7 @@ export default async function Card () {
               <span className="text-base-content text-lg">
                 ${product.price}
               </span>
-              <button className="btn bg-secondary rounded-none text-neutral font-semibold text-xl min-w-32">
+              <button className="btn bg-secondary rounded-none text-neutral font-semibold text-xl min-w-32 hover:bg-accent hover:text-primary">
                 Xem
               </button>
             </div>
