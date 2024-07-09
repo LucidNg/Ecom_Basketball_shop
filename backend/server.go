@@ -35,7 +35,7 @@ func main() {
 		w.Write([]byte("Welcome to the server!"))
 	})
 
-	http.HandleFunc("/users", func(w http.ResponseWriter, r *http.Request) {
+	http.HandleFunc("/users", corsMiddleware(func(w http.ResponseWriter, r *http.Request) {
 		if r.Method == http.MethodGet {
 			err := database.QueryUsers(db, w)
 			if err != nil {
@@ -54,9 +54,9 @@ func main() {
 		} else {
 			http.Error(w, "Unsupported method", http.StatusMethodNotAllowed)
 		}
-	})
+	}))
 
-	http.HandleFunc("/category", func(w http.ResponseWriter, r *http.Request) {
+	http.HandleFunc("/category", corsMiddleware(func(w http.ResponseWriter, r *http.Request) {
 		if r.Method == http.MethodGet {
 			err := database.QueryCategory(db, w)
 			if err != nil {
@@ -71,13 +71,13 @@ func main() {
 				http.Error(w, "Failed to create category: "+err.Error(), http.StatusInternalServerError)
 				return
 			}
-			w.Write([]byte("category inserted successfully"))
+			w.Write([]byte("Category inserted successfully"))
 		} else {
 			http.Error(w, "Unsupported method", http.StatusMethodNotAllowed)
 		}
-	})
+	}))
 
-	http.HandleFunc("/product", func(w http.ResponseWriter, r *http.Request) {
+	http.HandleFunc("/product", corsMiddleware(func(w http.ResponseWriter, r *http.Request) {
 		if r.Method == http.MethodGet {
 			err := database.QueryProduct(db, w)
 			if err != nil {
@@ -100,11 +100,11 @@ func main() {
 				http.Error(w, "Failed to create product: "+err.Error(), http.StatusInternalServerError)
 				return
 			}
-			w.Write([]byte("product inserted successfully"))
+			w.Write([]byte("Product inserted successfully"))
 		} else {
 			http.Error(w, "Unsupported method", http.StatusMethodNotAllowed)
 		}
-	})
+	}))
 
 	port := getPort()
 	fmt.Printf("Server is listening on port %s\n", port)
@@ -128,4 +128,19 @@ func getPort() string {
 		port = "8080"
 	}
 	return ":" + port
+}
+
+func corsMiddleware(next http.HandlerFunc) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Access-Control-Allow-Origin", "*")
+		w.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
+		w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
+
+		if r.Method == "OPTIONS" {
+			w.WriteHeader(http.StatusOK)
+			return
+		}
+
+		next(w, r)
+	}
 }

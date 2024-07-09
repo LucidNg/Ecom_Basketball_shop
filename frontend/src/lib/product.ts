@@ -18,6 +18,7 @@ export async function FetchProduct(): Promise<Array<Product>> {
         method: "GET",
         credentials: "include",
         mode: "cors",
+        cache: "no-cache"
       });
       
 
