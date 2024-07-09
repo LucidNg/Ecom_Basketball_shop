@@ -8,11 +8,13 @@ export default function Banner () {
         <div className="carousel w-full py-12">
           <div id="slide1" className="carousel-item relative w-full">
             <Image
-              width={100}
-              height={100}
               src="/mainBanner.svg"
               alt="mainBanner"
-              className="w-full"
+              layout="responsive"
+              objectFit="cover"
+              height={100}
+              width={100}
+              sizes="100vw"
             />
             <div className="absolute flex items-center justify-center top-1/2 inset-0">
             <button className="btn btn-xs sm:btn-sm md:btn-md lg:w-50 lg:h-20 lg:text-3xl  xl:w-72 xl:h-32 xl:text-5xl bg-neutral text-base-100 rounded-none outline-none border-none font-bold hover:bg-secondary hover:text-neutral">Mua ngay !</button>
@@ -25,10 +27,10 @@ export default function Banner () {
 
           <div id="slide2" className="carousel-item relative w-full">
             <Image 
-              width={100} 
-              height={100}
               src="/subBanner.svg" 
               alt="subBanner"
+              width={100}
+              height={100}
               className="w-full" 
             />
             <div className="absolute flex items-center justify-center top-1/2 inset-0">
@@ -40,6 +42,7 @@ export default function Banner () {
             </div>
           </div>
         </div>
+        
         <div className="decorationImage w-full justify-between px-20 hidden lg:flex">
           <div>
             <Image

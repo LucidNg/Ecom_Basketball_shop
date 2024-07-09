@@ -10,7 +10,7 @@ export default function RootLayout({
     children: React.ReactNode;
   }>) {
     return (
-      <div className="w-screen bg-base-100">
+      <div className="w-full bg-base-100">
         <TopBar/>
         <Navbar/>
         <Banner/>
