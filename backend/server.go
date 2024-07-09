@@ -25,18 +25,23 @@ func main() {
 		log.Fatalf("Failed to create tables: %v", err)
 	}
 
+	_, err = db.Exec("PRAGMA foreign_keys = ON")
+	if err != nil {
+		log.Fatalf("Failed to enable foreign key constraints: %v", err)
+	}
+
 	// Start HTTP server
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte("Welcome to the server!"))
 	})
+
 	http.HandleFunc("/users", func(w http.ResponseWriter, r *http.Request) {
 		if r.Method == http.MethodGet {
-			err := database.QueryUsers(db)
+			err := database.QueryUsers(db, w)
 			if err != nil {
 				http.Error(w, "Failed to query users", http.StatusInternalServerError)
 				return
 			}
-			w.Write([]byte("Users queried successfully. Check console for details."))
 		} else if r.Method == http.MethodPost {
 			email := r.FormValue("email")
 			password := r.FormValue("password")
@@ -46,6 +51,56 @@ func main() {
 				return
 			}
 			w.Write([]byte("User inserted successfully"))
+		} else {
+			http.Error(w, "Unsupported method", http.StatusMethodNotAllowed)
+		}
+	})
+
+	http.HandleFunc("/category", func(w http.ResponseWriter, r *http.Request) {
+		if r.Method == http.MethodGet {
+			err := database.QueryCategory(db, w)
+			if err != nil {
+				http.Error(w, "Failed to query category", http.StatusInternalServerError)
+				return
+			}
+		} else if r.Method == http.MethodPost {
+			name := r.FormValue("name")
+			description := r.FormValue("description")
+			err := database.InsertCategory(db, name, description)
+			if err != nil {
+				http.Error(w, "Failed to create category: "+err.Error(), http.StatusInternalServerError)
+				return
+			}
+			w.Write([]byte("category inserted successfully"))
+		} else {
+			http.Error(w, "Unsupported method", http.StatusMethodNotAllowed)
+		}
+	})
+
+	http.HandleFunc("/product", func(w http.ResponseWriter, r *http.Request) {
+		if r.Method == http.MethodGet {
+			err := database.QueryProduct(db, w)
+			if err != nil {
+				http.Error(w, "Failed to query product", http.StatusInternalServerError)
+				return
+			}
+		} else if r.Method == http.MethodPost {
+			categoryID := r.FormValue("categoryID")
+			name := r.FormValue("name")
+			description := r.FormValue("description")
+			brand := r.FormValue("brand")
+			price := r.FormValue("price")
+			stock := r.FormValue("stock")
+			imageURL := r.FormValue("imageURL")
+			dateAdded := r.FormValue("dateAdded")
+			size := r.FormValue("size")
+
+			err = database.InsertProduct(db, categoryID, name, description, brand, price, stock, imageURL, dateAdded, size)
+			if err != nil {
+				http.Error(w, "Failed to create product: "+err.Error(), http.StatusInternalServerError)
+				return
+			}
+			w.Write([]byte("product inserted successfully"))
 		} else {
 			http.Error(w, "Unsupported method", http.StatusMethodNotAllowed)
 		}

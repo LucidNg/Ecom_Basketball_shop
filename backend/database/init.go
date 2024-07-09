@@ -2,9 +2,7 @@ package database
 
 import (
 	"database/sql"
-	"fmt"
 
-	"github.com/google/uuid"
 	_ "github.com/mattn/go-sqlite3"
 )
 
@@ -82,6 +80,7 @@ func CreateTable(db *sql.DB) error {
 		"categoryID" TEXT NOT NULL,
 		"productName" TEXT NOT NULL,
 		"description" TEXT NOT NULL,
+		"brand" TEXT NOT NULL,
 		"price" INTEGER NOT NULL,
 		"stock" INTEGER NOT NULL,
 		"imageURL" TEXT NOT NULL,
@@ -196,70 +195,4 @@ func CreateTable(db *sql.DB) error {
 
 	return nil
 
-}
-
-func recordExists(db *sql.DB, tableName string, attribute string, id string) (bool, error) {
-	var exists bool
-	query := fmt.Sprintf("SELECT COUNT(1) FROM %s WHERE %s = ?", tableName, attribute)
-	err := db.QueryRow(query, id).Scan(&exists)
-	if err != nil && err != sql.ErrNoRows {
-		return false, err
-	}
-	return exists, nil
-}
-
-func InsertUser(db *sql.DB, email string, password string) error {
-	var id string
-	for {
-		id = uuid.New().String()
-		exists, err := recordExists(db, "users", "userID", id)
-		if err != nil {
-			return err
-		}
-		if !exists {
-			break
-		}
-	}
-	insertUserSQL := `INSERT INTO users (userID, email, password) VALUES (?, ?, ?)`
-	_, err := db.Exec(insertUserSQL, id, email, password)
-	return err
-}
-
-func InsertCategory(db *sql.DB, name string, desription string) error {
-	var id string
-	for {
-		id = uuid.New().String()
-		exists, err := recordExists(db, "category", "categoryID", id)
-		if err != nil {
-			return err
-		}
-		if !exists {
-			break
-		}
-	}
-	insertUserSQL := `INSERT INTO category (categoryID, categoryName, description) VALUES (?, ?, ?)`
-	_, err := db.Exec(insertUserSQL, id, name, desription)
-	return err
-}
-
-func QueryUsers(db *sql.DB) error {
-	rows, err := db.Query("SELECT userID, email, password FROM users")
-	if err != nil {
-		return err
-	}
-	defer rows.Close()
-
-	var id string
-	var email string
-	var password string
-
-	for rows.Next() {
-		err = rows.Scan(&id, &email, &password)
-		if err != nil {
-			return err
-		}
-		fmt.Printf("ID: %s, Email: %s, Password: %s\n", id, email, password)
-	}
-
-	return rows.Err()
 }
