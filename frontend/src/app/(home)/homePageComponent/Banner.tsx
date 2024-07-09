@@ -40,7 +40,7 @@ export default function Banner () {
             </div>
           </div>
         </div>
-        <div className="decorationImage w-full justify-between px-20 hidden  lg:flex">
+        <div className="decorationImage w-full justify-between px-20 hidden lg:flex">
           <div>
             <Image
             width={800}

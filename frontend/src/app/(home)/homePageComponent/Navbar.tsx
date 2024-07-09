@@ -20,7 +20,7 @@ export default function Navbar () {
                         </div>
                     </li>
                 </ul> */}
-                <div className="dropdown-content">
+                <div className="dropdown-content z-1">
                     <ul className="menu md:menu-horizontal bg-base-content rounded-box md:min-w-max p-10 gap-12">
                         <li>
                             <Link href="/"className="text-3xl font-semibold pb-5">Nam</Link>
@@ -57,7 +57,7 @@ export default function Navbar () {
                 </div>
                 <div className="dropdown dropdown-hover">
                 <div tabIndex={0} role="button"><Link href="/" className="btn btn-ghost text-2xl hover:bg-secondary hover:text-neutral hover:font-bold">Giày</Link></div>
-                <div className="dropdown-content">
+                <div className="dropdown-content z-1">
                     <ul className="menu bg-base-content rounded-box w-56 py-5">
                         <li><Link href="/"className="text-xl">Nam</Link></li>
                         <li><Link href="/"className="text-xl">Nữ</Link></li>
@@ -68,7 +68,7 @@ export default function Navbar () {
                 <Link href="/" className="btn btn-ghost text-2xl hover:bg-secondary hover:text-neutral hover:font-bold">Bóng rổ</Link>
                 <div className="dropdown dropdown-hover">
                 <div tabIndex={0} role="button"><Link href="/" className="btn btn-ghost text-2xl hover:bg-secondary hover:text-neutral hover:font-bold">Phụ kiện</Link></div>
-                    <div className="dropdown-content">
+                    <div className="dropdown-content z-1">
                         <ul className="menu bg-base-content rounded-box w-56 py-5">
                             <li><Link href="/"className="text-xl">Băng thun</Link></li>
                             <li><Link href="/"className="text-xl">Bình nước</Link></li>
