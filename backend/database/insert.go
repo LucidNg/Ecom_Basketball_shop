@@ -1,25 +1,23 @@
 package database
 
 import (
-	"database/sql"
 	"fmt"
 	"strconv"
 
 	"github.com/google/uuid"
-	_ "github.com/mattn/go-sqlite3"
+	sqlitecloud "github.com/sqlitecloud/sqlitecloud-go"
 )
 
-func recordExists(db *sql.DB, tableName string, attribute string, id string) (bool, error) {
-	var exists bool
-	query := fmt.Sprintf("SELECT COUNT(1) FROM %s WHERE %s = ?", tableName, attribute)
-	err := db.QueryRow(query, id).Scan(&exists)
-	if err != nil && err != sql.ErrNoRows {
+func recordExists(db *sqlitecloud.SQCloud, tableName string, attribute string, id string) (bool, error) {
+	query := fmt.Sprintf("SELECT COUNT(1) FROM %s WHERE %s = '%s'", tableName, attribute, id)
+	rows, err := db.Select(query)
+	if err != nil && rows.GetInt32Value_(0, 0) == 0 {
 		return false, err
 	}
-	return exists, nil
+	return rows.GetInt32Value_(0, 0) != 0, nil
 }
 
-func InsertUser(db *sql.DB, email string, password string) error {
+func InsertUser(db *sqlitecloud.SQCloud, email string, password string) error {
 	var id string
 	for {
 		id = uuid.New().String()
@@ -31,12 +29,14 @@ func InsertUser(db *sql.DB, email string, password string) error {
 			break
 		}
 	}
-	insertUserSQL := `INSERT INTO users (userID, email, password) VALUES (?, ?, ?)`
-	_, err := db.Exec(insertUserSQL, id, email, password)
+	insertUserSQL := "INSERT INTO users (userID, email, password) VALUES (?, ?, ?)"
+	values := []interface{}{id, email, password}
+
+	err := db.ExecuteArray(insertUserSQL, values)
 	return err
 }
 
-func InsertCategory(db *sql.DB, name string, description string) error {
+func InsertCategory(db *sqlitecloud.SQCloud, name string, description string) error {
 	var id string
 	for {
 		id = uuid.New().String()
@@ -48,12 +48,15 @@ func InsertCategory(db *sql.DB, name string, description string) error {
 			break
 		}
 	}
-	insertUserSQL := `INSERT INTO category (categoryID, categoryName, description) VALUES (?, ?, ?)`
-	_, err := db.Exec(insertUserSQL, id, name, description)
+
+	insertCategorySQL := "INSERT INTO category (categoryID, categoryName, description) VALUES (?, ?, ?)"
+	values := []interface{}{id, name, description}
+
+	err := db.ExecuteArray(insertCategorySQL, values)
 	return err
 }
 
-func InsertProduct(db *sql.DB, categoryID string, name string, description string, brand string, price string, stock string, imageURL string, dateAdded string, size string) error {
+func InsertProduct(db *sqlitecloud.SQCloud, categoryID string, name string, description string, brand string, price string, stock string, imageURL string, dateAdded string, size string) error {
 	var id string
 	for {
 		id = uuid.New().String()
@@ -77,7 +80,9 @@ func InsertProduct(db *sql.DB, categoryID string, name string, description strin
 		fmt.Println("Error:", err)
 		return err
 	}
-	insertUserSQL := `INSERT INTO product (productID, categoryID, productName, description, brand, price, stock, imageURL, dateAdded, size) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
-	_, err = db.Exec(insertUserSQL, id, categoryID, name, description, brand, priceInt, stockInt, imageURL, dateAdded, size)
+
+	insertProductSQL := "INSERT INTO product (productID, categoryID, productName, description, brand, price, stock, imageURL, dateAdded, size) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
+	values := []interface{}{id, categoryID, name, description, brand, priceInt, stockInt, imageURL, dateAdded, size}
+	err = db.ExecuteArray(insertProductSQL, values)
 	return err
 }

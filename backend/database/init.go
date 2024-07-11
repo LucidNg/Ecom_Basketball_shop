@@ -1,12 +1,10 @@
 package database
 
 import (
-	"database/sql"
-
-	_ "github.com/mattn/go-sqlite3"
+	sqlitecloud "github.com/sqlitecloud/sqlitecloud-go"
 )
 
-func CreateTable(db *sql.DB) error {
+func CreateTable(db *sqlitecloud.SQCloud) error {
 	userTable := `CREATE TABLE IF NOT EXISTS users (
         "userID" TEXT NOT NULL PRIMARY KEY,        
         "email" TEXT UNIQUE NOT NULL,
@@ -137,59 +135,59 @@ func CreateTable(db *sql.DB) error {
 		"status" TEXT NOT NULL
 	);`
 
-	if _, err := db.Exec(userTable); err != nil {
+	if err := db.Execute(userTable); err != nil {
 		return err
 	}
 
-	if _, err := db.Exec(userDetailTable); err != nil {
+	if err := db.Execute(userDetailTable); err != nil {
 		return err
 	}
 
-	if _, err := db.Exec(userPaymentTable); err != nil {
+	if err := db.Execute(userPaymentTable); err != nil {
 		return err
 	}
 
-	if _, err := db.Exec(customJerseyTable); err != nil {
+	if err := db.Execute(customJerseyTable); err != nil {
 		return err
 	}
 
-	if _, err := db.Exec(orderTable); err != nil {
+	if err := db.Execute(orderTable); err != nil {
 		return err
 	}
 
-	if _, err := db.Exec(shippingTable); err != nil {
+	if err := db.Execute(shippingTable); err != nil {
 		return err
 	}
 
-	if _, err := db.Exec(cartTable); err != nil {
+	if err := db.Execute(cartTable); err != nil {
 		return err
 	}
 
-	if _, err := db.Exec(categoryTable); err != nil {
+	if err := db.Execute(categoryTable); err != nil {
 		return err
 	}
 
-	if _, err := db.Exec(productTable); err != nil {
+	if err := db.Execute(productTable); err != nil {
 		return err
 	}
 
-	if _, err := db.Exec(reviewTable); err != nil {
+	if err := db.Execute(reviewTable); err != nil {
 		return err
 	}
 
-	if _, err := db.Exec(purchaseTable); err != nil {
+	if err := db.Execute(purchaseTable); err != nil {
 		return err
 	}
 
-	if _, err := db.Exec(cartItemTable); err != nil {
+	if err := db.Execute(cartItemTable); err != nil {
 		return err
 	}
 
-	if _, err := db.Exec(advertisementTable); err != nil {
+	if err := db.Execute(advertisementTable); err != nil {
 		return err
 	}
 
-	if _, err := db.Exec(giftCardTable); err != nil {
+	if err := db.Execute(giftCardTable); err != nil {
 		return err
 	}
 
