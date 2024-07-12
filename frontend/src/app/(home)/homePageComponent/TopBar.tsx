@@ -16,7 +16,7 @@ export default function TopBar(){
                         </div>
                 </div>
             </Link>
-            <div className="h-[40px] sm:h-[50px] items-center flex-1 w-3/5 SearchBar">
+            <div className="h-[40px] sm:h-[50px] items-center flex-1 w-3/5">
                 <label className="input input-bordered flex items-center gap-2 h-[40px] sm:h-[50px] border-none">
                 <input type="text" className="w-full text-base-content text-2xl font-semibold min-w-24 placeholder:text-opacity-25 placeholder:text-base-content" placeholder="Search" />
                 <Search color="black" className="h-5 w-5 sm:h-10 sm:w-10"/>
