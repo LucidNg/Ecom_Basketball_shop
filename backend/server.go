@@ -2,32 +2,30 @@ package main
 
 import (
 	"backend/database"
+	"database/sql"
 	"fmt"
 	"log"
 	"net/http"
 	"os"
 
-	sqlitecloud "github.com/sqlitecloud/sqlitecloud-go"
-
 	_ "github.com/mattn/go-sqlite3"
 )
 
-const connectionURL = "sqlitecloud://cjczta0lik.sqlite.cloud:8860?apikey=KavmXdlHtwvK5SMaaLxcCxLBviJ4RAbaJK5t7lSNWx4"
-
 func main() {
-
 	// Initialize the database
-	db, err := sqlitecloud.Connect(connectionURL)
+	db, err := initializeDatabase("database.db")
 	if err != nil {
-		fmt.Println("Connect error: ", err)
+		log.Fatalf("Failed to initialize database: %v", err)
 	}
-	db.UseDatabase("boroshopDB")
+	defer db.Close()
+
+	// Create tables
 	err = database.CreateTable(db)
 	if err != nil {
 		log.Fatalf("Failed to create tables: %v", err)
 	}
 
-	err = db.Execute("PRAGMA foreign_keys = ON")
+	_, err = db.Exec("PRAGMA foreign_keys = ON")
 	if err != nil {
 		log.Fatalf("Failed to enable foreign key constraints: %v", err)
 	}
@@ -111,6 +109,17 @@ func main() {
 	port := getPort()
 	fmt.Printf("Server is listening on port %s\n", port)
 	log.Fatal(http.ListenAndServe(port, nil))
+}
+
+func initializeDatabase(dbFile string) (*sql.DB, error) {
+	db, err := sql.Open("sqlite3", dbFile)
+	if err != nil {
+		return nil, err
+	}
+	if err = db.Ping(); err != nil {
+		return nil, err
+	}
+	return db, nil
 }
 
 func getPort() string {
