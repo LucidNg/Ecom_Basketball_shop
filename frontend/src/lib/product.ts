@@ -12,7 +12,7 @@ export interface Product {
 }
 
 export async function FetchProduct(): Promise<Array<Product>> {
-    let url = process.env.API_ENDPOINT ? process.env.API_ENDPOINT : "https://boroshop.onrender.com/product";
+    let url = process.env.API_ENDPOINT ? process.env.API_ENDPOINT : "http://localhost:8080/product";
     
     const response = await fetch(url, {
         method: "GET",
