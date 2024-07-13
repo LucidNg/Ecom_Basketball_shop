@@ -1,7 +1,7 @@
 import { ReactNode } from 'react';
 import Banner from './homePageComponent/Banner';
-import Navbar from './homePageComponent/Navbar';
-import TopBar from './homePageComponent/TopBar';
+import Navbar from '../appComoponent/Navbar';
+import TopBar from '../appComoponent/TopBar';
 import Footer from '../appComoponent/Footer';
 
 

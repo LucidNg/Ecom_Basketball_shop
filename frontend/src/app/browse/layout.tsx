@@ -1,7 +1,7 @@
 import { ReactNode } from 'react';
 import Footer from '../appComoponent/Footer';
-import Navbar from '../(home)/homePageComponent/Navbar';
-import TopBar from '../(home)/homePageComponent/TopBar';
+import Navbar from '../appComoponent/Navbar';
+import TopBar from '../appComoponent/TopBar';
 
 interface ProductPageLayout {
   children: ReactNode;
