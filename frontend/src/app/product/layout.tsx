@@ -10,7 +10,7 @@ interface ProductPageLayout {
 const RootLayout = async ({ children }: ProductPageLayout) => {
 
   return (
-    <div className="w-full bg-base-100">
+    <div className="w-screen bg-base-100">
         <TopBar/>
         <Navbar/>
         {children}
