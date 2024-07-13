@@ -1,12 +1,15 @@
-'use-client'
+'use client';
 
-import FilterBar from "./productComponent/FilteringBar"
+import FilterBar from "@/app/[category]/productComponent/FilteringBar";
+import { useParams } from "next/navigation";
 
-export default function ProductPage({
+export default function MostSubCategoryProductPageClient({
     children1
   }: {
     children1: React.ReactNode,
   }) {
+    const {category, subCategory, subSubCategory} = useParams();
+    console.log("subSubCategory", category, subCategory, subSubCategory);
     return (
       <div className="lg:pt-10 bg-base-100">
         <div className="lg:px-16 py-10 text-center lg:text-left">

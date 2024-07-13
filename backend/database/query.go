@@ -88,7 +88,6 @@ type Product struct {
 	Brand       string `json:"brand"`
 	Price       int    `json:"price"`
 	Stock       int    `json:"stock"`
-	ImageURL    string `json:"imageURL"`
 	DateAdded   string `json:"dateAdded"`
 	Size        string `json:"size"`
 }
@@ -104,7 +103,7 @@ func QueryProduct(db *sql.DB, w http.ResponseWriter) error {
 
 	for rows.Next() {
 		var product Product
-		err = rows.Scan(&product.ProductID, &product.CategoryID, &product.ProductName, &product.Description, &product.Brand, &product.Price, &product.Stock, &product.ImageURL, &product.DateAdded, &product.Size)
+		err = rows.Scan(&product.ProductID, &product.CategoryID, &product.ProductName, &product.Description, &product.Brand, &product.Price, &product.Stock, &product.DateAdded, &product.Size)
 		if err != nil {
 			return err
 		}

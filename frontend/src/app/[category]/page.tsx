@@ -1,6 +1,6 @@
 
 import Card from "@/app/(home)/homePageComponent/Card";
-import ProductPageCli from "../page";
+import ProductPageCli from "./page-client";
 
 export default function ProductPage() {
   return (

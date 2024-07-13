@@ -91,11 +91,10 @@ func main() {
 			brand := r.FormValue("brand")
 			price := r.FormValue("price")
 			stock := r.FormValue("stock")
-			imageURL := r.FormValue("imageURL")
 			dateAdded := r.FormValue("dateAdded")
 			size := r.FormValue("size")
 
-			err = database.InsertProduct(db, categoryID, name, description, brand, price, stock, imageURL, dateAdded, size)
+			err = database.InsertProduct(db, categoryID, name, description, brand, price, stock, dateAdded, size)
 			if err != nil {
 				http.Error(w, "Failed to create product: "+err.Error(), http.StatusInternalServerError)
 				return

@@ -4,9 +4,9 @@ import AlignLeft from '@geist-ui/icons/alignLeft';
 
 const generateLink = (category = '', subcategory = '') => {
     if (subcategory) {
-        return `/browse/${category}/${subcategory}`;
+        return `/${category}/${subcategory}`;
     }
-    return `/browse/${category}`;
+    return `/${category}`;
 };
 
 export default function Navbar() {

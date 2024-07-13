@@ -1,12 +1,13 @@
-'use-client'
-
-import FilterBar from "../productComponent/FilteringBar"
-
+'use client';
+import FilterBar from "./productComponent/FilteringBar"
+import { useParams } from "next/navigation";
 export default function ProductPageCli({
     children1
   }: {
     children1: React.ReactNode,
   }) {
+    const {category} = useParams();
+    console.log("category", category);
     return (
       <div className="lg:pt-10 bg-base-100">
         <div className="lg:px-16 py-10 text-center lg:text-left">

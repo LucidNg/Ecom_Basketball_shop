@@ -83,7 +83,6 @@ func CreateTable(db *sql.DB) error {
 		"brand" TEXT NOT NULL,
 		"price" INTEGER NOT NULL,
 		"stock" INTEGER NOT NULL,
-		"imageURL" TEXT NOT NULL,
 		"dateAdded" TEXT NOT NULL,
 		"size" TEXT NOT NULL,
 		FOREIGN KEY(categoryID) REFERENCES category(categoryID)

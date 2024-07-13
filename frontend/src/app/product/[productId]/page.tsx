@@ -11,7 +11,6 @@ const DetailedProductPage = () => {
   const [quantity, setQuantity] = useState<number>(1);
 
   const sizes = ['XS', 'S', 'M', 'L', 'XL', 'XXL'];
-
   useEffect(() => {
     if (productId) {
       // Load images based on the productId

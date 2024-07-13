@@ -53,7 +53,7 @@ func InsertCategory(db *sql.DB, name string, description string) error {
 	return err
 }
 
-func InsertProduct(db *sql.DB, categoryID string, name string, description string, brand string, price string, stock string, imageURL string, dateAdded string, size string) error {
+func InsertProduct(db *sql.DB, categoryID string, name string, description string, brand string, price string, stock string, dateAdded string, size string) error {
 	var id string
 	for {
 		id = uuid.New().String()
@@ -77,7 +77,7 @@ func InsertProduct(db *sql.DB, categoryID string, name string, description strin
 		fmt.Println("Error:", err)
 		return err
 	}
-	insertUserSQL := `INSERT INTO product (productID, categoryID, productName, description, brand, price, stock, imageURL, dateAdded, size) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
-	_, err = db.Exec(insertUserSQL, id, categoryID, name, description, brand, priceInt, stockInt, imageURL, dateAdded, size)
+	insertUserSQL := `INSERT INTO product (productID, categoryID, productName, description, brand, price, stock, dateAdded, size) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`
+	_, err = db.Exec(insertUserSQL, id, categoryID, name, description, brand, priceInt, stockInt, dateAdded, size)
 	return err
 }

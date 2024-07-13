@@ -29,7 +29,7 @@ export default async function Card({ limit }: CardProps) {
       {displayedProducts.map(product => (
         <div key={product.productID} className="bg-primary flex flex-col h-64 w-40 sm:h-80 sm:w-56 lg:h-[410px] lg:w-72">
           <Image 
-            src={product.imageURL} 
+            src={`/products/${product.productID}/1.png`} 
             alt={product.productName} 
             width={150} 
             height={150} 

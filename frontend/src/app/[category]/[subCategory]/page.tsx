@@ -1,6 +1,6 @@
 
 import Card from "@/app/(home)/homePageComponent/Card";
-import SubCategoryProductPageClient from "../page-client";
+import SubCategoryProductPageClient from "./page-client";
 
 export default function SubCategoryProductPage() {
   return (
