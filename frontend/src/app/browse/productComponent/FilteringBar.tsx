@@ -37,7 +37,7 @@ const FilterBar = () => {
 
   return (
     <div className="filterBar w-[90%] bg-neutral h-20 mx-auto mb-32 flex items-center px-10 gap-10 justify-center">
-      <span className="font-semibold text-2xl text-base-100">Sắp xếp theo</span>
+      <span className="font-semibold text-2xl text-base-100">Filter by</span>
 
       <div
         className={`font-semibold text-2xl bg-base-100 text-base-content h-3/4 w-1/12 flex items-center justify-center cursor-pointer ${
@@ -45,7 +45,7 @@ const FilterBar = () => {
         }`}
         onClick={() => setSortBy("newest")}
       >
-        Mới nhất
+        Lates
       </div>
 
       <div
@@ -54,7 +54,7 @@ const FilterBar = () => {
         }`}
         onClick={() => setSortBy("bestselling")}
       >
-        Bán chạy
+        Feature
       </div>
 
       <select
@@ -62,23 +62,23 @@ const FilterBar = () => {
         onChange={handleSortChange}
         className="select select-bordered w-1/12 h-3/4 font-semibold text-2xl text-base-content rounded-none"
       >
-        <option value="price-high-to-low">Giá cao đến thấp</option>
-        <option value="price-low-to-high">Giá thấp đến cao</option>
+        <option value="price-high-to-low">High to low</option>
+        <option value="price-low-to-high">Low to high</option>
       </select>
 
       <div className="flex items-center space-x-4 justify-between w-1/2">
-        <span className="font-semibold text-2xl text-base-100">Khoảng giá:</span>
+        <span className="font-semibold text-2xl text-base-100">From:</span>
         <input
           type="text"
-          placeholder="Từ"
+          placeholder="from"
           value={minPrice}
           onChange={handleMinPriceChange}
           className="w-28 h-14 px-3 bg-base-100 outline-none text-xl text-base-content font-semibold"
         />
-        <span className="font-semibold text-2xl text-base-100">đến</span>
+        <span className="font-semibold text-2xl text-base-100">to</span>
         <input
           type="text"
-          placeholder="Đến"
+          placeholder="to"
           value={maxPrice}
           onChange={handleMaxPriceChange}
           className="w-28 h-14 px-3 bg-base-100 outline-none text-xl text-base-content font-semibold"
@@ -87,13 +87,13 @@ const FilterBar = () => {
           onClick={handleApplyFilter}
           className="px-4 py-2 w-36 h-14 bg-green-500 shadow-md hover:bg-green-600 text-xl text-base-100 font-semibold"
         >
-          Áp dụng
+          Apply
         </button>
         <button
           onClick={handleClearFilter}
           className="px-4 py-2 w-36 h-14 bg-red-500 shadow-md hover:bg-accent text-xl text-base-100 font-semibold"
         >
-          Xóa bộ lọc
+          Cancel
         </button>
       </div>
     </div>
