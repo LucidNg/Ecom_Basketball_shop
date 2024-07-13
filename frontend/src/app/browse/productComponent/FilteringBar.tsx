@@ -24,12 +24,19 @@ const FilterBar = () => {
         // Convert input strings to numbers (or leave as undefined if empty)
         const min = minPrice !== "" ? parseInt(minPrice) : undefined;
         const max = maxPrice !== "" ? parseInt(maxPrice) : undefined;
+
+        // Check if min price is larger than max price
         if (min !== undefined && max !== undefined && min > max) {
             setError("Min price cannot be larger than max price");
+            setMinPrice("");
+            setMaxPrice("");
+            console.error("Error: Min price cannot be larger than max price");
             return;
         }
+
         setError(null);
         console.log("Filtering with min:", min, "and max:", max);
+        // Apply filtering logic based on min and max prices
     };
 
     const handleClearFilter = () => {
