@@ -17,7 +17,7 @@ export default function Banner () {
               sizes="100vw"
             />
             <div className="absolute flex items-center justify-center top-1/2 inset-0">
-            <button className="btn btn-xs sm:btn-sm md:btn-md lg:w-50 lg:h-20 lg:text-3xl  xl:w-72 xl:h-32 xl:text-5xl bg-neutral text-base-100 rounded-none outline-none border-none font-bold hover:bg-secondary hover:text-neutral">Mua ngay !</button>
+            <button className="btn btn-xs sm:btn-sm md:btn-md lg:w-50 lg:h-20 lg:text-3xl  xl:w-72 xl:h-32 xl:text-5xl bg-neutral text-base-100 rounded-none outline-none border-none font-bold hover:bg-secondary hover:text-neutral">Buy now !</button>
             </div>
             <div className="absolute left-5 right-5 top-1/2 flex -translate-y-1/2 transform justify-between">
               <a href="#slide2" className="btn btn-circle">❮</a>
@@ -34,7 +34,7 @@ export default function Banner () {
               className="w-full" 
             />
             <div className="absolute flex items-center justify-center top-1/2 inset-0">
-            <button className="btn btn-xs sm:btn-sm md:btn-md lg:w-50 lg:h-20 lg:text-3xl  xl:w-72 xl:h-32 xl:text-5xl bg-neutral text-base-100 rounded-none outline-none border-none font-bold hover:bg-primary hover:text-accent">Đặt ngay !</button>
+            <button className="btn btn-xs sm:btn-sm md:btn-md lg:w-50 lg:h-20 lg:text-3xl  xl:w-72 xl:h-32 xl:text-5xl bg-neutral text-base-100 rounded-none outline-none border-none font-bold hover:bg-primary hover:text-accent">Order now!</button>
             </div>
             <div className="absolute left-5 right-5 top-1/2 flex -translate-y-1/2 transform justify-between">
               <a href="#slide1" className="btn btn-circle">❮</a>
