@@ -62,6 +62,7 @@ const FilterBar = () => {
         onChange={handleSortChange}
         className="select select-bordered w-1/12 h-3/4 font-semibold text-2xl text-base-content rounded-none"
       >
+        <option value="none">none</option>
         <option value="price-high-to-low">High to low</option>
         <option value="price-low-to-high">Low to high</option>
       </select>
