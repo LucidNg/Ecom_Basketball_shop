@@ -1,4 +1,4 @@
-import Card from "../appComoponent/Card";
+import Card from "./homePageComponent/Card";
 import Home from "./page-client";
 
 export default function Page() {

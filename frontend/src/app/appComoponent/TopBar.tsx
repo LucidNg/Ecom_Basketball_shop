@@ -40,9 +40,9 @@ export default function TopBar() {
                 </label>
             </div>
 
-            <div className="afterLogined flex items-center">                
+            {/* <div className="afterLogined flex items-center">                
                 <div className="text-base-content px-3 sm:px-5 2xl:px-10 userInfo hidden 2xl:inline 2xl:text-2xl">
-                    <span className="whitespace-nowrap ">Xin chào, Văn A</span>
+                    <span className="whitespace-nowrap ">Welcome, Văn A</span>
                 </div>
 
                 <div className="avatar 2xl:hidden px-5">
@@ -57,16 +57,16 @@ export default function TopBar() {
                         <span className="text-base-content hidden sm:text-2xl sm:inline px-4">2</span>
                     </div>
                 </button>
-            </div>
+            </div> */}
 
-            {/* <div className="beforeLogined flex items-center pl-5 pr-8 xl:pr-20">                
+            <div className="beforeLogined flex items-center pl-5 pr-8 xl:pr-20">                
                 <button className="h-[50px] text-xl font-semibold text-base-content hover:text-accent lg:w-44 xl:text-xl xl:w-40">
-                    <Link href="/">Đăng nhập</Link>
+                    <Link href="/">Login</Link>
                 </button>
                 <button className="h-[50px] font-semibold text-accent-content bg-accent hover:bg-red-500 hidden lg:inline lg:text-xl lg:w-44 xl:w-40">
-                    <Link href="/">Đăng ký</Link>
+                    <Link href="/">Sign up</Link>
                 </button>
-            </div> */}
+            </div>
         </div>
     );
 }

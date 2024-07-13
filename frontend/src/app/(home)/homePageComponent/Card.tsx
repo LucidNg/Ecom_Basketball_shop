@@ -1,7 +1,7 @@
 import React from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { FetchProduct, Product } from "../../lib/product";
+import { FetchProduct, Product } from "../../../lib/product";
 
 interface CardProps {
   limit?: number;
@@ -41,11 +41,11 @@ export default async function Card({ limit }: CardProps) {
           </span>
           <div className="flex flex-row items-center justify-between w-40 sm:w-56 lg:w-72 px-5 pb-1">
             <span className="text-base-content text-xs sm:text-sm lg:text-lg">
-              đ {formatPrice(product.price)}
+              $ {formatPrice(product.price)}
             </span>
             <Link href={`/product/${product.productID}`}>
               <button className="btn bg-secondary rounded-none text-neutral font-semibold text-xs sm:text-sm lg:text-lg w-12 sm:w-24 lg:w-32 sm:h-4 lg:h-12 hover:bg-accent hover:text-primary">
-                Xem
+                View
               </button>
             </Link>
           </div>

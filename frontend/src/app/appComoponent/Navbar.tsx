@@ -15,39 +15,39 @@ export default function Navbar() {
             <div className="hidden w-full justify-between md:inline-flex 2xl:gap-8 2xl:justify-normal">
                 <div className="dropdown dropdown-hover">
                     <div tabIndex={0} role="button">
-                        <Link href={generateLink('quan-ao')} className="btn btn-ghost text-2xl hover:bg-secondary hover:text-neutral hover:font-bold">Quần áo</Link>
+                        <Link href={generateLink('clothes')} className="btn btn-ghost text-2xl hover:bg-secondary hover:text-neutral hover:font-bold">Clothes</Link>
                     </div>
 
                     <div className="dropdown-content z-10">
                         <ul className="menu md:menu-horizontal bg-base-content rounded-box md:min-w-max p-10 gap-12">
                             <li>
-                                <Link href={generateLink('quan-ao', 'nam')} className="text-3xl font-semibold pb-5">Nam</Link>
+                                <Link href={generateLink('clothes', 'men')} className="text-3xl font-semibold pb-5">Men</Link>
                                 <ul>
-                                    <li><Link href={generateLink('quan-ao', 'nam/ao-thun')} className="text-xl">Áo thun</Link></li>
-                                    <li><Link href={generateLink('quan-ao', 'nam/ao-jersey')} className="text-xl">Áo jersey</Link></li>
-                                    <li><Link href={generateLink('quan-ao', 'nam/ao-hoodie')} className="text-xl">Áo hoodie</Link></li>
-                                    <li><Link href={generateLink('quan-ao', 'nam/quan-short')} className="text-xl">Quần short</Link></li>
-                                    <li><Link href={generateLink('quan-ao', 'nam/quan-dai')} className="text-xl">Quần dài</Link></li>
+                                    <li><Link href={generateLink('clothes', 'men/t-shirt')} className="text-xl">T-shirt</Link></li>
+                                    <li><Link href={generateLink('clothes', 'men/jersey')} className="text-xl">Jersey</Link></li>
+                                    <li><Link href={generateLink('clothes', 'men/hoodie')} className="text-xl">Hoodie</Link></li>
+                                    <li><Link href={generateLink('clothes', 'men/shorts')} className="text-xl">Shorts</Link></li>
+                                    <li><Link href={generateLink('clothes', 'men/trousers')} className="text-xl">Trousers</Link></li>
                                 </ul>
                             </li>
                             <li>
-                                <Link href={generateLink('quan-ao', 'nu')} className="text-3xl font-semibold pb-5">Nữ</Link>
+                                <Link href={generateLink('clothes', 'nu')} className="text-3xl font-semibold pb-5">Women</Link>
                                 <ul>
-                                    <li><Link href={generateLink('quan-ao', 'nu/ao-thun')} className="text-xl">Áo thun</Link></li>
-                                    <li><Link href={generateLink('quan-ao', 'nu/ao-jersey')} className="text-xl">Áo jersey</Link></li>
-                                    <li><Link href={generateLink('quan-ao', 'nu/ao-hoodie')} className="text-xl">Áo hoodie</Link></li>
-                                    <li><Link href={generateLink('quan-ao', 'nu/quan-short')} className="text-xl">Quần short</Link></li>
-                                    <li><Link href={generateLink('quan-ao', 'nu/quan-dai')} className="text-xl">Quần dài</Link></li>
+                                    <li><Link href={generateLink('clothes', 'women/t-shirt')} className="text-xl">T-shirt</Link></li>
+                                    <li><Link href={generateLink('clothes', 'women/jersey')} className="text-xl">Jersey</Link></li>
+                                    <li><Link href={generateLink('clothes', 'women/hoodie')} className="text-xl">Hoodie</Link></li>
+                                    <li><Link href={generateLink('clothes', 'women/shorts')} className="text-xl">Shorts</Link></li>
+                                    <li><Link href={generateLink('clothes', 'women/trousers')} className="text-xl">Trousers</Link></li>
                                 </ul>
                             </li>
                             <li>
-                                <Link href={generateLink('quan-ao', 'tre-em')} className="text-3xl font-semibold pb-5">Trẻ em</Link>
+                                <Link href={generateLink('clothes', 'kid')} className="text-3xl font-semibold pb-5">Kid</Link>
                                 <ul>
-                                    <li><Link href={generateLink('quan-ao', 'tre-em/ao-thun')} className="text-xl">Áo thun</Link></li>
-                                    <li><Link href={generateLink('quan-ao', 'tre-em/ao-jersey')} className="text-xl">Áo jersey</Link></li>
-                                    <li><Link href={generateLink('quan-ao', 'tre-em/ao-hoodie')} className="text-xl">Áo hoodie</Link></li>
-                                    <li><Link href={generateLink('quan-ao', 'tre-em/quan-short')} className="text-xl">Quần short</Link></li>
-                                    <li><Link href={generateLink('quan-ao', 'tre-em/quan-dai')} className="text-xl">Quần dài</Link></li>
+                                    <li><Link href={generateLink('clothes', 'kid/t-shirt')} className="text-xl">T-shirt</Link></li>
+                                    <li><Link href={generateLink('clothes', 'kid/jersey')} className="text-xl">Jersey</Link></li>
+                                    <li><Link href={generateLink('clothes', 'kid/hoodie')} className="text-xl">Hoodie</Link></li>
+                                    <li><Link href={generateLink('clothes', 'kid/shorts')} className="text-xl">Shorts</Link></li>
+                                    <li><Link href={generateLink('clothes', 'kid/trousers')} className="text-xl">Trousers</Link></li>
                                 </ul>
                             </li>
                         </ul>
@@ -55,31 +55,31 @@ export default function Navbar() {
                 </div>
                 <div className="dropdown dropdown-hover">
                     <div tabIndex={0} role="button">
-                        <Link href={generateLink('giay')} className="btn btn-ghost text-2xl hover:bg-secondary hover:text-neutral hover:font-bold">Giày</Link>
+                        <Link href={generateLink('shoes')} className="btn btn-ghost text-2xl hover:bg-secondary hover:text-neutral hover:font-bold">Shoes</Link>
                     </div>
                     <div className="dropdown-content z-10">
                         <ul className="menu bg-base-content rounded-box w-56 py-5">
-                            <li><Link href={generateLink('giay', 'nam')} className="text-xl">Nam</Link></li>
-                            <li><Link href={generateLink('giay', 'nu')} className="text-xl">Nữ</Link></li>
-                            <li><Link href={generateLink('giay', 'tre-em')} className="text-xl">Trẻ em</Link></li>
+                            <li><Link href={generateLink('shoes', 'men')} className="text-xl">Men</Link></li>
+                            <li><Link href={generateLink('shoes', 'women')} className="text-xl">Women</Link></li>
+                            <li><Link href={generateLink('shoes', 'kid')} className="text-xl">Kid</Link></li>
                         </ul>
                     </div>
                 </div>
-                <Link href={generateLink('bong-ro')} className="btn btn-ghost text-2xl hover:bg-secondary hover:text-neutral hover:font-bold">Bóng rổ</Link>
+                <Link href={generateLink('ball')} className="btn btn-ghost text-2xl hover:bg-secondary hover:text-neutral hover:font-bold">Ball</Link>
                 <div className="dropdown dropdown-hover">
                     <div tabIndex={0} role="button">
-                        <Link href={generateLink('phu-kien')} className="btn btn-ghost text-2xl hover:bg-secondary hover:text-neutral hover:font-bold">Phụ kiện</Link>
+                        <Link href={generateLink('accessories')} className="btn btn-ghost text-2xl hover:bg-secondary hover:text-neutral hover:font-bold">Accessories</Link>
                     </div>
                     <div className="dropdown-content z-10">
                         <ul className="menu bg-base-content rounded-box w-56 py-5">
-                            <li><Link href={generateLink('phu-kien', 'bang-thun')} className="text-xl">Băng thun</Link></li>
-                            <li><Link href={generateLink('phu-kien', 'binh-nuoc')} className="text-xl">Bình nước</Link></li>
-                            <li><Link href={generateLink('phu-kien', 'balo')} className="text-xl">Balo</Link></li>
-                            <li><Link href={generateLink('phu-kien', 'dung-cu')} className="text-xl">Dụng cụ</Link></li>
+                            <li><Link href={generateLink('accessories', 'band')} className="text-xl">Band</Link></li>
+                            <li><Link href={generateLink('accessories', 'water-bottle')} className="text-xl">Water bottle</Link></li>
+                            <li><Link href={generateLink('accessories', 'backpack')} className="text-xl">Backpack</Link></li>
+                            <li><Link href={generateLink('accessories', 'tool')} className="text-xl">Tool</Link></li>
                         </ul>
                     </div>
                 </div>
-                <Link href={generateLink('moi-nhat')} className="btn btn-ghost text-2xl hover:bg-secondary hover:text-neutral hover:font-bold">Mới nhất</Link>
+                <Link href={generateLink('lates')} className="btn btn-ghost text-2xl hover:bg-secondary hover:text-neutral hover:font-bold">Lates</Link>
                 <Link href={generateLink('sale')} className="btn btn-ghost text-2xl hover:bg-secondary hover:text-neutral hover:font-bold">Sale</Link>
             </div>
             <div className="navbar-start md:hidden">
@@ -90,44 +90,44 @@ export default function Navbar() {
 
                     <ul
                         tabIndex={0}
-                        className="menu-sm dropdown-content menu bg-base-content z-[1] w-52 p-2 shadow mt-2">
+                        className="menu-sm dropdown-content menu bg-base-content z-[1] w-56 p-2 shadow mt-2">
                         <li>
                             <details>
-                                <summary><Link href={generateLink('quan-ao')} className="btn btn-ghost text-2xl hover:bg-secondary hover:text-primary-content hover:font-bold">Quần áo</Link></summary>
+                                <summary><Link href={generateLink('clothes')} className="btn btn-ghost text-2xl hover:bg-secondary hover:text-primary-content hover:font-bold">Clothes</Link></summary>
                                 <ul>
                                     <li>
                                         <details>
-                                            <summary><Link href={generateLink('quan-ao', 'nam')} className="btn btn-ghost text-lg hover:bg-secondary hover:text-neutral hover:font-bold">Nam</Link></summary>
+                                            <summary><Link href={generateLink('clothes', 'men')} className="btn btn-ghost text-lg hover:bg-secondary hover:text-neutral hover:font-bold">Men</Link></summary>
                                             <ul>
-                                                <li><Link href={generateLink('quan-ao', 'nam/ao-thun')} className="btn btn-ghost text-sm hover:bg-secondary hover:text-neutral hover:font-bold">Áo thun</Link></li>
-                                                <li><Link href={generateLink('quan-ao', 'nam/ao-jersey')} className="btn btn-ghost text-sm hover:bg-secondary hover:text-neutral hover:font-bold">Áo jersey</Link></li>
-                                                <li><Link href={generateLink('quan-ao', 'nam/ao-hoodie')} className="btn btn-ghost text-sm hover:bg-secondary hover:text-neutral hover:font-bold">Áo hoodie</Link></li>
-                                                <li><Link href={generateLink('quan-ao', 'nam/quan-short')} className="btn btn-ghost text-sm hover:bg-secondary hover:text-neutral hover:font-bold">Quần short</Link></li>
-                                                <li><Link href={generateLink('quan-ao', 'nam/quan-dai')} className="btn btn-ghost text-sm hover:bg-secondary hover:text-neutral hover:font-bold">Quần dài</Link></li>
+                                                <li><Link href={generateLink('clothes', 'men/t-shirt')} className="btn btn-ghost text-sm hover:bg-secondary hover:text-neutral hover:font-bold">T-shirt</Link></li>
+                                                <li><Link href={generateLink('clothes', 'men/jersey')} className="btn btn-ghost text-sm hover:bg-secondary hover:text-neutral hover:font-bold">Jersey</Link></li>
+                                                <li><Link href={generateLink('clothes', 'men/hoodie')} className="btn btn-ghost text-sm hover:bg-secondary hover:text-neutral hover:font-bold">Hoodie</Link></li>
+                                                <li><Link href={generateLink('clothes', 'men/shorts')} className="btn btn-ghost text-sm hover:bg-secondary hover:text-neutral hover:font-bold">Shorts</Link></li>
+                                                <li><Link href={generateLink('clothes', 'men/trousers')} className="btn btn-ghost text-sm hover:bg-secondary hover:text-neutral hover:font-bold">Trousers</Link></li>
                                             </ul>
                                         </details>
                                     </li>
                                     <li>
                                         <details>
-                                            <summary><Link href={generateLink('quan-ao', 'nu')} className="btn btn-ghost text-lg hover:bg-secondary hover:text-neutral hover:font-bold">Nữ</Link></summary>
+                                            <summary><Link href={generateLink('clothes', 'women')} className="btn btn-ghost text-lg hover:bg-secondary hover:text-neutral hover:font-bold">Women</Link></summary>
                                             <ul>
-                                                <li><Link href={generateLink('quan-ao', 'nu/ao-thun')} className="btn btn-ghost text-sm hover:bg-secondary hover:text-neutral hover:font-bold">Áo thun</Link></li>
-                                                <li><Link href={generateLink('quan-ao', 'nu/ao-jersey')} className="btn btn-ghost text-sm hover:bg-secondary hover:text-neutral hover:font-bold">Áo jersey</Link></li>
-                                                <li><Link href={generateLink('quan-ao', 'nu/ao-hoodie')} className="btn btn-ghost text-sm hover:bg-secondary hover:text-neutral hover:font-bold">Áo hoodie</Link></li>
-                                                <li><Link href={generateLink('quan-ao', 'nu/quan-short')} className="btn btn-ghost text-sm hover:bg-secondary hover:text-neutral hover:font-bold">Quần short</Link></li>
-                                                <li><Link href={generateLink('quan-ao', 'nu/quan-dai')} className="btn btn-ghost text-sm hover:bg-secondary hover:text-neutral hover:font-bold">Quần dài</Link></li>
+                                                <li><Link href={generateLink('clothes', 'women/t-shirt')} className="btn btn-ghost text-sm hover:bg-secondary hover:text-neutral hover:font-bold">T-shirt</Link></li>
+                                                <li><Link href={generateLink('clothes', 'women/jersey')} className="btn btn-ghost text-sm hover:bg-secondary hover:text-neutral hover:font-bold">Jersey</Link></li>
+                                                <li><Link href={generateLink('clothes', 'women/hoodie')} className="btn btn-ghost text-sm hover:bg-secondary hover:text-neutral hover:font-bold">Hoodie</Link></li>
+                                                <li><Link href={generateLink('clothes', 'women/shorts')} className="btn btn-ghost text-sm hover:bg-secondary hover:text-neutral hover:font-bold">Shorts</Link></li>
+                                                <li><Link href={generateLink('clothes', 'women/trousers')} className="btn btn-ghost text-sm hover:bg-secondary hover:text-neutral hover:font-bold">Trousers</Link></li>
                                             </ul>
                                         </details>
                                     </li>
                                     <li>
                                         <details>
-                                            <summary><Link href={generateLink('quan-ao', 'tre-em')} className="btn btn-ghost text-lg hover:bg-secondary hover:text-neutral hover:font-bold">Trẻ em</Link></summary>
+                                            <summary><Link href={generateLink('clothes', 'kid')} className="btn btn-ghost text-lg hover:bg-secondary hover:text-neutral hover:font-bold">Kid</Link></summary>
                                             <ul>
-                                                <li><Link href={generateLink('quan-ao', 'tre-em/ao-thun')} className="btn btn-ghost text-sm hover:bg-secondary hover:text-neutral hover:font-bold">Áo thun</Link></li>
-                                                <li><Link href={generateLink('quan-ao', 'tre-em/ao-jersey')} className="btn btn-ghost text-sm hover:bg-secondary hover:text-neutral hover:font-bold">Áo jersey</Link></li>
-                                                <li><Link href={generateLink('quan-ao', 'tre-em/ao-hoodie')} className="btn btn-ghost text-sm hover:bg-secondary hover:text-neutral hover:font-bold">Áo hoodie</Link></li>
-                                                <li><Link href={generateLink('quan-ao', 'tre-em/quan-short')} className="btn btn-ghost text-sm hover:bg-secondary hover:text-neutral hover:font-bold">Quần short</Link></li>
-                                                <li><Link href={generateLink('quan-ao', 'tre-em/quan-dai')} className="btn btn-ghost text-sm hover:bg-secondary hover:text-neutral hover:font-bold">Quần dài</Link></li>
+                                                <li><Link href={generateLink('clothes', 'kid/t-shirt')} className="btn btn-ghost text-sm hover:bg-secondary hover:text-neutral hover:font-bold">T-shirt</Link></li>
+                                                <li><Link href={generateLink('clothes', 'kid/jersey')} className="btn btn-ghost text-sm hover:bg-secondary hover:text-neutral hover:font-bold">Jersey</Link></li>
+                                                <li><Link href={generateLink('clothes', 'kid/hoodie')} className="btn btn-ghost text-sm hover:bg-secondary hover:text-neutral hover:font-bold">Hoodie</Link></li>
+                                                <li><Link href={generateLink('clothes', 'kid/shorts')} className="btn btn-ghost text-sm hover:bg-secondary hover:text-neutral hover:font-bold">Shorts</Link></li>
+                                                <li><Link href={generateLink('clothes', 'kid/trousers')} className="btn btn-ghost text-sm hover:bg-secondary hover:text-neutral hover:font-bold">Trousers</Link></li>
                                             </ul>
                                         </details>
                                     </li>
@@ -136,27 +136,27 @@ export default function Navbar() {
                         </li>
                         <li>
                             <details>
-                                <summary><Link href={generateLink('giay')} className="btn btn-ghost text-2xl hover:bg-secondary hover:text-primary-content hover:font-bold">Giày</Link></summary>
+                                <summary><Link href={generateLink('shoes')} className="btn btn-ghost text-2xl hover:bg-secondary hover:text-primary-content hover:font-bold">Shoes</Link></summary>
                                 <ul>
-                                    <li><Link href={generateLink('giay', 'nam')} className="btn btn-ghost text-sm hover:bg-secondary hover:text-neutral hover:font-bold">Nam</Link></li>
-                                    <li><Link href={generateLink('giay', 'nu')} className="btn btn-ghost text-sm hover:bg-secondary hover:text-neutral hover:font-bold">Nữ</Link></li>
-                                    <li><Link href={generateLink('giay', 'tre-em')} className="btn btn-ghost text-sm hover:bg-secondary hover:text-neutral hover:font-bold">Trẻ em</Link></li>
+                                    <li><Link href={generateLink('shoes', 'men')} className="btn btn-ghost text-sm hover:bg-secondary hover:text-neutral hover:font-bold">Men</Link></li>
+                                    <li><Link href={generateLink('shoes', 'women')} className="btn btn-ghost text-sm hover:bg-secondary hover:text-neutral hover:font-bold">Women</Link></li>
+                                    <li><Link href={generateLink('shoes', 'kid')} className="btn btn-ghost text-sm hover:bg-secondary hover:text-neutral hover:font-bold">Kid</Link></li>
                                 </ul>
                             </details>
                         </li>
-                        <li><Link href={generateLink('bong-ro')} className="btn btn-ghost text-2xl hover:bg-secondary hover:text-primary-content hover:font-bold">Bóng rổ</Link></li>
+                        <li><Link href={generateLink('ball')} className="btn btn-ghost text-2xl hover:bg-secondary hover:text-primary-content hover:font-bold">Ball</Link></li>
                         <li>
                             <details>
-                                <summary><Link href={generateLink('phu-kien')} className="btn btn-ghost text-2xl hover:bg-secondary hover:text-primary-content hover:font-bold">Phụ kiện</Link></summary>
+                                <summary><Link href={generateLink('accessories')} className="btn btn-ghost text-2xl hover:bg-secondary hover:text-primary-content hover:font-bold">Accessories</Link></summary>
                                 <ul>
-                                    <li><Link href={generateLink('phu-kien', 'bang-thun')} className="btn btn-ghost text-lg hover:bg-secondary hover:text-neutral hover:font-bold">Băng thun</Link></li>
-                                    <li><Link href={generateLink('phu-kien', 'binh-nuoc')} className="btn btn-ghost text-lg hover:bg-secondary hover:text-neutral hover:font-bold">Bình nước</Link></li>
-                                    <li><Link href={generateLink('phu-kien', 'balo')} className="btn btn-ghost text-lg hover:bg-secondary hover:text-neutral hover:font-bold">Balo</Link></li>
-                                    <li><Link href={generateLink('phu-kien', 'dung-cu')} className="btn btn-ghost text-lg hover:bg-secondary hover:text-neutral hover:font-bold">Dụng cụ</Link></li>
+                                    <li><Link href={generateLink('accessories', 'band')} className="btn btn-ghost text-lg hover:bg-secondary hover:text-neutral hover:font-bold">Band</Link></li>
+                                    <li><Link href={generateLink('accessories', 'water-bottle')} className="btn btn-ghost text-lg hover:bg-secondary hover:text-neutral hover:font-bold">Water bottle</Link></li>
+                                    <li><Link href={generateLink('accessories', 'backpack')} className="btn btn-ghost text-lg hover:bg-secondary hover:text-neutral hover:font-bold">backpack</Link></li>
+                                    <li><Link href={generateLink('accessories', 'tool')} className="btn btn-ghost text-lg hover:bg-secondary hover:text-neutral hover:font-bold">Tool</Link></li>
                                 </ul>
                             </details>
                         </li>
-                        <li><Link href={generateLink('moi-nhat')} className="btn btn-ghost text-2xl hover:bg-secondary hover:text-primary-content hover:font-bold">Mới nhất</Link></li>
+                        <li><Link href={generateLink('lates')} className="btn btn-ghost text-2xl hover:bg-secondary hover:text-primary-content hover:font-bold">Lates</Link></li>
                         <li><Link href={generateLink('sale')} className="btn btn-ghost text-2xl hover:bg-secondary hover:text-primary-content hover:font-bold">Sale</Link></li>
                     </ul>
                 </div>
