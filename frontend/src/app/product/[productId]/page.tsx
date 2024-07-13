@@ -10,7 +10,7 @@ const DetailedProductPage = () => {
   const [selectedSize, setSelectedSize] = useState<string | null>(null);
   const [quantity, setQuantity] = useState<number>(1);
 
-  const sizes = ['37', '38', '39', '40', '41', '42', '43', '44'];
+  const sizes = ['XS', 'S', 'M', 'L', 'XL', 'XXL'];
 
   useEffect(() => {
     if (productId) {
