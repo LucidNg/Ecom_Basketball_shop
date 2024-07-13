@@ -43,9 +43,11 @@ export default async function Card({ limit }: CardProps) {
             <span className="text-base-content text-xs sm:text-sm lg:text-lg">
               đ {formatPrice(product.price)}
             </span>
-            <button className="btn bg-secondary rounded-none text-neutral font-semibold text-xs sm:text-sm lg:text-lg w-12 sm:w-24 lg:w-32 sm:h-4 lg:h-12 hover:bg-accent hover:text-primary">
-              Xem
-            </button>
+            <Link href={`/product/${product.productID}`}>
+              <button className="btn bg-secondary rounded-none text-neutral font-semibold text-xs sm:text-sm lg:text-lg w-12 sm:w-24 lg:w-32 sm:h-4 lg:h-12 hover:bg-accent hover:text-primary">
+                Xem
+              </button>
+            </Link>
           </div>
         </div>
       ))}

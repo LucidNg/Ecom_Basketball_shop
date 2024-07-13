@@ -1,34 +1,36 @@
 "use client";
 import { useState, useEffect } from 'react';
+import { useParams } from 'next/navigation';
 
-interface DetailedProductPageProps {
-  productId: string;
-}
-
-const DetailedProductPage: React.FC<DetailedProductPageProps> = ({ productId }) => {
+const DetailedProductPage = () => {
+  const { productId } = useParams();
   const [mainImage, setMainImage] = useState<string>('');
   const [images, setImages] = useState<string[]>([]);
 
   useEffect(() => {
-    // Load images based on the productId
-    const loadImages = async () => {
-      const basePath = `/images/products/${productId}`;
-      const imageList = [
-        `${basePath}/image1.jpg`,
-        `${basePath}/image2.jpg`,
-        `${basePath}/image3.jpg`,
-        `${basePath}/image4.jpg`,
-      ];
-      setImages(imageList);
-      setMainImage(imageList[0]);
-    };
+    if (productId) {
+      // Load images based on the productId
+      const loadImages = async () => {
+        const basePath = `/images/products/${productId}`;
+        const imageList = [
+          `${basePath}/image1.jpg`,
+          `${basePath}/image2.jpg`,
+          `${basePath}/image3.jpg`,
+          `${basePath}/image4.jpg`,
+        ];
+        setImages(imageList);
+        setMainImage(imageList[0]);
+      };
 
-    loadImages();
+      loadImages();
+    }
   }, [productId]);
 
   const handleImageClick = (image: string) => {
     setMainImage(image);
   };
+
+  if (!productId) return null;
 
   return (
     <div className="flex flex-col items-center">
