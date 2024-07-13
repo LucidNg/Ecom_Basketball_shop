@@ -1,7 +1,7 @@
 import React from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { FetchProduct, Product } from "../../../lib/product";
+import { FetchProduct, Product } from "../../lib/product";
 
 interface CardProps {
   limit?: number;
