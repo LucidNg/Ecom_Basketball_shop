@@ -71,7 +71,7 @@ const DetailedProductPage = () => {
 
         <div className='rightColumn flex flex-col lg:w-3/5 w-full'>
           <span className='text-5xl font-semibold w-4/5 text-base-content leading-normal'>Air Jordan Jumpman Globe Kids T-Shirt &quot;White&quot;</span>
-          <span className='text-5xl py-16 mx-20 text-base-content'>đ 587.000</span>
+          <span className='text-5xl py-16 mx-20 text-base-content'>$ 587.000</span>
           <div className='sizeDisplay grid grid-cols-4 gap-x-12 gap-y-5 lg:w-1/2 w-3/4 mx-20'>
             {sizes.map((size, index) => (
               <div
@@ -102,14 +102,14 @@ const DetailedProductPage = () => {
                 +
               </button>
             </div>
-            <span className='Quantity self-end text-2xl text-base-content'>Còn x sản phẩm</span>
+            <span className='Quantity self-end text-2xl text-base-content'>x item left</span>
           </div>
 
           <button
             className={`addToCart mt-8 w-1/4 h-20 mx-20 text-2xl font-semibold text-neutral ${selectedSize ? 'bg-secondary' : 'bg-primary text-base-content cursor-not-allowed'}`}
             disabled={!selectedSize}
           >
-            Thêm vào giỏ hàng
+            Add to cart
           </button>
 
           <span className='itemDescriptionBox mx-20 mt-10 text-lg text-base-content'>
