@@ -3,8 +3,10 @@ package database
 import (
 	"database/sql"
 	"encoding/json"
+	"fmt"
 	"net/http"
 
+	"github.com/gorilla/mux"
 	_ "github.com/mattn/go-sqlite3"
 )
 
@@ -101,6 +103,44 @@ func QueryProduct(db *sql.DB, w http.ResponseWriter) error {
 
 	var products []Product
 
+	for rows.Next() {
+		var product Product
+		err = rows.Scan(&product.ProductID, &product.CategoryID, &product.ProductName, &product.Description, &product.Brand, &product.Price, &product.Stock, &product.DateAdded, &product.Size)
+		if err != nil {
+			return err
+		}
+		products = append(products, product)
+	}
+
+	if err := rows.Err(); err != nil {
+		return err
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	if err := json.NewEncoder(w).Encode(products); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func QueryProductByCategory(db *sql.DB, w http.ResponseWriter, r *http.Request) error {
+	vars := mux.Vars(r)
+	category := vars["category"]
+	value := fmt.Sprintf("%%%s%%", category)
+	query := `
+		SELECT p.productID, p.categoryID, p.productName, p.description, p.brand, p.price, p.stock, p.dateAdded, p.size
+		FROM product p
+		JOIN category c ON p.categoryID = c.categoryID
+		WHERE c.categoryName LIKE ?`
+
+	rows, err := db.Query(query, value)
+	if err != nil {
+		return err
+	}
+	defer rows.Close()
+
+	var products []Product
 	for rows.Next() {
 		var product Product
 		err = rows.Scan(&product.ProductID, &product.CategoryID, &product.ProductName, &product.Description, &product.Brand, &product.Price, &product.Stock, &product.DateAdded, &product.Size)

@@ -9,9 +9,9 @@ export interface Product {
     dateAdded: string;
     size: string;
 }
-
+const connectString = "http://localhost:8080"
 export async function FetchProduct(): Promise<Array<Product>> {
-    let url = process.env.API_ENDPOINT ? process.env.API_ENDPOINT : "http://localhost:8080/product";
+    let url = process.env.API_ENDPOINT ? process.env.API_ENDPOINT : connectString + "/product";
     
     const response = await fetch(url, {
         method: "GET",
@@ -26,6 +26,24 @@ export async function FetchProduct(): Promise<Array<Product>> {
     }
 
     
+    const data = await response.json();
+    return data as Array<Product>;
+}
+
+export async function FetchProductByCategory(category: string): Promise<Array<Product>> {
+    let url = process.env.API_ENDPOINT ? process.env.API_ENDPOINT : `${connectString}/categoryProduct/${category}`;
+    console.log("url", url);
+    const response = await fetch(url, {
+        method: "GET",
+        credentials: "include",
+        mode: "cors",
+        cache: "no-cache"
+    });
+
+    if (!response.ok) {
+        throw new Error(`Failed to fetch products for category: ${category}`);
+    }
+
     const data = await response.json();
     return data as Array<Product>;
 }

@@ -12,7 +12,6 @@ export default async function Card({ limit }: CardProps) {
 
   try {
     products = await FetchProduct();
-    console.log("product:", products);
   } catch (error) {
     console.error('Error fetching products:', error);
   }

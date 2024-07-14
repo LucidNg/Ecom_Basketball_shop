@@ -31,13 +31,13 @@ export default function Navbar() {
                                 </ul>
                             </li>
                             <li>
-                                <Link href={generateLink('clothes', 'nu')} className="text-3xl font-semibold pb-5">Women</Link>
+                                <Link href={generateLink('clothes', 'wm')} className="text-3xl font-semibold pb-5">Women</Link>
                                 <ul>
-                                    <li><Link href={generateLink('clothes', 'women/t-shirt')} className="text-xl">T-shirt</Link></li>
-                                    <li><Link href={generateLink('clothes', 'women/jersey')} className="text-xl">Jersey</Link></li>
-                                    <li><Link href={generateLink('clothes', 'women/hoodie')} className="text-xl">Hoodie</Link></li>
-                                    <li><Link href={generateLink('clothes', 'women/shorts')} className="text-xl">Shorts</Link></li>
-                                    <li><Link href={generateLink('clothes', 'women/trousers')} className="text-xl">Trousers</Link></li>
+                                    <li><Link href={generateLink('clothes', 'wm/t-shirt')} className="text-xl">T-shirt</Link></li>
+                                    <li><Link href={generateLink('clothes', 'wm/jersey')} className="text-xl">Jersey</Link></li>
+                                    <li><Link href={generateLink('clothes', 'wm/hoodie')} className="text-xl">Hoodie</Link></li>
+                                    <li><Link href={generateLink('clothes', 'wm/shorts')} className="text-xl">Shorts</Link></li>
+                                    <li><Link href={generateLink('clothes', 'wm/trousers')} className="text-xl">Trousers</Link></li>
                                 </ul>
                             </li>
                             <li>
@@ -60,7 +60,7 @@ export default function Navbar() {
                     <div className="dropdown-content z-10">
                         <ul className="menu bg-base-content rounded-box w-56 py-5">
                             <li><Link href={generateLink('shoes', 'men')} className="text-xl">Men</Link></li>
-                            <li><Link href={generateLink('shoes', 'women')} className="text-xl">Women</Link></li>
+                            <li><Link href={generateLink('shoes', 'wm')} className="text-xl">Women</Link></li>
                             <li><Link href={generateLink('shoes', 'kid')} className="text-xl">Kid</Link></li>
                         </ul>
                     </div>
@@ -109,13 +109,13 @@ export default function Navbar() {
                                     </li>
                                     <li>
                                         <details>
-                                            <summary><Link href={generateLink('clothes', 'women')} className="btn btn-ghost text-lg hover:bg-secondary hover:text-neutral hover:font-bold">Women</Link></summary>
+                                            <summary><Link href={generateLink('clothes', 'wm')} className="btn btn-ghost text-lg hover:bg-secondary hover:text-neutral hover:font-bold">Women</Link></summary>
                                             <ul>
-                                                <li><Link href={generateLink('clothes', 'women/t-shirt')} className="btn btn-ghost text-sm hover:bg-secondary hover:text-neutral hover:font-bold">T-shirt</Link></li>
-                                                <li><Link href={generateLink('clothes', 'women/jersey')} className="btn btn-ghost text-sm hover:bg-secondary hover:text-neutral hover:font-bold">Jersey</Link></li>
-                                                <li><Link href={generateLink('clothes', 'women/hoodie')} className="btn btn-ghost text-sm hover:bg-secondary hover:text-neutral hover:font-bold">Hoodie</Link></li>
-                                                <li><Link href={generateLink('clothes', 'women/shorts')} className="btn btn-ghost text-sm hover:bg-secondary hover:text-neutral hover:font-bold">Shorts</Link></li>
-                                                <li><Link href={generateLink('clothes', 'women/trousers')} className="btn btn-ghost text-sm hover:bg-secondary hover:text-neutral hover:font-bold">Trousers</Link></li>
+                                                <li><Link href={generateLink('clothes', 'wm/t-shirt')} className="btn btn-ghost text-sm hover:bg-secondary hover:text-neutral hover:font-bold">T-shirt</Link></li>
+                                                <li><Link href={generateLink('clothes', 'wm/jersey')} className="btn btn-ghost text-sm hover:bg-secondary hover:text-neutral hover:font-bold">Jersey</Link></li>
+                                                <li><Link href={generateLink('clothes', 'wm/hoodie')} className="btn btn-ghost text-sm hover:bg-secondary hover:text-neutral hover:font-bold">Hoodie</Link></li>
+                                                <li><Link href={generateLink('clothes', 'wm/shorts')} className="btn btn-ghost text-sm hover:bg-secondary hover:text-neutral hover:font-bold">Shorts</Link></li>
+                                                <li><Link href={generateLink('clothes', 'wm/trousers')} className="btn btn-ghost text-sm hover:bg-secondary hover:text-neutral hover:font-bold">Trousers</Link></li>
                                             </ul>
                                         </details>
                                     </li>
@@ -139,7 +139,7 @@ export default function Navbar() {
                                 <summary><Link href={generateLink('shoes')} className="btn btn-ghost text-2xl hover:bg-secondary hover:text-primary-content hover:font-bold">Shoes</Link></summary>
                                 <ul>
                                     <li><Link href={generateLink('shoes', 'men')} className="btn btn-ghost text-sm hover:bg-secondary hover:text-neutral hover:font-bold">Men</Link></li>
-                                    <li><Link href={generateLink('shoes', 'women')} className="btn btn-ghost text-sm hover:bg-secondary hover:text-neutral hover:font-bold">Women</Link></li>
+                                    <li><Link href={generateLink('shoes', 'wm')} className="btn btn-ghost text-sm hover:bg-secondary hover:text-neutral hover:font-bold">Women</Link></li>
                                     <li><Link href={generateLink('shoes', 'kid')} className="btn btn-ghost text-sm hover:bg-secondary hover:text-neutral hover:font-bold">Kid</Link></li>
                                 </ul>
                             </details>

@@ -1,12 +1,11 @@
+'use client';
+import Card from "@/app/[category]/productComponent/Card";
+import ProductPageCli from "./page-client";
 
-import Card from "@/app/(home)/homePageComponent/Card";
-import MostSubCategoryProductPageClient from "./page-client";
-
-
-export default function MostSubCategoryProductPage() {
+export default function ProductPage() {
   return (
-    <MostSubCategoryProductPageClient 
-    children1={<Card/>}>
-    </MostSubCategoryProductPageClient>
+    <ProductPageCli 
+    children1={<Card category={""}/>}>
+    </ProductPageCli>
   );
 }
