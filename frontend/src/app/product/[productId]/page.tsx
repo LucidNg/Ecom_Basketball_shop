@@ -1,6 +1,7 @@
 'use client';
 import { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
+import {Product, FetchProductByID} from '@/lib/product'
 import Image from 'next/image';
 
 const DetailedProductPage = () => {
@@ -9,24 +10,47 @@ const DetailedProductPage = () => {
   const [images, setImages] = useState<string[]>([]);
   const [selectedSize, setSelectedSize] = useState<string | null>(null);
   const [quantity, setQuantity] = useState<number>(1);
+  const [products, setProducts] = useState<Product[]>([]);
+  const [sizes, setSizes] = useState<string[]>([]);
+  const [stockBySize, setStockBySize] = useState<{ [key: string]: number }>({});
 
-  const sizes = ['XS', 'S', 'M', 'L', 'XL', 'XXL'];
   useEffect(() => {
     if (productId) {
-      // Load images based on the productId
-      const loadImages = async () => {
-        const basePath = `/images/products/${productId}`;
-        const imageList = [
-          `${basePath}/image1.jpg`,
-          `${basePath}/image2.jpg`,
-          `${basePath}/image3.jpg`,
-          `${basePath}/image4.jpg`,
-        ];
-        setImages(imageList);
-        setMainImage(imageList[0]);
+      const fetchProductDetails = async () => {
+        try {
+          const fetchedProducts = await FetchProductByID(productId.toString());
+          setProducts(fetchedProducts);
+
+          const sizeSet = new Set<string>();
+          const stockMap: { [key: string]: number } = {};
+
+          fetchedProducts.forEach(product => {
+            sizeSet.add(product.size);
+            if (stockMap[product.size]) {
+              stockMap[product.size] += product.stock;
+            } else {
+              stockMap[product.size] = product.stock;
+            }
+          });
+
+          setSizes(Array.from(sizeSet));
+          setStockBySize(stockMap);
+
+          const basePath = `/images/products/${productId}`;
+          const imageList = [
+            `${basePath}/image1.jpg`,
+            `${basePath}/image2.jpg`,
+            `${basePath}/image3.jpg`,
+            `${basePath}/image4.jpg`,
+          ];
+          setImages(imageList);
+          setMainImage(imageList[0]);
+        } catch (error) {
+          console.error("Failed to fetch product details:", error);
+        }
       };
 
-      loadImages();
+      fetchProductDetails();
     }
   }, [productId]);
 
@@ -46,7 +70,9 @@ const DetailedProductPage = () => {
     setQuantity((prevQuantity) => (prevQuantity > 1 ? prevQuantity - 1 : 1));
   };
 
-  if (!productId) return null;
+  if (!productId || products.length === 0) return null;
+
+  const product = products[0];
 
   return (
     <div className='w-screen flex flex-col pt-20 bg-base-100'>
@@ -69,58 +95,56 @@ const DetailedProductPage = () => {
         </div>
 
         <div className='rightColumn flex flex-col lg:w-3/5 w-full'>
-          <span className='text-5xl font-semibold w-4/5 text-base-content leading-normal'>Air Jordan Jumpman Globe Kids T-Shirt &quot;White&quot;</span>
-          <span className='text-5xl py-16 mx-20 text-base-content'>$ 587.000</span>
-          <div className='sizeDisplay grid grid-cols-4 gap-x-12 gap-y-5 lg:w-1/2 w-3/4 mx-20'>
-            {sizes.map((size, index) => (
-              <div
-                key={index}
-                className={`flex items-center justify-center w-28 h-12 text-xl cursor-pointer hover:bg-secondary hover:font-semibold ${selectedSize === size ? 'bg-secondary font-semibold' : 'bg-primary text-base-content'}`}
-                onClick={() => handleSizeClick(size)}
-              >
-                {size}
+          {product && (
+            <>
+              <span className='text-5xl font-semibold w-4/5 text-base-content leading-normal'>{product.productName}</span>
+              <span className='text-5xl py-16 mx-20 text-base-content'>${product.price}</span>
+              <div className='sizeDisplay grid grid-cols-4 gap-x-12 gap-y-5 lg:w-1/2 w-3/4 mx-20'>
+                {sizes.map((size, index) => (
+                  <div
+                    key={index}
+                    className={`flex flex-col items-center justify-center w-28 h-24 text-xl cursor-pointer hover:bg-secondary hover:font-semibold ${selectedSize === size ? 'bg-secondary font-semibold' : 'bg-primary text-base-content'}`}
+                    onClick={() => handleSizeClick(size)}
+                  >
+                    <span>{size}</span>
+                    <span className='text-sm'>{stockBySize[size]} items left</span>
+                  </div>
+                ))}
               </div>
-            ))}
-          </div>
 
-          <div className='flex flex-row'>
-            <div className='quantityControl flex items-center mt-8 w-36 h-10 mx-20'>
-              <button
-                className='flex items-center justify-center w-1/3 h-full bg-primary text-base-content hover:bg-secondary'
-                onClick={decrementQuantity}
-              >
-                -
-              </button>
-              <div className='flex items-center justify-center w-1/3 h-full bg-base-100 text-base-content'>
-                {quantity}
+              <div className='flex flex-row'>
+                <div className='quantityControl flex items-center mt-8 w-36 h-10 mx-20'>
+                  <button
+                    className='flex items-center justify-center w-1/3 h-full bg-primary text-base-content hover:bg-secondary'
+                    onClick={decrementQuantity}
+                  >
+                    -
+                  </button>
+                  <div className='flex items-center justify-center w-1/3 h-full bg-base-100 text-base-content'>
+                    {quantity}
+                  </div>
+                  <button
+                    className='flex items-center justify-center w-1/3 h-full bg-primary text-base-content hover:bg-secondary'
+                    onClick={incrementQuantity}
+                  >
+                    +
+                  </button>
+                </div>
+                <span className='Quantity self-end text-2xl text-base-content'> item left</span>
               </div>
+
               <button
-                className='flex items-center justify-center w-1/3 h-full bg-primary text-base-content hover:bg-secondary'
-                onClick={incrementQuantity}
+                className={`addToCart mt-8 w-1/4 h-20 mx-20 text-2xl font-semibold text-neutral ${selectedSize ? 'bg-secondary' : 'bg-primary text-base-content cursor-not-allowed'}`}
+                disabled={!selectedSize}
               >
-                +
+                Add to cart
               </button>
-            </div>
-            <span className='Quantity self-end text-2xl text-base-content'>x item left</span>
-          </div>
 
-          <button
-            className={`addToCart mt-8 w-1/4 h-20 mx-20 text-2xl font-semibold text-neutral ${selectedSize ? 'bg-secondary' : 'bg-primary text-base-content cursor-not-allowed'}`}
-            disabled={!selectedSize}
-          >
-            Add to cart
-          </button>
-
-          <span className='itemDescriptionBox mx-20 mt-10 text-lg text-base-content'>
-            The Air Jordan Jumpman Globe Kids T-Shirt in &quot;White&quot; is
-            a stylish and comfortable apparel item designed for young 
-            fans of the iconic Air Jordan brand. It features a classic 
-            white color with a prominent Jumpman logo and globe 
-            graphic on the front, showcasing a global basketball theme. 
-            Made from soft, breathable fabric, this t-shirt offers a 
-            relaxed fit, making it perfect for everyday wear or athletic activities. 
-            It is an ideal choice for kids who want to sport a cool, sporty look while representing the Air Jordan legacy.
-          </span>
+              <span className='itemDescriptionBox mx-20 mt-10 text-lg text-base-content'>
+                {product.description}
+              </span>
+            </>
+          )}
         </div>
       </div>
     </div>
@@ -128,3 +152,4 @@ const DetailedProductPage = () => {
 };
 
 export default DetailedProductPage;
+

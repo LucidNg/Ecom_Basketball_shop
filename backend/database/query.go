@@ -129,11 +129,41 @@ func QueryProductByCategory(db *sql.DB, w http.ResponseWriter, r *http.Request) 
 	category := vars["category"]
 	value := fmt.Sprintf("%%%s%%", category)
 	query := `
-	SELECT p.productID, p.categoryID, p.productName, p.description, p.brand, p.price, p.stock, p.dateAdded, p.size
-	FROM product p
-	JOIN category c ON p.categoryID = c.categoryID
-	WHERE c.categoryName LIKE ?
-	ORDER BY strftime('%Y-%m-%d', substr(p.dateAdded, 7, 4) || '-' || substr(p.dateAdded, 4, 2) || '-' || substr(p.dateAdded, 1, 2)) DESC`
+	WITH ranked_products AS (
+	SELECT 
+		p.productID, 
+		p.categoryID, 
+		p.productName, 
+		p.description, 
+		p.brand, 
+		p.price, 
+		p.stock, 
+		p.dateAdded, 
+		p.size,
+		ROW_NUMBER() OVER (PARTITION BY p.productName ORDER BY strftime('%Y-%m-%d', substr(p.dateAdded, 7, 4) || '-' || substr(p.dateAdded, 4, 2) || '-' || substr(p.dateAdded, 1, 2)) DESC) as row_num
+	FROM 
+		product p
+	JOIN 
+		category c ON p.categoryID = c.categoryID
+	WHERE 
+		c.categoryName LIKE ?
+	)
+	SELECT 
+	productID, 
+	categoryID, 
+	productName, 
+	description, 
+	brand, 
+	price, 
+	stock, 
+	dateAdded, 
+	size
+	FROM 
+	ranked_products
+	WHERE 
+	row_num = 1
+	ORDER BY 
+	strftime('%Y-%m-%d', substr(dateAdded, 7, 4) || '-' || substr(dateAdded, 4, 2) || '-' || substr(dateAdded, 1, 2)) DESC;`
 
 	rows, err := db.Query(query, value)
 	if err != nil {
@@ -161,4 +191,41 @@ func QueryProductByCategory(db *sql.DB, w http.ResponseWriter, r *http.Request) 
 	}
 
 	return nil
+}
+
+func QueryProductByID(db *sql.DB, w http.ResponseWriter, r *http.Request) error {
+	vars := mux.Vars(r)
+	productID := vars["productID"]
+	query := `SELECT p2.*
+        FROM product p1
+        JOIN product p2 ON p1.productName = p2.productName
+        WHERE p1.productID = ?`
+
+	rows, err := db.Query(query, productID)
+	if err != nil {
+		return err
+	}
+	defer rows.Close()
+
+	var products []Product
+	for rows.Next() {
+		var product Product
+		err = rows.Scan(&product.ProductID, &product.CategoryID, &product.ProductName, &product.Description, &product.Brand, &product.Price, &product.Stock, &product.DateAdded, &product.Size)
+		if err != nil {
+			return err
+		}
+		products = append(products, product)
+	}
+
+	if err := rows.Err(); err != nil {
+		return err
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	if err := json.NewEncoder(w).Encode(products); err != nil {
+		return err
+	}
+
+	return nil
+
 }
