@@ -29,7 +29,6 @@ func QueryCategory(db *sqlitecloud.SQCloud, w http.ResponseWriter) error {
 		return err
 	}
 
-	defer rows.Dump()
 	_, err = w.Write([]byte(rows.ToJSON()))
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -44,7 +43,6 @@ func QueryProduct(db *sqlitecloud.SQCloud, w http.ResponseWriter) error {
 		return err
 	}
 
-	defer rows.Dump()
 	_, err = w.Write([]byte(rows.ToJSON()))
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -100,7 +98,6 @@ func QueryProductByCategory(db *sqlitecloud.SQCloud, w http.ResponseWriter, r *h
 		return err
 	}
 
-	defer rows.Dump()
 	_, err = w.Write([]byte(rows.ToJSON()))
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -124,6 +121,27 @@ func QueryProductByID(db *sqlitecloud.SQCloud, w http.ResponseWriter, r *http.Re
 		return err
 	}
 
+	_, err = w.Write([]byte(rows.ToJSON()))
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return err
+	}
+	return nil
+
+}
+
+func QueryProductByName(db *sqlitecloud.SQCloud, w http.ResponseWriter, r *http.Request) error {
+	vars := mux.Vars(r)
+	name := vars["name"]
+	value := fmt.Sprintf("%%%s%%", name)
+	query := `SELECT * FROM product WHERE productName LIKE ?`
+
+	values := []interface{}{value}
+
+	rows, err := db.SelectArray(query, values)
+	if err != nil {
+		return err
+	}
 	defer rows.Dump()
 	_, err = w.Write([]byte(rows.ToJSON()))
 	if err != nil {

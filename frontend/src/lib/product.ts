@@ -58,7 +58,25 @@ export async function FetchProductByID(productID: string): Promise<Array<Product
     });
 
     if (!response.ok) {
-        throw new Error(`Failed to fetch products for category: ${productID}`);
+        throw new Error(`Failed to fetch products with ID: ${productID}`);
+    }
+
+    const data = await response.json();
+    return data as Array<Product>;
+}
+
+export async function FetchProductByName(name: string): Promise<Array<Product>> {
+    let url = process.env.API_ENDPOINT ? process.env.API_ENDPOINT : `${connectString}/search/${name}`;
+    console.log("url", url);
+    const response = await fetch(url, {
+        method: "GET",
+        credentials: "include",
+        mode: "cors",
+        cache: "no-cache"
+    });
+
+    if (!response.ok) {
+        throw new Error(`Failed to fetch products with name: ${name}`);
     }
 
     const data = await response.json();

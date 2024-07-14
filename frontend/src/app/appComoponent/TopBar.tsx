@@ -4,13 +4,16 @@ import React, { useState, useEffect, ChangeEvent } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { Search } from "@geist-ui/icons";
-import { ShoppingCart } from "@geist-ui/icons";
+import {FetchProductByName} from "@/lib/product"
 
 export default function TopBar() {
     const [searchValue, setSearchValue] = useState<string>('');
 
     useEffect(() => {
-        console.log(searchValue);
+        if (searchValue.trim() !== '') {
+            // Call the FetchProductByName function
+            FetchProductByName(searchValue);
+        }
     }, [searchValue]);
 
     const handleSearchChange = (e: ChangeEvent<HTMLInputElement>) => {
