@@ -48,10 +48,10 @@ const FilterBar = () => {
 
     return (
         <div className="filterBar w-[90%] bg-neutral h-20 mx-auto mb-32 flex items-center px-10 gap-10 justify-center">
-            <span className="font-semibold text-2xl text-base-100">Filter by</span>
+            <span className="font-semibold text-xl text-base-100">Filter by</span>
 
             <div
-                className={`font-semibold text-2xl bg-base-100 text-base-content h-3/4 w-1/12 flex items-center justify-center cursor-pointer ${
+                className={`font-semibold text-xl bg-base-100 text-base-content h-3/4 w-1/12 flex items-center justify-center cursor-pointer ${
                     sortBy === "newest" ? "bg-secondary" : "bg-base-100"
                 }`}
                 onClick={() => setSortBy("newest")}
@@ -60,7 +60,7 @@ const FilterBar = () => {
             </div>
 
             <div
-                className={`font-semibold text-2xl bg-base-100 text-base-content h-3/4 w-1/12 flex items-center justify-center cursor-pointer ${
+                className={`font-semibold text-xl bg-base-100 text-base-content h-3/4 w-1/12 flex items-center justify-center cursor-pointer ${
                     sortBy === "bestselling" ? "bg-secondary" : "bg-base-100"
                 }`}
                 onClick={() => setSortBy("bestselling")}
@@ -69,7 +69,7 @@ const FilterBar = () => {
             </div>
 
             <div
-                className={`font-semibold text-2xl bg-base-100 text-base-content h-3/4 w-1/12 flex items-center justify-center cursor-pointer ${
+                className={`font-semibold text-xl bg-base-100 text-base-content h-3/4 w-1/12 flex items-center justify-center cursor-pointer ${
                     sortBy === "price-high-to-low" ? "bg-secondary" : "bg-base-100"
                 }`}
                 onClick={() => setSortBy("price-high-to-low")}
@@ -78,7 +78,7 @@ const FilterBar = () => {
             </div>
 
             <div
-                className={`font-semibold text-2xl bg-base-100 text-base-content h-3/4 w-1/12 flex items-center justify-center cursor-pointer ${
+                className={`font-semibold text-xl bg-base-100 text-base-content h-3/4 w-1/12 flex items-center justify-center cursor-pointer ${
                     sortBy === "price-low-to-high" ? "bg-secondary" : "bg-base-100"
                 }`}
                 onClick={() => setSortBy("price-low-to-high")}
@@ -87,18 +87,18 @@ const FilterBar = () => {
             </div>
 
             <div className="flex items-center space-x-4 justify-between w-1/2">
-                <span className="font-semibold text-2xl text-base-100">From:</span>
+                <span className="font-semibold text-xl text-base-100">From:</span>
                 <input
                     type="text"
-                    placeholder="from"
+                    placeholder="..."
                     value={minPrice}
                     onChange={handleMinPriceChange}
                     className="w-28 h-14 px-3 bg-base-100 outline-none text-xl text-base-content font-semibold"
                 />
-                <span className="font-semibold text-2xl text-base-100">to</span>
+                <span className="font-semibold text-xl text-base-100">to</span>
                 <input
                     type="text"
-                    placeholder="to"
+                    placeholder="..."
                     value={maxPrice}
                     onChange={handleMaxPriceChange}
                     className="w-28 h-14 px-3 bg-base-100 outline-none text-xl text-base-content font-semibold"
