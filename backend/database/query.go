@@ -61,7 +61,8 @@ func QueryProductByCategory(db *sqlitecloud.SQCloud, w http.ResponseWriter, r *h
 		SELECT p.productID, p.categoryID, p.productName, p.description, p.brand, p.price, p.stock, p.dateAdded, p.size
 		FROM product p
 		JOIN category c ON p.categoryID = c.categoryID
-		WHERE c.categoryName LIKE ?`
+		WHERE c.categoryName LIKE ?
+		ORDER BY strftime('%Y-%m-%d', substr(p.dateAdded, 7, 4) || '-' || substr(p.dateAdded, 4, 2) || '-' || substr(p.dateAdded, 1, 2)) DESC`
 	values := []interface{}{value}
 
 	rows, err := db.SelectArray(query, values)
