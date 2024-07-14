@@ -21,23 +21,23 @@ export default function Home({
           </div>
 
           <div className="py-10 text-center lg:text-left">
-            <span className="text-accent font-bold text-3xl sm:text-4xl">Lates shoes</span>
+            <span className="text-accent font-bold text-3xl sm:text-4xl">Latest shoes</span>
           </div>
           <div className="flex flex-row w-full justify-center">
             <div id="most-liked" className="w-[90%] overflow-x-auto">
               <div className="flex gap-10 min-w-max">
-                {children1}
+                {children2}
               </div>
             </div>
           </div>
 
           <div className="py-10 text-center lg:text-left">
-            <span className="text-accent font-bold text-3xl sm:text-4xl">Lates clothes<i></i></span>
+            <span className="text-accent font-bold text-3xl sm:text-4xl">Latest clothes</span>
           </div>
           <div className="flex flex-row w-full justify-center">
             <div id="most-liked" className="w-[90%] overflow-x-auto">
               <div className="flex gap-10 min-w-max">
-                {children1}
+                {children3}
               </div>
             </div>
           </div>
