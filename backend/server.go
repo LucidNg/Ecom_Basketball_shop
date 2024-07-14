@@ -9,6 +9,7 @@ import (
 
 	sqlitecloud "github.com/sqlitecloud/sqlitecloud-go"
 
+	"github.com/gorilla/mux"
 	_ "github.com/mattn/go-sqlite3"
 )
 
@@ -32,12 +33,15 @@ func main() {
 		log.Fatalf("Failed to enable foreign key constraints: %v", err)
 	}
 
-	// Start HTTP server
-	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+	// Set up the router
+	r := mux.NewRouter()
+
+	// Define routes
+	r.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte("Welcome to the server!"))
 	})
 
-	http.HandleFunc("/users", corsMiddleware(func(w http.ResponseWriter, r *http.Request) {
+	r.HandleFunc("/users", corsMiddleware(func(w http.ResponseWriter, r *http.Request) {
 		if r.Method == http.MethodGet {
 			err := database.QueryUsers(db, w)
 			if err != nil {
@@ -56,9 +60,9 @@ func main() {
 		} else {
 			http.Error(w, "Unsupported method", http.StatusMethodNotAllowed)
 		}
-	}))
+	})).Methods(http.MethodGet, http.MethodPost)
 
-	http.HandleFunc("/category", corsMiddleware(func(w http.ResponseWriter, r *http.Request) {
+	r.HandleFunc("/category", corsMiddleware(func(w http.ResponseWriter, r *http.Request) {
 		if r.Method == http.MethodGet {
 			err := database.QueryCategory(db, w)
 			if err != nil {
@@ -77,9 +81,21 @@ func main() {
 		} else {
 			http.Error(w, "Unsupported method", http.StatusMethodNotAllowed)
 		}
-	}))
+	})).Methods(http.MethodGet, http.MethodPost)
 
-	http.HandleFunc("/product", corsMiddleware(func(w http.ResponseWriter, r *http.Request) {
+	r.HandleFunc("/categoryProduct/{category}", corsMiddleware(func(w http.ResponseWriter, r *http.Request) {
+		if r.Method == http.MethodGet {
+			err := database.QueryProductByCategory(db, w, r)
+			if err != nil {
+				http.Error(w, "Failed to query products", http.StatusInternalServerError)
+				return
+			}
+		} else {
+			http.Error(w, "Unsupported method", http.StatusMethodNotAllowed)
+		}
+	})).Methods(http.MethodGet)
+
+	r.HandleFunc("/product", corsMiddleware(func(w http.ResponseWriter, r *http.Request) {
 		if r.Method == http.MethodGet {
 			err := database.QueryProduct(db, w)
 			if err != nil {
@@ -93,11 +109,10 @@ func main() {
 			brand := r.FormValue("brand")
 			price := r.FormValue("price")
 			stock := r.FormValue("stock")
-			imageURL := r.FormValue("imageURL")
 			dateAdded := r.FormValue("dateAdded")
 			size := r.FormValue("size")
 
-			err = database.InsertProduct(db, categoryID, name, description, brand, price, stock, imageURL, dateAdded, size)
+			err = database.InsertProduct(db, categoryID, name, description, brand, price, stock, dateAdded, size)
 			if err != nil {
 				http.Error(w, "Failed to create product: "+err.Error(), http.StatusInternalServerError)
 				return
@@ -106,11 +121,11 @@ func main() {
 		} else {
 			http.Error(w, "Unsupported method", http.StatusMethodNotAllowed)
 		}
-	}))
+	})).Methods(http.MethodGet, http.MethodPost)
 
 	port := getPort()
 	fmt.Printf("Server is listening on port %s\n", port)
-	log.Fatal(http.ListenAndServe(port, nil))
+	log.Fatal(http.ListenAndServe(port, r))
 }
 
 func getPort() string {
@@ -123,9 +138,17 @@ func getPort() string {
 
 func corsMiddleware(next http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Set("Access-Control-Allow-Origin", "*")
+		// Set allowed origins dynamically based on incoming request origin
+		origin := r.Header.Get("Origin")
+		if origin == "" {
+			origin = "*"
+		}
+		w.Header().Set("Access-Control-Allow-Origin", origin)
 		w.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
 		w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
+
+		// Set Access-Control-Allow-Credentials header
+		w.Header().Set("Access-Control-Allow-Credentials", "true")
 
 		if r.Method == "OPTIONS" {
 			w.WriteHeader(http.StatusOK)

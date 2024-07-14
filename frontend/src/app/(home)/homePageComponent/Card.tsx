@@ -12,7 +12,6 @@ export default async function Card({ limit }: CardProps) {
 
   try {
     products = await FetchProduct();
-    console.log("product:", products);
   } catch (error) {
     console.error('Error fetching products:', error);
   }
@@ -29,7 +28,7 @@ export default async function Card({ limit }: CardProps) {
       {displayedProducts.map(product => (
         <div key={product.productID} className="bg-primary flex flex-col h-64 w-40 sm:h-80 sm:w-56 lg:h-[410px] lg:w-72">
           <Image 
-            src={product.imageURL} 
+            src={`/products/${product.productID}/1.png`} 
             alt={product.productName} 
             width={150} 
             height={150} 
@@ -41,11 +40,13 @@ export default async function Card({ limit }: CardProps) {
           </span>
           <div className="flex flex-row items-center justify-between w-40 sm:w-56 lg:w-72 px-5 pb-1">
             <span className="text-base-content text-xs sm:text-sm lg:text-lg">
-              đ {formatPrice(product.price)}
+              $ {formatPrice(product.price)}
             </span>
-            <button className="btn bg-secondary rounded-none text-neutral font-semibold text-xs sm:text-sm lg:text-lg w-12 sm:w-24 lg:w-32 sm:h-4 lg:h-12 hover:bg-accent hover:text-primary">
-              Xem
-            </button>
+            <Link href={`/product/${product.productID}`}>
+              <button className="btn bg-secondary rounded-none text-neutral font-semibold text-xs sm:text-sm lg:text-lg w-12 sm:w-24 lg:w-32 sm:h-4 lg:h-12 hover:bg-accent hover:text-primary">
+                View
+              </button>
+            </Link>
           </div>
         </div>
       ))}

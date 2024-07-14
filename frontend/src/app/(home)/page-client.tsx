@@ -1,4 +1,4 @@
-'use-client'
+'use client';
 
 export default function Home({
     children1, children2, children3
@@ -10,7 +10,7 @@ export default function Home({
     return (
       <div className="lg:px-16 lg:pt-10 bg-base-100">
           <div className="py-10 text-center lg:text-left">
-            <span className="text-accent font-bold text-3xl sm:text-4xl">Sản phẩm bán chạy</span>
+            <span className="text-accent font-bold text-3xl sm:text-4xl">Feature products</span>
           </div>
           <div className="flex flex-row w-full justify-center">
             <div id="most-liked" className="w-[90%] overflow-x-auto">
@@ -21,7 +21,7 @@ export default function Home({
           </div>
 
           <div className="py-10 text-center lg:text-left">
-            <span className="text-accent font-bold text-3xl sm:text-4xl">Giày mới</span>
+            <span className="text-accent font-bold text-3xl sm:text-4xl">Lates shoes</span>
           </div>
           <div className="flex flex-row w-full justify-center">
             <div id="most-liked" className="w-[90%] overflow-x-auto">
@@ -32,7 +32,7 @@ export default function Home({
           </div>
 
           <div className="py-10 text-center lg:text-left">
-            <span className="text-accent font-bold text-3xl sm:text-4xl">Quần áo mới<i></i></span>
+            <span className="text-accent font-bold text-3xl sm:text-4xl">Lates clothes<i></i></span>
           </div>
           <div className="flex flex-row w-full justify-center">
             <div id="most-liked" className="w-[90%] overflow-x-auto">
