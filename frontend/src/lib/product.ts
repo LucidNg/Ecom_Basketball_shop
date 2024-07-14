@@ -9,7 +9,7 @@ export interface Product {
     dateAdded: string;
     size: string;
 }
-const connectString = "https://boroshop.onrender.com"
+const connectString = "http://localhost:8080"
 export async function FetchProduct(): Promise<Array<Product>> {
     let url = process.env.API_ENDPOINT ? process.env.API_ENDPOINT : connectString + "/product";
     
@@ -47,7 +47,7 @@ export async function FetchProductByCategory(category: string): Promise<Array<Pr
     return data as Array<Product>;
 }
 
-export async function FetchProductByID(productID: string): Promise<Product> {
+export async function FetchProductByID(productID: string): Promise<Array<Product>> {
     let url = process.env.API_ENDPOINT ? process.env.API_ENDPOINT : `${connectString}/product/${productID}`;
     console.log("url", url);
     const response = await fetch(url, {
@@ -62,5 +62,5 @@ export async function FetchProductByID(productID: string): Promise<Product> {
     }
 
     const data = await response.json();
-    return data as Product;
+    return data as Array<Product>;
 }

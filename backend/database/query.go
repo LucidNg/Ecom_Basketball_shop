@@ -58,11 +58,41 @@ func QueryProductByCategory(db *sqlitecloud.SQCloud, w http.ResponseWriter, r *h
 	category := vars["category"]
 	value := fmt.Sprintf("%%%s%%", category)
 	query := `
-		SELECT p.productID, p.categoryID, p.productName, p.description, p.brand, p.price, p.stock, p.dateAdded, p.size
-		FROM product p
-		JOIN category c ON p.categoryID = c.categoryID
-		WHERE c.categoryName LIKE ?
-		ORDER BY strftime('%Y-%m-%d', substr(p.dateAdded, 7, 4) || '-' || substr(p.dateAdded, 4, 2) || '-' || substr(p.dateAdded, 1, 2)) DESC`
+		WITH ranked_products AS (
+		SELECT 
+			p.productID, 
+			p.categoryID, 
+			p.productName, 
+			p.description, 
+			p.brand, 
+			p.price, 
+			p.stock, 
+			p.dateAdded, 
+			p.size,
+			ROW_NUMBER() OVER (PARTITION BY p.productName ORDER BY strftime('%Y-%m-%d', substr(p.dateAdded, 7, 4) || '-' || substr(p.dateAdded, 4, 2) || '-' || substr(p.dateAdded, 1, 2)) DESC) as row_num
+		FROM 
+			product p
+		JOIN 
+			category c ON p.categoryID = c.categoryID
+		WHERE 
+			c.categoryName LIKE ?
+		)
+		SELECT 
+		productID, 
+		categoryID, 
+		productName, 
+		description, 
+		brand, 
+		price, 
+		stock, 
+		dateAdded, 
+		size
+		FROM 
+		ranked_products
+		WHERE 
+		row_num = 1
+		ORDER BY 
+		strftime('%Y-%m-%d', substr(dateAdded, 7, 4) || '-' || substr(dateAdded, 4, 2) || '-' || substr(dateAdded, 1, 2)) DESC;`
 	values := []interface{}{value}
 
 	rows, err := db.SelectArray(query, values)
