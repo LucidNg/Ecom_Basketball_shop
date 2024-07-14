@@ -56,7 +56,7 @@ func InsertCategory(db *sqlitecloud.SQCloud, name string, description string) er
 	return err
 }
 
-func InsertProduct(db *sqlitecloud.SQCloud, categoryID string, name string, description string, brand string, price string, stock string, imageURL string, dateAdded string, size string) error {
+func InsertProduct(db *sqlitecloud.SQCloud, categoryID string, name string, description string, brand string, price string, stock string, dateAdded string, size string) error {
 	var id string
 	for {
 		id = uuid.New().String()
@@ -81,8 +81,8 @@ func InsertProduct(db *sqlitecloud.SQCloud, categoryID string, name string, desc
 		return err
 	}
 
-	insertProductSQL := "INSERT INTO product (productID, categoryID, productName, description, brand, price, stock, imageURL, dateAdded, size) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
-	values := []interface{}{id, categoryID, name, description, brand, priceInt, stockInt, imageURL, dateAdded, size}
+	insertProductSQL := "INSERT INTO product (productID, categoryID, productName, description, brand, price, stock, dateAdded, size) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)"
+	values := []interface{}{id, categoryID, name, description, brand, priceInt, stockInt, dateAdded, size}
 	err = db.ExecuteArray(insertProductSQL, values)
 	return err
 }

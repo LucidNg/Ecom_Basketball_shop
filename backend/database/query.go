@@ -1,8 +1,10 @@
 package database
 
 import (
+	"fmt"
 	"net/http"
 
+	"github.com/gorilla/mux"
 	sqlitecloud "github.com/sqlitecloud/sqlitecloud-go"
 )
 
@@ -49,4 +51,30 @@ func QueryProduct(db *sqlitecloud.SQCloud, w http.ResponseWriter) error {
 		return err
 	}
 	return nil
+}
+
+func QueryProductByCategory(db *sqlitecloud.SQCloud, w http.ResponseWriter, r *http.Request) error {
+	vars := mux.Vars(r)
+	category := vars["category"]
+	value := fmt.Sprintf("%%%s%%", category)
+	query := `
+		SELECT p.productID, p.categoryID, p.productName, p.description, p.brand, p.price, p.stock, p.dateAdded, p.size
+		FROM product p
+		JOIN category c ON p.categoryID = c.categoryID
+		WHERE c.categoryName LIKE ?`
+	values := []interface{}{value}
+
+	rows, err := db.SelectArray(query, values)
+	if err != nil {
+		return err
+	}
+
+	defer rows.Dump()
+	_, err = w.Write([]byte(rows.ToJSON()))
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return err
+	}
+	return nil
+
 }
