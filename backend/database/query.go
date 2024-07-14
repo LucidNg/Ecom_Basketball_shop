@@ -113,7 +113,10 @@ func QueryProductByCategory(db *sqlitecloud.SQCloud, w http.ResponseWriter, r *h
 func QueryProductByID(db *sqlitecloud.SQCloud, w http.ResponseWriter, r *http.Request) error {
 	vars := mux.Vars(r)
 	productID := vars["productID"]
-	query := `SELECT * FROM product WHERE productID = ?`
+	query := `SELECT p2.*
+        FROM product p1
+        JOIN product p2 ON p1.productName = p2.productName
+        WHERE p1.productID = ?`
 	values := []interface{}{productID}
 
 	rows, err := db.SelectArray(query, values)
