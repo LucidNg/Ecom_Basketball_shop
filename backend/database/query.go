@@ -129,10 +129,11 @@ func QueryProductByCategory(db *sql.DB, w http.ResponseWriter, r *http.Request) 
 	category := vars["category"]
 	value := fmt.Sprintf("%%%s%%", category)
 	query := `
-		SELECT p.productID, p.categoryID, p.productName, p.description, p.brand, p.price, p.stock, p.dateAdded, p.size
-		FROM product p
-		JOIN category c ON p.categoryID = c.categoryID
-		WHERE c.categoryName LIKE ?`
+	SELECT p.productID, p.categoryID, p.productName, p.description, p.brand, p.price, p.stock, p.dateAdded, p.size
+	FROM product p
+	JOIN category c ON p.categoryID = c.categoryID
+	WHERE c.categoryName LIKE ?
+	ORDER BY strftime('%Y-%m-%d', substr(p.dateAdded, 7, 4) || '-' || substr(p.dateAdded, 4, 2) || '-' || substr(p.dateAdded, 1, 2)) DESC`
 
 	rows, err := db.Query(query, value)
 	if err != nil {
