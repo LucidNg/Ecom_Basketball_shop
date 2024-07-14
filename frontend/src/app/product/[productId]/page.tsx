@@ -2,33 +2,41 @@
 import { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
 import Image from 'next/image';
+import { FetchProductByID, Product } from '@/lib/product';
 
-const DetailedProductPage = () => {
+export async function DetailedProductPage ({}) {
   const { productId } = useParams();
   const [mainImage, setMainImage] = useState<string>('');
   const [images, setImages] = useState<string[]>([]);
   const [selectedSize, setSelectedSize] = useState<string | null>(null);
   const [quantity, setQuantity] = useState<number>(1);
+  const [product, setProduct] = useState<Product | null>(null);
 
   const sizes = ['XS', 'S', 'M', 'L', 'XL', 'XXL'];
   useEffect(() => {
-    if (productId) {
-      // Load images based on the productId
-      const loadImages = async () => {
-        const basePath = `/images/products/${productId}`;
-        const imageList = [
-          `${basePath}/image1.jpg`,
-          `${basePath}/image2.jpg`,
-          `${basePath}/image3.jpg`,
-          `${basePath}/image4.jpg`,
-        ];
-        setImages(imageList);
-        setMainImage(imageList[0]);
-      };
-
-      loadImages();
+    async function fetchProduct() {
+      if (productId) {
+        try {
+          const fetchedProduct = await FetchProductByID(productId.toString());
+          setProduct(fetchedProduct);
+        } catch (error) {
+          console.error('Error fetching product:', error);
+        }
+      }
     }
+
+    fetchProduct();
   }, [productId]);
+
+  // const basePath = `/images/products/${productId}`;
+  // const imageList = [
+  //   `${basePath}/image1.jpg`,
+  //   `${basePath}/image2.jpg`,
+  //   `${basePath}/image3.jpg`,
+  //   `${basePath}/image4.jpg`,
+  // ];
+  // setImages(imageList);
+  // setMainImage(imageList[0]);
 
   const handleImageClick = (image: string) => {
     setMainImage(image);
@@ -69,8 +77,8 @@ const DetailedProductPage = () => {
         </div>
 
         <div className='rightColumn flex flex-col lg:w-3/5 w-full'>
-          <span className='text-5xl font-semibold w-4/5 text-base-content leading-normal'>Air Jordan Jumpman Globe Kids T-Shirt &quot;White&quot;</span>
-          <span className='text-5xl py-16 mx-20 text-base-content'>$ 587.000</span>
+          <span className='text-5xl font-semibold w-4/5 text-base-content leading-normal'>{product?.productName ?? 'Product Name'}</span>
+          <span className='text-5xl py-16 mx-20 text-base-content'>$ {product ? new Intl.NumberFormat('vi-VN').format(product.price) : '0'}</span>
           <div className='sizeDisplay grid grid-cols-4 gap-x-12 gap-y-5 lg:w-1/2 w-3/4 mx-20'>
             {sizes.map((size, index) => (
               <div
@@ -112,19 +120,10 @@ const DetailedProductPage = () => {
           </button>
 
           <span className='itemDescriptionBox mx-20 mt-10 text-lg text-base-content'>
-            The Air Jordan Jumpman Globe Kids T-Shirt in &quot;White&quot; is
-            a stylish and comfortable apparel item designed for young 
-            fans of the iconic Air Jordan brand. It features a classic 
-            white color with a prominent Jumpman logo and globe 
-            graphic on the front, showcasing a global basketball theme. 
-            Made from soft, breathable fabric, this t-shirt offers a 
-            relaxed fit, making it perfect for everyday wear or athletic activities. 
-            It is an ideal choice for kids who want to sport a cool, sporty look while representing the Air Jordan legacy.
+            {product?.description ?? 'Product description goes here.'}
           </span>
         </div>
       </div>
     </div>
   );
 };
-
-export default DetailedProductPage;

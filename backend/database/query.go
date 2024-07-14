@@ -79,3 +79,24 @@ func QueryProductByCategory(db *sqlitecloud.SQCloud, w http.ResponseWriter, r *h
 	return nil
 
 }
+
+func QueryProductByID(db *sqlitecloud.SQCloud, w http.ResponseWriter, r *http.Request) error {
+	vars := mux.Vars(r)
+	productID := vars["productID"]
+	query := `SELECT * FROM product WHERE productID = ?`
+	values := []interface{}{productID}
+
+	rows, err := db.SelectArray(query, values)
+	if err != nil {
+		return err
+	}
+
+	defer rows.Dump()
+	_, err = w.Write([]byte(rows.ToJSON()))
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return err
+	}
+	return nil
+
+}
