@@ -47,11 +47,11 @@ const FilterBar = () => {
     };
 
     return (
-        <div className="filterBar w-[90%] bg-neutral h-20 mx-auto mb-32 flex items-center px-10 gap-10 justify-center">
+        <div className="filterBar w-[90%] bg-neutral h-20 mx-auto mb-32 flex items-center px-10 gap-2 xl:gap-10 justify-center">
             <span className="font-semibold text-xl text-base-100">Filter by</span>
 
             <div
-                className={`font-semibold text-xl bg-base-100 text-base-content h-3/4 w-1/12 flex items-center justify-center cursor-pointer ${
+                className={`font-semibold text-xl bg-base-100 text-base-content h-3/4 xl:w-1/12 min-w-1/12 flex items-center justify-center cursor-pointer ${
                     sortBy === "newest" ? "bg-secondary" : "bg-base-100"
                 }`}
                 onClick={() => setSortBy("newest")}
@@ -60,7 +60,7 @@ const FilterBar = () => {
             </div>
 
             <div
-                className={`font-semibold text-xl bg-base-100 text-base-content h-3/4 w-1/12 flex items-center justify-center cursor-pointer ${
+                className={`font-semibold text-xl bg-base-100 text-base-content h-3/4 xl:w-1/12 min-w-1/12 flex items-center justify-center cursor-pointer ${
                     sortBy === "bestselling" ? "bg-secondary" : "bg-base-100"
                 }`}
                 onClick={() => setSortBy("bestselling")}
@@ -69,7 +69,7 @@ const FilterBar = () => {
             </div>
 
             <div
-                className={`font-semibold text-xl bg-base-100 text-base-content h-3/4 w-1/12 flex items-center justify-center cursor-pointer ${
+                className={`font-semibold text-xl bg-base-100 text-base-content h-3/4 xl:w-1/12 flex items-center justify-center cursor-pointer ${
                     sortBy === "price-high-to-low" ? "bg-secondary" : "bg-base-100"
                 }`}
                 onClick={() => setSortBy("price-high-to-low")}
@@ -78,7 +78,7 @@ const FilterBar = () => {
             </div>
 
             <div
-                className={`font-semibold text-xl bg-base-100 text-base-content h-3/4 w-1/12 flex items-center justify-center cursor-pointer ${
+                className={`font-semibold text-xl bg-base-100 text-base-content h-3/4 xl:w-1/12 flex items-center justify-center cursor-pointer ${
                     sortBy === "price-low-to-high" ? "bg-secondary" : "bg-base-100"
                 }`}
                 onClick={() => setSortBy("price-low-to-high")}
@@ -86,14 +86,14 @@ const FilterBar = () => {
                 Low to high
             </div>
 
-            <div className="flex items-center space-x-4 justify-between w-1/2">
-                <span className="font-semibold text-xl text-base-100">From:</span>
+            <div className="items-center xl:space-x-4 space-x-2 ustify-between w-1/2 hidden md:flex">
+                <span className="font-semibold text-xl text-base-100 hidden xl:inline">From:</span>
                 <input
                     type="text"
                     placeholder="..."
                     value={minPrice}
                     onChange={handleMinPriceChange}
-                    className="w-28 h-14 px-3 bg-base-100 outline-none text-xl text-base-content font-semibold"
+                    className="xl:w-28 w-20 h-14 px-3 bg-base-100 outline-none text-xl text-base-content font-semibold"
                 />
                 <span className="font-semibold text-xl text-base-100">to</span>
                 <input
@@ -101,19 +101,31 @@ const FilterBar = () => {
                     placeholder="..."
                     value={maxPrice}
                     onChange={handleMaxPriceChange}
-                    className="w-28 h-14 px-3 bg-base-100 outline-none text-xl text-base-content font-semibold"
+                    className="xl:w-28 w-20 h-14 px-3 bg-base-100 outline-none text-xl text-base-content font-semibold"
                 />
                 <button
                     onClick={handleApplyFilter}
-                    className="px-4 py-2 w-36 h-14 bg-green-500 shadow-md hover:bg-green-600 text-xl text-base-100 font-semibold"
+                    className="px-4 py-2 w-36 h-14 bg-green-500 shadow-md hover:bg-green-600 text-xl text-base-100 font-semibold hidden xl:inline"
                 >
                     Apply
                 </button>
                 <button
                     onClick={handleClearFilter}
-                    className="px-4 py-2 w-36 h-14 bg-red-500 shadow-md hover:bg-accent text-xl text-base-100 font-semibold"
+                    className="px-4 py-2 w-36 h-14 bg-red-500 shadow-md hover:bg-accent text-xl text-base-100 font-semibold hidden xl:inline"
                 >
                     Cancel
+                </button>
+                <button
+                    onClick={handleApplyFilter}
+                    className="px-4 py-2 w-14 h-14 bg-green-500 shadow-md hover:bg-green-600 text-xl text-base-100 font-semibold xl:hidden"
+                >
+                    V
+                </button>
+                <button
+                    onClick={handleClearFilter}
+                    className="px-4 py-2 w-14 h-14 bg-red-500 shadow-md hover:bg-accent text-xl text-base-100 font-semibold xl:hidden"
+                >
+                    X
                 </button>
             </div>
 
