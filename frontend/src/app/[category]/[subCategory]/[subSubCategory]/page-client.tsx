@@ -12,7 +12,7 @@ export default function ProductPageCli({ children1 }: ProductPageCliProps) {
   return (
     <div className="lg:pt-10 bg-base-100">
       <div className="lg:px-16 py-10 text-center lg:text-left">
-        <span className="text-accent font-bold text-3xl sm:text-4xl">Tên sản phẩm</span>
+        <span className="text-accent font-bold text-3xl sm:text-4xl capitalize">{subCategory} {subSubCategory}</span>
       </div>
       <FilterBar />
       <div className="flex justify-center lg:px-16">

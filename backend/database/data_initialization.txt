@@ -1,0 +1,33 @@
+delete from product
+
+delete from category
+
+INSERT INTO category (categoryID, categoryName, description) VALUES
+('e6dc7c31-c0c4-422f-9018-f4ad73228626', 'men''s T-shirt', 'T-shirt for men'),
+('80f068cd-da77-43e4-8384-dc6825a56000', 'men''s Jersey', 'Jersey for men'),
+('f12e9b94-3a00-46c7-bad3-70b2c4ba1f82', 'men''s Hoodie', 'Hoodie for men'),
+('ccb4b22b-eb38-4d69-9889-4e5501792fd6', 'men''s Shorts', 'Shorts for men'),
+('dc86d26f-9e4e-4d53-9a83-ca4de464f285', 'men''s Trousers', 'Trousers for men'),
+('014816fc-4c84-40b5-8a36-9d5d0c078235', 'wm''s T-shirt', 'T-shirt for women'),
+('dfb1a6d6-a5be-46c8-b088-0e77b2bff594', 'wm''s Jersey', 'Jersey for women'),
+('2687f23f-b4eb-4302-9097-9ce924cc1211', 'wm''s Hoodie', 'Hoodie for women'),
+('0b1d49b8-4f22-4c3d-a9f3-1781326afaed', 'wm''s Shorts', 'Shorts for women'),
+('61c5c4d4-e28f-4ed9-8141-07e19be82ac4', 'wm''s Trousers', 'Trousers for women'),
+('a6530b97-47b9-40b2-95b7-7583f33be315', 'kids'' T-shirt', 'T-shirt for kids'),
+('867abc16-c1e9-49c5-8ae3-2df722b390ee', 'kids'' Jersey', 'Jersey for kids'),
+('037ce04f-b291-45bf-8479-3bedaf276888', 'kids'' Hoodie', 'Hoodie for kids'),
+('9c6671d2-b748-40ff-a412-db44951df581', 'kids'' Shorts', 'Shorts for kids'),
+('4dd9854e-1a88-43e8-a2cc-0a201e8d3f27', 'kids'' Trousers', 'Trousers for kids'),
+('eefb4ee1-19e4-41af-bf54-41c68ff4a27e', 'men''s Shoes', 'Shoes for men'),
+('e74124a9-e82d-44ff-b8e2-1ed78ccee264', 'wm''s Shoes', 'Shoes for women'),
+('aea61a5a-4f39-4e46-85f9-aee374eb3716', 'kids'' Shoes', 'Shoes for kids'),
+('32974795-e5a8-4df7-b900-a6a320309909', 'Ball', 'Basketball'),
+('ba1e6e65-2faa-4541-aca0-976bd8d20918', 'Band', 'Wristband'),
+('d4954e1a-eeb1-4b4b-ac77-0f9f5e347689', 'Water bottle', 'Water bottle'),
+('23919e53-14fd-47d3-bb2c-70e1a4336811', 'Backpack', 'Backpack'),
+('cb24f094-44df-41a5-8b83-aed2cde9c7a5', 'Tool', 'Sports tool');
+
+
+
+
+
