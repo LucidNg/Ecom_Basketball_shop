@@ -12,16 +12,10 @@ export default function TopBar() {
     const [showDropdown, setShowDropdown] = useState<boolean>(false);
 
     useEffect(() => {
+        console.log(searchValue);
         if (searchValue.trim() !== '') {
-            FetchProductByName(searchValue).then((products) => {
-                setSearchResults(products);
-                setShowDropdown(true);
-            }).catch((error) => {
-                console.error(error);
-                setShowDropdown(false);
-            });
-        } else {
-            setShowDropdown(false);
+            // Call the FetchProductByName function
+            FetchProductByName(searchValue);
         }
     }, [searchValue]);
 
