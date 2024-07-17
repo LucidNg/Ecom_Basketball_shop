@@ -5,19 +5,35 @@ import Image from "next/image";
 import Link from "next/link";
 import { Search } from "@geist-ui/icons";
 import { FetchProductByName, Product } from "@/lib/product";
+import debounce from 'lodash/debounce';
 
 export default function TopBar() {
     const [searchValue, setSearchValue] = useState<string>('');
     const [searchResults, setSearchResults] = useState<Product[]>([]);
     const [showDropdown, setShowDropdown] = useState<boolean>(false);
 
+    const fetchProducts = async () => {
+        try {
+            const fetchedProducts = await FetchProductByName(searchValue);
+            setSearchResults(fetchedProducts);
+        } catch (error) {
+            console.error(`Failed to fetch products for name ${searchValue}:`, error);
+        }
+    };
+
+    const debouncedFetchProducts = debounce(fetchProducts, 2000);
+
     useEffect(() => {
-        console.log(searchValue);
-        if (searchValue.trim() !== '') {
-            // Call the FetchProductByName function
-            FetchProductByName(searchValue);
+        if (searchValue) {
+            debouncedFetchProducts();
+        } else {
+            setSearchResults([]);
         }
     }, [searchValue]);
+
+    useEffect(() => {
+        setShowDropdown(searchResults.length > 0);
+    }, [searchResults]);
 
     const handleSearchChange = (e: ChangeEvent<HTMLInputElement>) => {
         setSearchValue(e.target.value);
