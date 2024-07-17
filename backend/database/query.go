@@ -67,13 +67,13 @@ func QueryProductByCategory(db *sqlitecloud.SQCloud, w http.ResponseWriter, r *h
 			p.stock, 
 			p.dateAdded, 
 			p.size,
-			ROW_NUMBER() OVER (PARTITION BY p.productName ORDER BY strftime('%Y-%m-%d', substr(p.dateAdded, 7, 4) || '-' || substr(p.dateAdded, 4, 2) || '-' || substr(p.dateAdded, 1, 2)) DESC) as row_num
+			ROW_NUMBER() OVER (PARTITION BY p.productName ORDER BY p.dateAdded DESC) as row_num
 		FROM 
 			product p
 		JOIN 
 			category c ON p.categoryID = c.categoryID
 		WHERE 
-			c.categoryName LIKE ?
+			c.categoryName LIKE '%shoes%'
 		)
 		SELECT 
 		productID, 
@@ -90,7 +90,7 @@ func QueryProductByCategory(db *sqlitecloud.SQCloud, w http.ResponseWriter, r *h
 		WHERE 
 		row_num = 1
 		ORDER BY 
-		strftime('%Y-%m-%d', substr(dateAdded, 7, 4) || '-' || substr(dateAdded, 4, 2) || '-' || substr(dateAdded, 1, 2)) DESC;`
+		dateAdded DESC;`
 	values := []interface{}{value}
 
 	rows, err := db.SelectArray(query, values)
@@ -134,7 +134,7 @@ func QueryProductByName(db *sqlitecloud.SQCloud, w http.ResponseWriter, r *http.
 	vars := mux.Vars(r)
 	name := vars["name"]
 	value := fmt.Sprintf("%%%s%%", name)
-	query := `SELECT * FROM product WHERE productName LIKE ?`
+	query := `SELECT * FROM product WHERE productName LIKE ? LIMIT 5`
 
 	values := []interface{}{value}
 
