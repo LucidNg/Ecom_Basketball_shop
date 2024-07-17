@@ -73,7 +73,7 @@ func QueryProductByCategory(db *sqlitecloud.SQCloud, w http.ResponseWriter, r *h
 		JOIN 
 			category c ON p.categoryID = c.categoryID
 		WHERE 
-			c.categoryName LIKE '%shoes%'
+			c.categoryName LIKE ?
 		)
 		SELECT 
 		productID, 
