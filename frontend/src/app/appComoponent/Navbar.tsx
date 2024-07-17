@@ -79,7 +79,28 @@ export default function Navbar() {
                         </ul>
                     </div>
                 </div>
-                <Link href={generateLink('lates')} className="btn btn-ghost text-2xl hover:bg-secondary hover:text-neutral hover:font-bold">Lates</Link>
+                <Link href={generateLink('ball')} className="btn btn-ghost text-2xl hover:bg-secondary hover:text-neutral hover:font-bold">Brand</Link>
+                <div className="dropdown dropdown-hover">
+                    <div tabIndex={0} role="button">
+                        <Link href={generateLink('accessories')} className="btn btn-ghost text-2xl hover:bg-secondary hover:text-neutral hover:font-bold">
+                            Accessories
+                        </Link>
+                    </div>
+                    <div className="dropdown-content z-10">
+                        <ul className="menu bg-base-content rounded-box w-56 py-5 grid grid-cols-2 gap-4">
+                            <li><Link href={generateLink('brand', 'nike')} className="text-xl focus:text-base-100">Nike</Link></li>
+                            <li><Link href={generateLink('brand', 'adidas')} className="text-xl focus:text-base-100">Adidas</Link></li>
+                            <li><Link href={generateLink('brand', 'puma')} className="text-xl focus:text-base-100">Puma</Link></li>
+                            <li><Link href={generateLink('brand', 'under-armour')} className="text-xl focus:text-base-100">Under Armour</Link></li>
+                            <li><Link href={generateLink('brand', 'reebok')} className="text-xl focus:text-base-100">Reebok</Link></li>
+                            <li><Link href={generateLink('brand', 'spalding')} className="text-xl focus:text-base-100">Spalding</Link></li>
+                            <li><Link href={generateLink('brand', 'wilson')} className="text-xl focus:text-base-100">Wilson</Link></li>
+                            <li><Link href={generateLink('brand', 'molten')} className="text-xl focus:text-base-100">Molten</Link></li>
+                            <li><Link href={generateLink('brand', 'rawlings')} className="text-xl focus:text-base-100">Rawlings</Link></li>
+                            <li><Link href={generateLink('brand', 'baden')} className="text-xl focus:text-base-100">Baden</Link></li>
+                        </ul>
+                    </div>
+                </div>
                 <Link href={generateLink('sale')} className="btn btn-ghost text-2xl hover:bg-secondary hover:text-neutral hover:font-bold">Sale</Link>
             </div>
             <div className="navbar-start md:hidden">
