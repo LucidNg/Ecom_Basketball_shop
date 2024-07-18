@@ -90,14 +90,14 @@ const DetailedProductPage = () => {
         <div className='leftColumn flex flex-col items-center lg:w-2/5 w-full'>
           <div className={`w-[550px] h-[550px] flex items-center justify-center ${!mainImage ? 'bg-gray-300' : ''}`}>
             {mainImage ? (
-              <Image src={mainImage} alt='Main Product' className='object-cover w-[500px] h-[500px]' height={100} width={100} />
+              <Image src={mainImage} alt='Main Product' className='object-cover w-[500px] h-[500px] text-base-content border-2' height={100} width={100} />
             ) : (
               <span className='text-lg text-gray-500'>No Image Available</span>
             )}
           </div>
           <div className='flex mt-10 space-x-10'>
             {images.map((image, index) => (
-              <div key={index} className='w-20 h-20 cursor-pointer borde' onClick={() => handleImageClick(image)}>
+              <div key={index} className='w-20 h-20 cursor-pointer text-base-content border-2' onClick={() => handleImageClick(image)}>
                 <Image src={image} alt={`Product ${index + 1}`} className='object-cover w-full h-full' height={100} width={100} />
               </div>
             ))}
