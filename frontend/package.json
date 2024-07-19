@@ -10,12 +10,14 @@
   },
   "dependencies": {
     "@geist-ui/icons": "^1.0.2",
+    "lodash": "^4.17.21",
     "next": "14.2.4",
     "react": "^18",
     "react-dom": "^18",
     "sharp": "^0.33.4"
   },
   "devDependencies": {
+    "@types/lodash": "^4.17.7",
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",

@@ -9,7 +9,7 @@ export interface Product {
     dateAdded: string;
     size: string;
 }
-const connectString = "http://localhost:8080"
+const connectString = "https://boroshop.onrender.com"
 export async function FetchProduct(): Promise<Array<Product>> {
     let url = process.env.API_ENDPOINT ? process.env.API_ENDPOINT : connectString + "/product";
     
@@ -32,6 +32,7 @@ export async function FetchProduct(): Promise<Array<Product>> {
 
 export async function FetchProductByCategory(category: string): Promise<Array<Product>> {
     let url = process.env.API_ENDPOINT ? process.env.API_ENDPOINT : `${connectString}/categoryProduct/${category}`;
+    console.log("category: ", category)
     const response = await fetch(url, {
         method: "GET",
         credentials: "include",
@@ -49,7 +50,6 @@ export async function FetchProductByCategory(category: string): Promise<Array<Pr
 
 export async function FetchProductByID(productID: string): Promise<Array<Product>> {
     let url = process.env.API_ENDPOINT ? process.env.API_ENDPOINT : `${connectString}/product/${productID}`;
-    console.log("url", url);
     const response = await fetch(url, {
         method: "GET",
         credentials: "include",
@@ -58,7 +58,24 @@ export async function FetchProductByID(productID: string): Promise<Array<Product
     });
 
     if (!response.ok) {
-        throw new Error(`Failed to fetch products for category: ${productID}`);
+        throw new Error(`Failed to fetch products with ID: ${productID}`);
+    }
+
+    const data = await response.json();
+    return data as Array<Product>;
+}
+
+export async function FetchProductByName(name: string): Promise<Array<Product>> {
+    let url = process.env.API_ENDPOINT ? process.env.API_ENDPOINT : `${connectString}/search/${name}`;
+    const response = await fetch(url, {
+        method: "GET",
+        credentials: "include",
+        mode: "cors",
+        cache: "no-cache"
+    });
+
+    if (!response.ok) {
+        throw new Error(`Failed to fetch products with name: ${name}`);
     }
 
     const data = await response.json();

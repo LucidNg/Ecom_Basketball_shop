@@ -130,40 +130,40 @@ func QueryProductByCategory(db *sql.DB, w http.ResponseWriter, r *http.Request) 
 	value := fmt.Sprintf("%%%s%%", category)
 	query := `
 	WITH ranked_products AS (
-	SELECT 
-		p.productID, 
-		p.categoryID, 
-		p.productName, 
-		p.description, 
-		p.brand, 
-		p.price, 
-		p.stock, 
-		p.dateAdded, 
-		p.size,
-		ROW_NUMBER() OVER (PARTITION BY p.productName ORDER BY strftime('%Y-%m-%d', substr(p.dateAdded, 7, 4) || '-' || substr(p.dateAdded, 4, 2) || '-' || substr(p.dateAdded, 1, 2)) DESC) as row_num
-	FROM 
-		product p
-	JOIN 
-		category c ON p.categoryID = c.categoryID
-	WHERE 
-		c.categoryName LIKE ?
-	)
-	SELECT 
-	productID, 
-	categoryID, 
-	productName, 
-	description, 
-	brand, 
-	price, 
-	stock, 
-	dateAdded, 
-	size
-	FROM 
-	ranked_products
-	WHERE 
-	row_num = 1
-	ORDER BY 
-	strftime('%Y-%m-%d', substr(dateAdded, 7, 4) || '-' || substr(dateAdded, 4, 2) || '-' || substr(dateAdded, 1, 2)) DESC;`
+		SELECT 
+			p.productID, 
+			p.categoryID, 
+			p.productName, 
+			p.description, 
+			p.brand, 
+			p.price, 
+			p.stock, 
+			p.dateAdded, 
+			p.size,
+			ROW_NUMBER() OVER (PARTITION BY p.productName ORDER BY p.dateAdded DESC) as row_num
+		FROM 
+			product p
+		JOIN 
+			category c ON p.categoryID = c.categoryID
+		WHERE 
+			c.categoryName LIKE ?
+		)
+		SELECT 
+		productID, 
+		categoryID, 
+		productName, 
+		description, 
+		brand, 
+		price, 
+		stock, 
+		dateAdded, 
+		size
+		FROM 
+		ranked_products
+		WHERE 
+		row_num = 1
+		ORDER BY 
+		dateAdded DESC;`
 
 	rows, err := db.Query(query, value)
 	if err != nil {
@@ -202,6 +202,41 @@ func QueryProductByID(db *sql.DB, w http.ResponseWriter, r *http.Request) error 
         WHERE p1.productID = ?`
 
 	rows, err := db.Query(query, productID)
+	if err != nil {
+		return err
+	}
+	defer rows.Close()
+
+	var products []Product
+	for rows.Next() {
+		var product Product
+		err = rows.Scan(&product.ProductID, &product.CategoryID, &product.ProductName, &product.Description, &product.Brand, &product.Price, &product.Stock, &product.DateAdded, &product.Size)
+		if err != nil {
+			return err
+		}
+		products = append(products, product)
+	}
+
+	if err := rows.Err(); err != nil {
+		return err
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	if err := json.NewEncoder(w).Encode(products); err != nil {
+		return err
+	}
+
+	return nil
+
+}
+
+func QueryProductByName(db *sql.DB, w http.ResponseWriter, r *http.Request) error {
+	vars := mux.Vars(r)
+	name := vars["name"]
+	value := fmt.Sprintf("%%%s%%", name)
+	query := `SELECT * FROM product WHERE productName LIKE ?`
+
+	rows, err := db.Query(query, value)
 	if err != nil {
 		return err
 	}
