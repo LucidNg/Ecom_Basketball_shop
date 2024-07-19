@@ -5,10 +5,13 @@ import { FetchProductByCategory, Product } from "../../../lib/product";
 
 interface CardProps {
   limit?: number;
-  category: string; // Define category prop here
+  category: string;
+  currentPage: number;
+  itemsPerPage: number;
+  checkHasMoreProducts: (hasMore: boolean) => void;
 }
 
-const Card: React.FC<CardProps> = ({ limit, category }: CardProps) => {
+const Card: React.FC<CardProps> = ({ limit, category, currentPage, itemsPerPage, checkHasMoreProducts }: CardProps) => {
   const [products, setProducts] = useState<Product[]>([]);
 
   useEffect(() => {
@@ -16,6 +19,9 @@ const Card: React.FC<CardProps> = ({ limit, category }: CardProps) => {
       try {
         const fetchedProducts = await FetchProductByCategory(category);
         setProducts(fetchedProducts || []); // Ensure products is not null
+        // Check if there are more products available for the next page
+        const hasMore = fetchedProducts && fetchedProducts.length > currentPage * itemsPerPage;
+        checkHasMoreProducts(hasMore);
       } catch (error) {
         console.error(`Failed to fetch products for category ${category}:`, error);
       }
@@ -24,9 +30,9 @@ const Card: React.FC<CardProps> = ({ limit, category }: CardProps) => {
     if (category) {
       fetchProducts();
     }
-  }, [category]);
+  }, [category, currentPage, itemsPerPage, checkHasMoreProducts]);
 
-  const displayedProducts = limit ? products.slice(0, limit) : products;
+  const displayedProducts = products.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
 
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat('vi-VN').format(price);

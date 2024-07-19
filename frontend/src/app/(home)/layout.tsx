@@ -5,6 +5,7 @@ import TopBar from '../appComoponent/TopBar';
 import Footer from '../appComoponent/Footer';
 
 
+
 interface RootLayoutProps {
   children: ReactNode;
 }
@@ -16,7 +17,6 @@ const RootLayout = async ({ children }: RootLayoutProps) => {
       <TopBar />
       <Navbar />
       <Banner />
-      
       {children}
       <Footer />
     </div>

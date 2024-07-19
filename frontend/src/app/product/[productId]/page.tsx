@@ -61,7 +61,6 @@ const DetailedProductPage = () => {
 
   const handleSizeClick = (size: string) => {
     setSelectedSize(size);
-    // Reset quantity if the selected size changes
     setQuantity(1);
   };
 
@@ -87,28 +86,28 @@ const DetailedProductPage = () => {
 
   return (
     <div className='w-screen flex flex-col pt-20 bg-base-100'>
-      <div className='w-full flex flex-col lg:flex-row '>
+      <div className='w-full flex flex-col lg:flex-row overflow-x-hidden'>
         <div className='leftColumn flex flex-col items-center lg:w-2/5 w-full'>
           <div className={`w-[550px] h-[550px] flex items-center justify-center ${!mainImage ? 'bg-gray-300' : ''}`}>
             {mainImage ? (
-              <Image src={mainImage} alt='Main Product' className='object-cover w-[500px] h-[500px]' height={100} width={100} />
+              <Image src={mainImage} alt='Main Product' className='object-cover w-[500px] h-[500px] text-base-content border-2' height={100} width={100} />
             ) : (
               <span className='text-lg text-gray-500'>No Image Available</span>
             )}
           </div>
           <div className='flex mt-10 space-x-10'>
             {images.map((image, index) => (
-              <div key={index} className='w-20 h-20 cursor-pointer borde' onClick={() => handleImageClick(image)}>
+              <div key={index} className='w-20 h-20 cursor-pointer text-base-content border-2' onClick={() => handleImageClick(image)}>
                 <Image src={image} alt={`Product ${index + 1}`} className='object-cover w-full h-full' height={100} width={100} />
               </div>
             ))}
           </div>
         </div>
 
-        <div className='rightColumn flex flex-col lg:w-3/5 w-full'>
+        <div className='rightColumn flex flex-col lg:w-3/5 w-full lg:px-0 px-10 '>
           {product && (
             <>
-              <span className='text-5xl font-semibold w-4/5 text-base-content leading-normal'>{product.productName}</span>
+              <span className='text-5xl font-semibold lg:w-4/5 text-base-content leading-normal lg:px-0 px-10'>{product.productName}</span>
               <span className='text-5xl py-16 mx-20 text-base-content'>${product.price}</span>
               <div className='sizeDisplay grid grid-cols-4 gap-x-12 gap-y-5 lg:w-1/2 w-3/4 mx-20'>
                 {sizes.map((size, index) => (
@@ -148,7 +147,7 @@ const DetailedProductPage = () => {
               </div>
 
               <button
-                className={`addToCart mt-8 w-1/4 h-20 mx-20 text-2xl font-semibold text-neutral ${selectedSize && quantity <= stockBySize[selectedSize] ? 'bg-secondary' : 'bg-primary text-base-content cursor-not-allowed'}`}
+                className={`addToCart mt-8 w-1/4 h-16 lg:h-20 mx-20 text-xl lg:text-2xl font-semibold text-neutral ${selectedSize && quantity <= stockBySize[selectedSize] ? 'bg-secondary' : 'bg-primary text-base-content cursor-not-allowed'}`}
                 disabled={!selectedSize || quantity > stockBySize[selectedSize]}
                 onClick={addToCart}
               >
