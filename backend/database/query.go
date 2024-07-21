@@ -1,62 +1,135 @@
 package database
 
 import (
+	"database/sql"
+	"encoding/json"
 	"fmt"
 	"net/http"
 
 	"github.com/gorilla/mux"
-	sqlitecloud "github.com/sqlitecloud/sqlitecloud-go"
+	_ "github.com/mattn/go-sqlite3"
 )
 
-func QueryUsers(db *sqlitecloud.SQCloud, w http.ResponseWriter) error {
-	rows, err := db.Select("SELECT * FROM users")
+type User struct {
+	ID       string `json:"id"`
+	Email    string `json:"email"`
+	Password string `json:"password"`
+}
+
+func QueryUsers(db *sql.DB, w http.ResponseWriter) error {
+	rows, err := db.Query("SELECT * FROM users")
 	if err != nil {
+		return err
+	}
+	defer rows.Close()
+
+	var users []User
+
+	for rows.Next() {
+		var user User
+		err = rows.Scan(&user.ID, &user.Email, &user.Password)
+		if err != nil {
+			return err
+		}
+		users = append(users, user)
+	}
+
+	if err := rows.Err(); err != nil {
 		return err
 	}
 
-	defer rows.Dump()
-	_, err = w.Write([]byte(rows.ToJSON()))
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+	w.Header().Set("Content-Type", "application/json")
+	if err := json.NewEncoder(w).Encode(users); err != nil {
 		return err
 	}
+
 	return nil
 }
 
-func QueryCategory(db *sqlitecloud.SQCloud, w http.ResponseWriter) error {
-	rows, err := db.Select("SELECT * FROM category")
+type Category struct {
+	ID          string `json:"id"`
+	Name        string `json:"name"`
+	Description string `json:"description"`
+}
+
+func QueryCategory(db *sql.DB, w http.ResponseWriter) error {
+	rows, err := db.Query("SELECT * FROM category")
 	if err != nil {
+		return err
+	}
+	defer rows.Close()
+
+	var categories []Category
+
+	for rows.Next() {
+		var category Category
+		err = rows.Scan(&category.ID, &category.Name, &category.Description)
+		if err != nil {
+			return err
+		}
+		categories = append(categories, category)
+	}
+
+	if err := rows.Err(); err != nil {
 		return err
 	}
 
-	_, err = w.Write([]byte(rows.ToJSON()))
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+	w.Header().Set("Content-Type", "application/json")
+	if err := json.NewEncoder(w).Encode(categories); err != nil {
 		return err
 	}
+
 	return nil
 }
 
-func QueryProduct(db *sqlitecloud.SQCloud, w http.ResponseWriter) error {
-	rows, err := db.Select("SELECT * FROM product")
+type Product struct {
+	ProductID   string `json:"productID"`
+	CategoryID  string `json:"categoryID"`
+	ProductName string `json:"productName"`
+	Description string `json:"description"`
+	Brand       string `json:"brand"`
+	Price       int    `json:"price"`
+	Stock       int    `json:"stock"`
+	DateAdded   string `json:"dateAdded"`
+	Size        string `json:"size"`
+}
+
+func QueryProduct(db *sql.DB, w http.ResponseWriter) error {
+	rows, err := db.Query("SELECT * FROM product")
 	if err != nil {
+		return err
+	}
+	defer rows.Close()
+
+	var products []Product
+
+	for rows.Next() {
+		var product Product
+		err = rows.Scan(&product.ProductID, &product.CategoryID, &product.ProductName, &product.Description, &product.Brand, &product.Price, &product.Stock, &product.DateAdded, &product.Size)
+		if err != nil {
+			return err
+		}
+		products = append(products, product)
+	}
+
+	if err := rows.Err(); err != nil {
 		return err
 	}
 
-	_, err = w.Write([]byte(rows.ToJSON()))
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+	w.Header().Set("Content-Type", "application/json")
+	if err := json.NewEncoder(w).Encode(products); err != nil {
 		return err
 	}
+
 	return nil
 }
 
-func QueryProductByCategory(db *sqlitecloud.SQCloud, w http.ResponseWriter, r *http.Request) error {
+func QueryProductByCategory(db *sql.DB, w http.ResponseWriter, r *http.Request) error {
 	vars := mux.Vars(r)
 	category := vars["category"]
 	value := fmt.Sprintf("%%%s%%", category)
 	query := `
-		WITH ranked_products AS (
+	WITH ranked_products AS (
 		SELECT 
 			p.productID, 
 			p.categoryID, 
@@ -91,65 +164,103 @@ func QueryProductByCategory(db *sqlitecloud.SQCloud, w http.ResponseWriter, r *h
 		row_num = 1
 		ORDER BY 
 		dateAdded DESC;`
-	values := []interface{}{value}
 
-	rows, err := db.SelectArray(query, values)
+	rows, err := db.Query(query, value)
 	if err != nil {
-		fmt.Println(err)
+		return err
+	}
+	defer rows.Close()
+
+	var products []Product
+	for rows.Next() {
+		var product Product
+		err = rows.Scan(&product.ProductID, &product.CategoryID, &product.ProductName, &product.Description, &product.Brand, &product.Price, &product.Stock, &product.DateAdded, &product.Size)
+		if err != nil {
+			return err
+		}
+		products = append(products, product)
+	}
+
+	if err := rows.Err(); err != nil {
 		return err
 	}
 
-	_, err = w.Write([]byte(rows.ToJSON()))
-	if err != nil {
-		fmt.Println(err)
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+	w.Header().Set("Content-Type", "application/json")
+	if err := json.NewEncoder(w).Encode(products); err != nil {
 		return err
 	}
+
 	return nil
-
 }
 
-func QueryProductByID(db *sqlitecloud.SQCloud, w http.ResponseWriter, r *http.Request) error {
+func QueryProductByID(db *sql.DB, w http.ResponseWriter, r *http.Request) error {
 	vars := mux.Vars(r)
 	productID := vars["productID"]
 	query := `SELECT p2.*
         FROM product p1
         JOIN product p2 ON p1.productName = p2.productName
         WHERE p1.productID = ?`
-	values := []interface{}{productID}
 
-	rows, err := db.SelectArray(query, values)
+	rows, err := db.Query(query, productID)
 	if err != nil {
 		return err
 	}
+	defer rows.Close()
 
-	_, err = w.Write([]byte(rows.ToJSON()))
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+	var products []Product
+	for rows.Next() {
+		var product Product
+		err = rows.Scan(&product.ProductID, &product.CategoryID, &product.ProductName, &product.Description, &product.Brand, &product.Price, &product.Stock, &product.DateAdded, &product.Size)
+		if err != nil {
+			return err
+		}
+		products = append(products, product)
+	}
+
+	if err := rows.Err(); err != nil {
 		return err
 	}
+
+	w.Header().Set("Content-Type", "application/json")
+	if err := json.NewEncoder(w).Encode(products); err != nil {
+		return err
+	}
+
 	return nil
 
 }
 
-func QueryProductByName(db *sqlitecloud.SQCloud, w http.ResponseWriter, r *http.Request) error {
+func QueryProductByName(db *sql.DB, w http.ResponseWriter, r *http.Request) error {
 	vars := mux.Vars(r)
 	name := vars["name"]
 	value := fmt.Sprintf("%%%s%%", name)
-	query := `SELECT * FROM product WHERE productName LIKE ? LIMIT 5`
+	query := `SELECT * FROM product WHERE productName LIKE ?`
 
-	values := []interface{}{value}
-
-	rows, err := db.SelectArray(query, values)
+	rows, err := db.Query(query, value)
 	if err != nil {
 		return err
 	}
-	defer rows.Dump()
-	_, err = w.Write([]byte(rows.ToJSON()))
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+	defer rows.Close()
+
+	var products []Product
+	for rows.Next() {
+		var product Product
+		err = rows.Scan(&product.ProductID, &product.CategoryID, &product.ProductName, &product.Description, &product.Brand, &product.Price, &product.Stock, &product.DateAdded, &product.Size)
+		if err != nil {
+			return err
+		}
+		products = append(products, product)
+	}
+
+	if err := rows.Err(); err != nil {
 		return err
 	}
+
+	w.Header().Set("Content-Type", "application/json")
+	if err := json.NewEncoder(w).Encode(products); err != nil {
+		return err
+	}
+
 	return nil
 
 }

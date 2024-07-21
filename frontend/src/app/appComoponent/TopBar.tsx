@@ -32,6 +32,7 @@ export default function TopBar() {
     }, [searchValue]);
 
     useEffect(() => {
+        console.log("lentgh:", searchResults)
         setShowDropdown(searchResults.length > 0);
     }, [searchResults]);
 
