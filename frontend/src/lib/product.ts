@@ -9,7 +9,7 @@ export interface Product {
   dateAdded: string;
   size: string;
 }
-const connectString = "http://localhost:8080";
+const connectString = "https://boroshop.onrender.com";
 export async function FetchProduct(): Promise<Array<Product>> {
   let url = process.env.API_ENDPOINT
     ? process.env.API_ENDPOINT

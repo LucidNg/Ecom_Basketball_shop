@@ -21,7 +21,7 @@ func main() {
 	if err != nil {
 		fmt.Println("Connect error: ", err)
 	}
-	db.UseDatabase("test")
+	db.UseDatabase("boroshopDB")
 	err = database.CreateTable(db)
 	if err != nil {
 		log.Fatalf("Failed to create tables: %v", err)
