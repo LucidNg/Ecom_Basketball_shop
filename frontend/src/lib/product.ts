@@ -15,12 +15,15 @@ export async function FetchProduct(): Promise<Array<Product>> {
     ? process.env.API_ENDPOINT
     : connectString + "/product";
 
+  console.log("url: ",url)
   const response = await fetch(url, {
     method: "GET",
     credentials: "include",
     mode: "cors",
     cache: "no-cache",
   });
+
+  console.log("respone url: ",response.url);
 
   if (!response.ok) {
     throw new Error("Failed to fetch products");
