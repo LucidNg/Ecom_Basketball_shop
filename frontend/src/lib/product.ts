@@ -9,18 +9,21 @@ export interface Product {
   dateAdded: string;
   size: string;
 }
-const connectString = "http://localhost:8080";
+const connectString = "https://boroshop.onrender.com";
 export async function FetchProduct(): Promise<Array<Product>> {
   let url = process.env.API_ENDPOINT
     ? process.env.API_ENDPOINT
     : connectString + "/product";
 
+  console.log("url: ",url)
   const response = await fetch(url, {
     method: "GET",
     credentials: "include",
     mode: "cors",
     cache: "no-cache",
   });
+
+  console.log("respone url: ",response.url);
 
   if (!response.ok) {
     throw new Error("Failed to fetch products");
