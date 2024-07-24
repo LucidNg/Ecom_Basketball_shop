@@ -3,6 +3,7 @@ package database
 import (
 	"fmt"
 	"net/http"
+	"strconv"
 
 	"github.com/gorilla/mux"
 	sqlitecloud "github.com/sqlitecloud/sqlitecloud-go"
@@ -54,44 +55,89 @@ func QueryProduct(db *sqlitecloud.SQCloud, w http.ResponseWriter) error {
 func QueryProductByCategory(db *sqlitecloud.SQCloud, w http.ResponseWriter, r *http.Request) error {
 	vars := mux.Vars(r)
 	category := vars["category"]
+	method := vars["method"]
+	maxPrice := vars["maxPrice"]
+	minPrice := vars["minPrice"]
+
 	value := fmt.Sprintf("%%%s%%", category)
-	query := `
+	maxPriceValue, err := strconv.ParseFloat(maxPrice, 64)
+	if err != nil {
+		fmt.Println("Error:", err)
+		return err
+	}
+
+	minPriceValue, err := strconv.ParseFloat(minPrice, 64)
+	if err != nil {
+		fmt.Println("Error:", err)
+		return err
+	}
+
+	fmt.Println(category, method, maxPriceValue, minPriceValue)
+	var query string
+	var values []interface{}
+
+	// Base query
+	baseQuery := `
 		WITH ranked_products AS (
-		SELECT 
-			p.productID, 
-			p.categoryID, 
-			p.productName, 
-			p.description, 
-			p.brand, 
-			p.price, 
-			p.stock, 
-			p.dateAdded, 
-			p.size,
-			ROW_NUMBER() OVER (PARTITION BY p.productName ORDER BY p.dateAdded DESC) as row_num
-		FROM 
-			product p
-		JOIN 
-			category c ON p.categoryID = c.categoryID
-		WHERE 
-			c.categoryName LIKE ?
+			SELECT 
+				p.productID, 
+				p.categoryID, 
+				p.productName, 
+				p.description, 
+				p.brand, 
+				p.price, 
+				p.stock, 
+				p.dateAdded, 
+				p.size,
+				ROW_NUMBER() OVER (PARTITION BY p.productName ORDER BY p.dateAdded DESC) as row_num
+			FROM 
+				product p
+			JOIN 
+				category c ON p.categoryID = c.categoryID
+			WHERE 
+				c.categoryName LIKE ?
 		)
 		SELECT 
-		productID, 
-		categoryID, 
-		productName, 
-		description, 
-		brand, 
-		price, 
-		stock, 
-		dateAdded, 
-		size
+			productID, 
+			categoryID, 
+			productName, 
+			description, 
+			brand, 
+			price, 
+			stock, 
+			dateAdded, 
+			size
 		FROM 
-		ranked_products
+			ranked_products
 		WHERE 
-		row_num = 1
-		ORDER BY 
-		dateAdded DESC;`
-	values := []interface{}{value}
+			row_num = 1`
+
+	values = append(values, value)
+
+	switch method {
+	case "latest":
+		query = baseQuery + " ORDER BY dateAdded DESC;"
+	case "bestselling":
+		query = baseQuery + `
+			ORDER BY 
+				(SELECT COUNT(*) 
+				 FROM purchase 
+				 WHERE productID = ranked_products.productID) DESC;`
+	case "max", "min":
+		if maxPrice != "" {
+			query = baseQuery + " AND price <= ? AND price >= ?"
+			values = append(values, maxPriceValue, minPriceValue)
+		}
+		if method == "max" {
+			query = query + " ORDER BY price DESC;"
+		} else {
+			query = query + " ORDER BY price ASC;"
+		}
+	default:
+		query = baseQuery + " ORDER BY dateAdded DESC;"
+	}
+
+	fmt.Println(query)
 
 	rows, err := db.SelectArray(query, values)
 	if err != nil {
@@ -99,7 +145,6 @@ func QueryProductByCategory(db *sqlitecloud.SQCloud, w http.ResponseWriter, r *h
 		return err
 	}
 
-	fmt.Println(rows.ToJSON())
 	_, err = w.Write([]byte(rows.ToJSON()))
 	if err != nil {
 		fmt.Println(err)

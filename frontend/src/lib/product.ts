@@ -9,7 +9,7 @@ export interface Product {
   dateAdded: string;
   size: string;
 }
-const connectString = "https://boroshop.onrender.com";
+const connectString = "https://ecom-testserver.onrender.com";
 export async function FetchProduct(): Promise<Array<Product>> {
   let url = process.env.API_ENDPOINT
     ? process.env.API_ENDPOINT
@@ -34,11 +34,11 @@ export async function FetchProduct(): Promise<Array<Product>> {
 }
 
 export async function FetchProductByCategory(
-  category: string
+  category: string, method: string, maxPrice: string, minPrice: string
 ): Promise<Array<Product>> {
   let url = process.env.API_ENDPOINT
     ? process.env.API_ENDPOINT
-    : `${connectString}/categoryProduct/${category}`;
+    : `${connectString}/categoryProduct/${category}/${method}/${maxPrice}/${minPrice}`;
   console.log("category: ", category);
   const response = await fetch(url, {
     method: "GET",

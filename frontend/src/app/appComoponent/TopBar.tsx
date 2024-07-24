@@ -5,7 +5,6 @@ import Image from "next/image";
 import Link from "next/link";
 import { Search } from "@geist-ui/icons";
 import { FetchProductByName, Product } from "@/lib/product";
-import debounce from 'lodash/debounce';
 
 export default function TopBar() {
     const [searchValue, setSearchValue] = useState<string>('');
@@ -21,11 +20,10 @@ export default function TopBar() {
         }
     };
 
-    const debouncedFetchProducts = debounce(fetchProducts, 2000);
 
     useEffect(() => {
         if (searchValue) {
-            debouncedFetchProducts();
+            fetchProducts();
         } else {
             setSearchResults([]);
         }

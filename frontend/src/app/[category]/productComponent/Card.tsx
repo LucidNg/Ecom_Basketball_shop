@@ -9,15 +9,18 @@ interface CardProps {
   currentPage: number;
   itemsPerPage: number;
   checkHasMoreProducts: (hasMore: boolean) => void;
+  sortBy: string;
+  minPrice: string;
+  maxPrice: string;
 }
 
-const Card: React.FC<CardProps> = ({ limit, category, currentPage, itemsPerPage, checkHasMoreProducts }: CardProps) => {
+const Card: React.FC<CardProps> = ({ limit, category, currentPage, itemsPerPage, checkHasMoreProducts, sortBy, minPrice, maxPrice }: CardProps) => {
   const [products, setProducts] = useState<Product[]>([]);
 
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const fetchedProducts = await FetchProductByCategory(category);
+        const fetchedProducts = await FetchProductByCategory(category, sortBy, minPrice, maxPrice);
         setProducts(fetchedProducts || []); // Ensure products is not null
         // Check if there are more products available for the next page
         const hasMore = fetchedProducts && fetchedProducts.length > currentPage * itemsPerPage;
@@ -30,21 +33,20 @@ const Card: React.FC<CardProps> = ({ limit, category, currentPage, itemsPerPage,
     if (category) {
       fetchProducts();
     }
-  }, [category, currentPage, itemsPerPage, checkHasMoreProducts]);
+  }, [category, currentPage, itemsPerPage, checkHasMoreProducts, sortBy, minPrice, maxPrice]);
 
   const displayedProducts = products.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
 
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat('vi-VN').format(price);
   };
-
   return (
     <>
       {displayedProducts.length > 0 ? (
         displayedProducts.map(product => (
           <div key={product.productID} className="bg-primary flex flex-col h-64 w-40 sm:h-80 sm:w-56 lg:h-[410px] lg:w-72">
             <Image 
-              src={`/products/${product.productID}/1.png`} 
+              src={`/products/${product.productID}/1.png`}
               alt={product.productName} 
               width={150} 
               height={150} 

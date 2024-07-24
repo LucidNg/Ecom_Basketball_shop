@@ -82,7 +82,7 @@ func main() {
 		}
 	})).Methods(http.MethodGet, http.MethodPost)
 
-	r.HandleFunc("/categoryProduct/{category}", corsMiddleware(func(w http.ResponseWriter, r *http.Request) {
+	r.HandleFunc("/categoryProduct/{category}/{method}/{maxPrice}/{minPrice}", corsMiddleware(func(w http.ResponseWriter, r *http.Request) {
 		if r.Method == http.MethodGet {
 			err := database.QueryProductByCategory(db, w, r)
 			if err != nil {
