@@ -20,7 +20,7 @@ const Card: React.FC<CardProps> = ({ limit, category, currentPage, itemsPerPage,
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const fetchedProducts = await FetchProductByCategory(category, sortBy, minPrice, maxPrice);
+        const fetchedProducts = await FetchProductByCategory(category, sortBy, maxPrice, minPrice);
         setProducts(fetchedProducts || []); // Ensure products is not null
         // Check if there are more products available for the next page
         const hasMore = fetchedProducts && fetchedProducts.length > currentPage * itemsPerPage;

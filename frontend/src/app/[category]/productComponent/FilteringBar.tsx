@@ -93,7 +93,7 @@ const FilterBar: React.FC<FilterBarProps> = ({ sortBy, setSortBy, minPrice, setM
         <span className="font-semibold text-xl text-base-100 hidden xl:inline">From:</span>
         <input
           type="text"
-          placeholder="..."
+          placeholder={minPrice === "0" ? "''" : "..."}
           value={minPrice}
           onChange={handleMinPriceChange}
           className="xl:w-28 w-20 h-14 px-3 bg-base-100 outline-none text-xl text-base-content font-semibold"

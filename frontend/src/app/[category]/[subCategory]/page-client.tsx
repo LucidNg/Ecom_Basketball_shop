@@ -12,6 +12,11 @@ export default function ProductPageCli({ children1 }: ProductPageCliProps) {
   const [currentPage, setCurrentPage] = useState(1);
   const [hasMoreProducts, setHasMoreProducts] = useState(true);
   const itemsPerPage = 15;
+
+  const [sortBy, setSortBy] = useState("latest");
+  const [minPrice, setMinPrice] = useState("0");
+  const [maxPrice, setMaxPrice] = useState("0");
+
   const normalizedSubCategory = subCategory === 'wm' ? 'women' : subCategory;
 
   const handleNextPage = () => {
@@ -27,19 +32,29 @@ export default function ProductPageCli({ children1 }: ProductPageCliProps) {
   };
 
   return (
-    <div className="lg:pt-10 bg-base-100">
+    <div className="lg:pt-10 bg-base-100 w-screen">
       <div className="lg:px-16 py-10 text-center lg:text-left">
-        <span className="text-accent font-bold text-3xl sm:text-4xl capitalize">{normalizedSubCategory} {category}</span>
+      <span className="text-accent font-bold text-3xl sm:text-4xl capitalize">{normalizedSubCategory} {category}</span>
       </div>
-      <FilterBar />
-      <div className="flex justify-center lg:px-16">
-        <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-10 p-2">
+      <FilterBar 
+        sortBy={sortBy}
+        setSortBy={setSortBy}
+        minPrice={minPrice}
+        setMinPrice={setMinPrice}
+        maxPrice={maxPrice}
+        setMaxPrice={setMaxPrice}
+      />
+      <div className="flex justify-center items-center w-full lg:px-16 overflow-x-auto">
+        <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-10 p-2 max-w-full">
           {React.Children.map(children1, (child) => {
             return React.cloneElement(child as React.ReactElement<any>, { 
-              category: `${subCategory}'s ${category}`,
-              currentPage,
-              itemsPerPage,
-              checkHasMoreProducts
+              category: `${subCategory}'s ${category}`, 
+              currentPage, 
+              itemsPerPage, 
+              checkHasMoreProducts,
+              sortBy,
+              minPrice,
+              maxPrice
             });
           })}
         </div>

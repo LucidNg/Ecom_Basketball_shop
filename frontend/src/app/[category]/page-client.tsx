@@ -14,8 +14,8 @@ export default function ProductPageCli({ children1 }: ProductPageCliProps) {
   const itemsPerPage = 15;
 
   const [sortBy, setSortBy] = useState("latest");
-  const [minPrice, setMinPrice] = useState("");
-  const [maxPrice, setMaxPrice] = useState("");
+  const [minPrice, setMinPrice] = useState("0");
+  const [maxPrice, setMaxPrice] = useState("0");
 
   const handleNextPage = () => {
     setCurrentPage(prevPage => prevPage + 1);
