@@ -2,6 +2,142 @@ delete from product;
 
 delete from category;
 
+CREATE TABLE IF NOT EXISTS users (
+    "userID" TEXT NOT NULL PRIMARY KEY,        
+    "email" TEXT UNIQUE NOT NULL,
+    "password" TEXT NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS userDetail (
+    "userID" TEXT NOT NULL PRIMARY KEY,
+    "fullName" TEXT NOT NULL,
+    "phoneNumber" TEXT,
+    "address" TEXT,
+    "dob" TEXT,
+    "memberSince" TEXT,
+    "totalPoint" INTEGER,
+    "pointEarned" INTEGER,
+    "pointRedeemed" INTEGER,
+    FOREIGN KEY(userID) REFERENCES users(userID)
+);
+
+CREATE TABLE IF NOT EXISTS userPayment (
+    "paymentID" TEXT NOT NULL PRIMARY KEY,
+    "userID" TEXT NOT NULL,
+    "method" TEXT NOT NULL,
+    "accountNumber" TEXT NOT NULL,
+    FOREIGN KEY(userID) REFERENCES users(userID)
+);
+
+CREATE TABLE IF NOT EXISTS customJersey (
+    "jerseyID" TEXT NOT NULL PRIMARY KEY,
+    "userID" TEXT NOT NULL,
+    "description" TEXT,
+    "imageURL" TEXT,
+    FOREIGN KEY(userID) REFERENCES users(userID)
+);
+
+CREATE TABLE IF NOT EXISTS orders (
+    "orderID" TEXT NOT NULL PRIMARY KEY,
+    "userID" TEXT NOT NULL,
+    "date" TEXT NOT NULL,
+    "shippingAddress" TEXT NOT NULL,
+    "billingAddress" TEXT NOT NULL,
+    "price" INTEGER NOT NULL,
+    "status" TEXT NOT NULL,
+    FOREIGN KEY(userID) REFERENCES users(userID)
+);
+
+CREATE TABLE IF NOT EXISTS shipping (
+    "shippingID" TEXT NOT NULL PRIMARY KEY,
+    "orderID" TEXT NOT NULL,
+    "shippingMethod" TEXT NOT NULL,
+    "cost" INTEGER NOT NULL,
+    "startTime" TEXT NOT NULL,
+    "estimatedDeliveryTime" TEXT NOT NULL,
+    FOREIGN KEY(orderID) REFERENCES orders(orderID)
+);
+
+CREATE TABLE IF NOT EXISTS cart (
+    "cartID" TEXT NOT NULL PRIMARY KEY,
+    "userID" TEXT NOT NULL,
+    FOREIGN KEY(userID) REFERENCES users(userID)
+);
+
+CREATE TABLE IF NOT EXISTS category (
+    "categoryID" TEXT NOT NULL PRIMARY KEY,
+    "categoryName" TEXT NOT NULL,
+    "description" TEXT NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS product (
+    "productID" TEXT NOT NULL PRIMARY KEY,
+    "categoryID" TEXT NOT NULL,
+    "productName" TEXT NOT NULL,
+    "description" TEXT NOT NULL,
+    "brand" TEXT NOT NULL,
+    "dateAdded" TEXT NOT NULL,
+    FOREIGN KEY(categoryID) REFERENCES category(categoryID)
+);
+
+CREATE TABLE IF NOT EXISTS review (
+    "reviewID" TEXT NOT NULL PRIMARY KEY,
+    "userID" TEXT NOT NULL,
+    "productID" TEXT NOT NULL,
+    "rating" INTEGER NOT NULL,
+    "comment" TEXT NOT NULL,
+    "date" TEXT NOT NULL,
+    FOREIGN KEY(userID) REFERENCES users(userID),
+    FOREIGN KEY(productID) REFERENCES product(productID)
+);
+
+CREATE TABLE IF NOT EXISTS purchase (
+    "purchaseID" TEXT NOT NULL PRIMARY KEY,
+    "userID" TEXT NOT NULL,
+    "productID" TEXT NOT NULL,
+    "quantity" INTEGER NOT NULL,
+    "date" TEXT NOT NULL,
+    FOREIGN KEY(userID) REFERENCES users(userID),
+    FOREIGN KEY(productID) REFERENCES product(productID)
+);
+
+CREATE TABLE IF NOT EXISTS cartItem (
+    "cartID" TEXT NOT NULL,
+    "productID" TEXT NOT NULL,
+    "quantity" INTEGER NOT NULL,
+    PRIMARY KEY(cartID, productID),
+    FOREIGN KEY(cartID) REFERENCES cart(cartID),
+    FOREIGN KEY(productID) REFERENCES product(productID)
+);
+
+CREATE TABLE IF NOT EXISTS advertisement (
+    "advertisementID" TEXT NOT NULL PRIMARY KEY,
+    "adName" TEXT NOT NULL,
+    "adURL" TEXT NOT NULL,
+    "adImageURL" TEXT NOT NULL,
+    "startDate" TEXT NOT NULL,
+    "endDate" TEXT NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS giftCard (
+    "giftCardID" TEXT NOT NULL PRIMARY KEY,
+    "code" TEXT NOT NULL,
+    "percentage" INTEGER NOT NULL,
+    "cost" INTEGER NOT NULL,
+    "expiryDate" TEXT NOT NULL,
+    "status" TEXT NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS size (
+    "productID" TEXT NOT NULL,
+    "size" INTEGER NOT NULL,
+    "stock" INTEGER NOT NULL,
+    "price" REAL NOT NULL,
+    PRIMARY KEY(productID, size),
+    FOREIGN KEY(productID) REFERENCES product(productID)
+);
+
+
 INSERT INTO category (categoryID, categoryName, description) VALUES
 ('e6dc7c31-c0c4-422f-9018-f4ad73228626', 'men''s clothes T-shirt', 'T-shirt for men'),
 ('80f068cd-da77-43e4-8384-dc6825a56000', 'men''s clothes Jersey', 'Jersey for men'),
@@ -31,141 +167,1060 @@ INSERT INTO category (categoryID, categoryName, description) VALUES
 
 
 
-INSERT INTO product (productID, categoryID, productName, description, brand, price, stock, dateAdded, size) VALUES
-('e948169d-a57f-4955-b8bd-3606cd9902a3', 'e6dc7c31-c0c4-422f-9018-f4ad73228626', 'Nike Dri-FIT T-shirt', 'Comfortable men''s T-shirt', 'Nike', 19.99, 100, '2024-07-05', 'M'),
-('e3323eed-9682-4e29-bf21-bf127399f67b', 'e6dc7c31-c0c4-422f-9018-f4ad73228626', 'Adidas Climacool T-shirt', 'Soft men''s T-shirt', 'Adidas', 21.99, 80, '2024-06-21', 'L'),
-('3da78831-014e-4546-8fb8-ded3fda6309b', 'e6dc7c31-c0c4-422f-9018-f4ad73228626', 'Puma Essential T-shirt', 'Stylish men''s T-shirt', 'Puma', 22.99, 60, '2024-05-18', 'S'),
-('0b4da7b0-3391-4798-8661-492ef2109230', 'e6dc7c31-c0c4-422f-9018-f4ad73228626', 'Under Armour Sportstyle T-shirt', 'Casual men''s T-shirt', 'Under Armour', 18.99, 90, '2024-04-14', 'M'),
-('80e23e43-db64-4e74-823b-906786c455d3', 'e6dc7c31-c0c4-422f-9018-f4ad73228626', 'Reebok Workout Ready T-shirt', 'Elegant men''s T-shirt', 'Reebok', 20.99, 50, '2024-03-20', 'L'),
+INSERT INTO product (productID, categoryID, productName, description, brand, dateAdded) VALUES
+('e948169d-a57f-4955-b8bd-3606cd9902a3', 'e6dc7c31-c0c4-422f-9018-f4ad73228626', 'Nike Dri-FIT T-shirt', 'Comfortable men''s T-shirt', 'Nike', '2024-07-05'),
+('e3323eed-9682-4e29-bf21-bf127399f67b', 'e6dc7c31-c0c4-422f-9018-f4ad73228626', 'Adidas Climacool T-shirt', 'Soft men''s T-shirt', 'Adidas', '2024-06-21'),
+('3da78831-014e-4546-8fb8-ded3fda6309b', 'e6dc7c31-c0c4-422f-9018-f4ad73228626', 'Puma Essential T-shirt', 'Stylish men''s T-shirt', 'Puma', '2024-05-18'),
+('0b4da7b0-3391-4798-8661-492ef2109230', 'e6dc7c31-c0c4-422f-9018-f4ad73228626', 'Under Armour Sportstyle T-shirt', 'Casual men''s T-shirt', 'Under Armour', '2024-04-14'),
+('80e23e43-db64-4e74-823b-906786c455d3', 'e6dc7c31-c0c4-422f-9018-f4ad73228626', 'Reebok Workout Ready T-shirt', 'Elegant men''s T-shirt', 'Reebok', '2024-03-20'),
+('216abf79-2106-49d2-a0ce-36d5159417a6', '80f068cd-da77-43e4-8384-dc6825a56000', 'Nike Pro Jersey', 'Sporty men''s jersey', 'Nike', '2024-02-15'),
+('8f41cee6-3cef-458d-b942-124838194a4b', '80f068cd-da77-43e4-8384-dc6825a56000', 'Adidas Condivo 20 Jersey', 'Cool men''s jersey', 'Adidas', '2024-01-10'),
+('2a1859de-e52f-4728-aa60-7e3d1c8e2d11', '80f068cd-da77-43e4-8384-dc6825a56000', 'Puma Liga Jersey', 'Comfortable men''s jersey', 'Puma', '2024-05-25'),
+('c8ab7b05-99d1-467b-a923-6987ed4d7804', '80f068cd-da77-43e4-8384-dc6825a56000', 'Under Armour Challenger Jersey', 'Athletic men''s jersey', 'Under Armour', '2024-06-30'),
+('4232ca43-a33e-47a9-837d-a5ddd72bdfe9', '80f068cd-da77-43e4-8384-dc6825a56000', 'Reebok Crossfit Jersey', 'Durable men''s jersey', 'Reebok', '2024-07-12'),
+('bda9e2d4-a4d5-417f-9999-f62194b4285f', 'f12e9b94-3a00-46c7-bad3-70b2c4ba1f82', 'Nike Therma Hoodie', 'Warm men''s hoodie', 'Nike', '2024-04-18'),
+('9a67dc75-6cd7-4bda-b96a-ce639a407db4', 'f12e9b94-3a00-46c7-bad3-70b2c4ba1f82', 'Adidas Essentials Hoodie', 'Cozy men''s hoodie', 'Adidas', '2024-03-22'),
+('9d2a2fe5-3db0-470d-9e0a-6028200c60fa', 'f12e9b94-3a00-46c7-bad3-70b2c4ba1f82', 'Puma Big Logo Hoodie', 'Stylish men''s hoodie', 'Puma', '2024-02-28'),
+('5a0854b5-589f-4232-8422-ab53b0315609', 'f12e9b94-3a00-46c7-bad3-70b2c4ba1f82', 'Under Armour Rival Hoodie', 'Casual men''s hoodie', 'Under Armour', '2024-01-05'),
+('5ee788fa-4c10-4c86-9d5f-0cf8c6a4a29a', 'f12e9b94-3a00-46c7-bad3-70b2c4ba1f82', 'Reebok Classics Hoodie', 'Elegant men''s hoodie', 'Reebok', '2024-05-01'),
+('dce4f957-4832-4e13-ad99-782642b7f794', 'ccb4b22b-eb38-4d69-9889-4e5501792fd6', 'Nike Flex Shorts', 'Comfortable men''s shorts', 'Nike', '2024-06-17'),
+('cebd0415-ef11-4a97-a5c9-32e3f729a33b', 'ccb4b22b-eb38-4d69-9889-4e5501792fd6', 'Adidas 4KRFT Shorts', 'Stylish men''s shorts', 'Adidas', '2024-07-02'),
+('5005a75d-cc5d-451f-b42c-b584b1008205', 'ccb4b22b-eb38-4d69-9889-4e5501792fd6', 'Puma Active Shorts', 'Casual men''s shorts', 'Puma', '2024-07-12'),
+('7ffe74a5-ebcc-43a7-97c9-b471870a672b', 'ccb4b22b-eb38-4d69-9889-4e5501792fd6', 'Under Armour Launch Shorts', 'Sporty men''s shorts', 'Under Armour', '2024-06-21'),
+('c2f1fa08-f699-4d0c-b5cd-7b27c07fee3e', 'ccb4b22b-eb38-4d69-9889-4e5501792fd6', 'Reebok Speed Shorts', 'Elegant men''s shorts', 'Reebok', '2024-04-19'),
 
-('216abf79-2106-49d2-a0ce-36d5159417a6', '80f068cd-da77-43e4-8384-dc6825a56000', 'Nike Pro Jersey', 'Sporty men''s jersey', 'Nike', 29.99, 100, '2024-02-15', 'M'),
-('8f41cee6-3cef-458d-b942-124838194a4b', '80f068cd-da77-43e4-8384-dc6825a56000', 'Adidas Condivo 20 Jersey', 'Cool men''s jersey', 'Adidas', 31.99, 80, '2024-01-10', 'L'),
-('2a1859de-e52f-4728-aa60-7e3d1c8e2d11', '80f068cd-da77-43e4-8384-dc6825a56000', 'Puma Liga Jersey', 'Comfortable men''s jersey', 'Puma', 30.99, 60, '2024-05-25', 'S'),
-('c8ab7b05-99d1-467b-a923-6987ed4d7804', '80f068cd-da77-43e4-8384-dc6825a56000', 'Under Armour Challenger Jersey', 'Athletic men''s jersey', 'Under Armour', 28.99, 90, '2024-06-30', 'M'),
-('4232ca43-a33e-47a9-837d-a5ddd72bdfe9', '80f068cd-da77-43e4-8384-dc6825a56000', 'Reebok Crossfit Jersey', 'Durable men''s jersey', 'Reebok', 32.99, 50, '2024-07-12', 'L'),
+('a16a3409-5966-4537-8b42-193fd6070547', 'dc86d26f-9e4e-4d53-9a83-ca4de464f285', 'Nike Tech Fleece Joggers', 'Comfortable men''s trousers', 'Nike', '2024-03-12'),
+('ffbd927c-e0c5-4973-8a6e-6dffcddc1b44', 'dc86d26f-9e4e-4d53-9a83-ca4de464f285', 'Adidas Tiro 19 Pants', 'Stylish men''s trousers', 'Adidas', '2024-01-30'),
+('eda7e9a4-1cac-465d-a136-2111d5190ff1', 'dc86d26f-9e4e-4d53-9a83-ca4de464f285', 'Puma Evostripe Pants', 'Casual men''s trousers', 'Puma', '2024-02-25'),
+('789d977e-dd80-4bef-8ebf-ae51b97ff57a', 'dc86d26f-9e4e-4d53-9a83-ca4de464f285', 'Under Armour Threadborne Pants', 'Formal men''s trousers', 'Under Armour', '2024-07-01'),
+('7f25afa5-b53b-40cf-a7af-072743fd9592', 'dc86d26f-9e4e-4d53-9a83-ca4de464f285', 'Reebok Workout Ready Joggers', 'Elegant men''s trousers', 'Reebok', '2024-06-05'),
 
-('bda9e2d4-a4d5-417f-9999-f62194b4285f', 'f12e9b94-3a00-46c7-bad3-70b2c4ba1f82', 'Nike Therma Hoodie', 'Warm men''s hoodie', 'Nike', 39.99, 100, '2024-04-18', 'M'),
-('9a67dc75-6cd7-4bda-b96a-ce639a407db4', 'f12e9b94-3a00-46c7-bad3-70b2c4ba1f82', 'Adidas Essentials Hoodie', 'Cozy men''s hoodie', 'Adidas', 41.99, 80, '2024-03-22', 'L'),
-('9d2a2fe5-3db0-470d-9e0a-6028200c60fa', 'f12e9b94-3a00-46c7-bad3-70b2c4ba1f82', 'Puma Big Logo Hoodie', 'Stylish men''s hoodie', 'Puma', 42.99, 60, '2024-02-28', 'S'),
-('5a0854b5-589f-4232-8422-ab53b0315609', 'f12e9b94-3a00-46c7-bad3-70b2c4ba1f82', 'Under Armour Rival Hoodie', 'Casual men''s hoodie', 'Under Armour', 38.99, 90, '2024-01-05', 'M'),
-('5ee788fa-4c10-4c86-9d5f-0cf8c6a4a29a', 'f12e9b94-3a00-46c7-bad3-70b2c4ba1f82', 'Reebok Classics Hoodie', 'Elegant men''s hoodie', 'Reebok', 40.99, 50, '2024-05-01', 'L'),
+('4cd34642-e9e1-4273-80db-974988e4f87d', '014816fc-4c84-40b5-8a36-9d5d0c078235', 'Nike Dri-FIT Women''s T-shirt', 'Comfortable women''s T-shirt', 'Nike', '2024-05-19'),
+('39b8cc8f-3b60-43a9-bb91-c7412f4880ca', '014816fc-4c84-40b5-8a36-9d5d0c078235', 'Adidas Badge of Sport Women''s T-shirt', 'Soft women''s T-shirt', 'Adidas', '2024-03-22'),
+('b6a40252-a981-4f33-a85a-c0b2f4fb78fa', '014816fc-4c84-40b5-8a36-9d5d0c078235', 'Puma Essentials Women''s T-shirt', 'Stylish women''s T-shirt', 'Puma', '2024-02-24'),
+('27abc067-a0e9-4d30-a0d2-9568ef8f8d69', '014816fc-4c84-40b5-8a36-9d5d0c078235', 'Under Armour Tech Women''s T-shirt', 'Casual women''s T-shirt', 'Under Armour', '2024-06-21'),
+('24c68852-11cf-4331-9110-bce1e5f2f9d9', '014816fc-4c84-40b5-8a36-9d5d0c078235', 'Reebok Les Mills Women''s T-shirt', 'Elegant women''s T-shirt', 'Reebok', '2024-04-20'),
 
-('dce4f957-4832-4e13-ad99-782642b7f794', 'ccb4b22b-eb38-4d69-9889-4e5501792fd6', 'Nike Flex Shorts', 'Comfortable men''s shorts', 'Nike', 24.99, 100, '2024-06-17', 'M'),
-('cebd0415-ef11-4a97-a5c9-32e3f729a33b', 'ccb4b22b-eb38-4d69-9889-4e5501792fd6', 'Adidas 4KRFT Shorts', 'Stylish men''s shorts', 'Adidas', 25.99, 80, '2024-07-02', 'L'),
-('5005a75d-cc5d-451f-b42c-b584b1008205', 'ccb4b22b-eb38-4d69-9889-4e5501792fd6', 'Puma Active Shorts', 'Casual men''s shorts', 'Puma', 23.99, 60, '2024-07-12', 'S'),
-('7ffe74a5-ebcc-43a7-97c9-b471870a672b', 'ccb4b22b-eb38-4d69-9889-4e5501792fd6', 'Under Armour Launch Shorts', 'Sporty men''s shorts', 'Under Armour', 22.99, 90, '2024-06-21', 'M'),
-('c2f1fa08-f699-4d0c-b5cd-7b27c07fee3e', 'ccb4b22b-eb38-4d69-9889-4e5501792fd6', 'Reebok Speed Shorts', 'Elegant men''s shorts', 'Reebok', 26.99, 50, '2024-04-19', 'L'),
+('9308094a-0ae5-481e-ae69-1c9c6044a0ca', 'dfb1a6d6-a5be-46c8-b088-0e77b2bff594', 'Nike Pro Women''s Jersey', 'Sporty women''s jersey', 'Nike', '2024-05-15'),
+('674e4519-96b3-482b-94c3-d78fc66db073', 'dfb1a6d6-a5be-46c8-b088-0e77b2bff594', 'Adidas Condivo 20 Women''s Jersey', 'Cool women''s jersey', 'Adidas', '2024-07-10'),
+('f87b74be-7147-4379-abff-dcb87acbc65b', 'dfb1a6d6-a5be-46c8-b088-0e77b2bff594', 'Puma Liga Women''s Jersey', 'Comfortable women''s jersey', 'Puma', '2024-02-28'),
+('b28e3529-ed10-4cbb-8495-dab2404218c6', 'dfb1a6d6-a5be-46c8-b088-0e77b2bff594', 'Under Armour Challenger Women''s Jersey', 'Athletic women''s jersey', 'Under Armour', '2024-03-03'),
+('a3a074c2-cd37-486f-8235-9238e02dcfd8', 'dfb1a6d6-a5be-46c8-b088-0e77b2bff594', 'Reebok Crossfit Women''s Jersey', 'Durable women''s jersey', 'Reebok', '2024-01-12'),
 
-('a16a3409-5966-4537-8b42-193fd6070547', 'dc86d26f-9e4e-4d53-9a83-ca4de464f285', 'Nike Tech Fleece Joggers', 'Comfortable men''s trousers', 'Nike', 34.99, 100, '2024-03-12', 'M'),
-('ffbd927c-e0c5-4973-8a6e-6dffcddc1b44', 'dc86d26f-9e4e-4d53-9a83-ca4de464f285', 'Adidas Tiro 19 Pants', 'Stylish men''s trousers', 'Adidas', 35.99, 80, '2024-01-30', 'L'),
-('eda7e9a4-1cac-465d-a136-2111d5190ff1', 'dc86d26f-9e4e-4d53-9a83-ca4de464f285', 'Puma Evostripe Pants', 'Casual men''s trousers', 'Puma', 33.99, 60, '2024-02-25', 'S'),
-('789d977e-dd80-4bef-8ebf-ae51b97ff57a', 'dc86d26f-9e4e-4d53-9a83-ca4de464f285', 'Under Armour Threadborne Pants', 'Formal men''s trousers', 'Under Armour', 32.99, 90, '2024-07-01', 'M'),
-('7f25afa5-b53b-40cf-a7af-072743fd9592', 'dc86d26f-9e4e-4d53-9a83-ca4de464f285', 'Reebok Workout Ready Joggers', 'Elegant men''s trousers', 'Reebok', 36.99, 50, '2024-06-05', 'L'),
+('96773a76-0e41-4454-985b-7eed3fef9fd0', '2687f23f-b4eb-4302-9097-9ce924cc1211', 'Nike Therma Women''s Hoodie', 'Warm women''s hoodie', 'Nike', '2024-07-02'),
+('3e5844ae-308b-4235-8d50-8805301c58aa', '2687f23f-b4eb-4302-9097-9ce924cc1211', 'Adidas Essentials Women''s Hoodie', 'Cozy women''s hoodie', 'Adidas', '2024-06-15'),
+('6cadcfe9-f759-4089-b2a3-6c3d011977c0', '2687f23f-b4eb-4302-9097-9ce924cc1211', 'Puma Big Logo Women''s Hoodie', 'Stylish women''s hoodie', 'Puma', '2024-04-14'),
+('c38d9763-32d1-4899-8dad-73e8400cfdf7', '2687f23f-b4eb-4302-9097-9ce924cc1211', 'Under Armour Rival Women''s Hoodie', 'Casual women''s hoodie', 'Under Armour', '2024-03-18'),
+('f0eb99e1-0f6b-434c-9da1-340d9c944a13', '2687f23f-b4eb-4302-9097-9ce924cc1211', 'Reebok Classics Women''s Hoodie', 'Elegant women''s hoodie', 'Reebok', '2024-02-27'),
 
-('4cd34642-e9e1-4273-80db-974988e4f87d', '014816fc-4c84-40b5-8a36-9d5d0c078235', 'Nike Dri-FIT Women''s T-shirt', 'Comfortable women''s T-shirt', 'Nike', 19.99, 100, '2024-05-19', 'M'),
-('39b8cc8f-3b60-43a9-bb91-c7412f4880ca', '014816fc-4c84-40b5-8a36-9d5d0c078235', 'Adidas Badge of Sport Women''s T-shirt', 'Soft women''s T-shirt', 'Adidas', 21.99, 80, '2024-03-22', 'L'),
-('b6a40252-a981-4f33-a85a-c0b2f4fb78fa', '014816fc-4c84-40b5-8a36-9d5d0c078235', 'Puma Essentials Women''s T-shirt', 'Stylish women''s T-shirt', 'Puma', 22.99, 60, '2024-02-24', 'S'),
-('27abc067-a0e9-4d30-a0d2-9568ef8f8d69', '014816fc-4c84-40b5-8a36-9d5d0c078235', 'Under Armour Tech Women''s T-shirt', 'Casual women''s T-shirt', 'Under Armour', 18.99, 90, '2024-06-21', 'M'),
-('24c68852-11cf-4331-9110-bce1e5f2f9d9', '014816fc-4c84-40b5-8a36-9d5d0c078235', 'Reebok Les Mills Women''s T-shirt', 'Elegant women''s T-shirt', 'Reebok', 20.99, 50, '2024-04-20', 'L'),
+('4edb25f0-6394-49c6-9da6-85ae4e97ea6e', '0b1d49b8-4f22-4c3d-a9f3-1781326afaed', 'Nike Flex Women''s Shorts', 'Comfortable women''s shorts', 'Nike', '2024-05-20'),
+('38f44c3f-0fe5-42da-a208-2fe5471cb7aa', '0b1d49b8-4f22-4c3d-a9f3-1781326afaed', 'Adidas 4KRFT Women''s Shorts', 'Stylish women''s shorts', 'Adidas', '2024-06-05'),
+('878ee818-4cc5-4832-b766-a6597d7eddd3', '0b1d49b8-4f22-4c3d-a9f3-1781326afaed', 'Puma Active Women''s Shorts', 'Casual women''s shorts', 'Puma', '2024-03-12'),
+('2b10a6c1-ea45-4c8f-9a1e-f9583444285d', '0b1d49b8-4f22-4c3d-a9f3-1781326afaed', 'Under Armour Launch Women''s Shorts', 'Sporty women''s shorts', 'Under Armour', '2024-01-25'),
+('b120e91a-37ac-4104-95a5-223ff114852a', '0b1d49b8-4f22-4c3d-a9f3-1781326afaed', 'Reebok Speed Women''s Shorts', 'Elegant women''s shorts', 'Reebok', '2024-02-17'),
 
-('9308094a-0ae5-481e-ae69-1c9c6044a0ca', 'dfb1a6d6-a5be-46c8-b088-0e77b2bff594', 'Nike Pro Women''s Jersey', 'Sporty women''s jersey', 'Nike', 29.99, 100, '2024-05-15', 'M'),
-('674e4519-96b3-482b-94c3-d78fc66db073', 'dfb1a6d6-a5be-46c8-b088-0e77b2bff594', 'Adidas Condivo 20 Women''s Jersey', 'Cool women''s jersey', 'Adidas', 31.99, 80, '2024-07-10', 'L'),
-('f87b74be-7147-4379-abff-dcb87acbc65b', 'dfb1a6d6-a5be-46c8-b088-0e77b2bff594', 'Puma Liga Women''s Jersey', 'Comfortable women''s jersey', 'Puma', 30.99, 60, '2024-02-28', 'S'),
-('b28e3529-ed10-4cbb-8495-dab2404218c6', 'dfb1a6d6-a5be-46c8-b088-0e77b2bff594', 'Under Armour Challenger Women''s Jersey', 'Athletic women''s jersey', 'Under Armour', 28.99, 90, '2024-03-03', 'M'),
-('a3a074c2-cd37-486f-8235-9238e02dcfd8', 'dfb1a6d6-a5be-46c8-b088-0e77b2bff594', 'Reebok Crossfit Women''s Jersey', 'Durable women''s jersey', 'Reebok', 32.99, 50, '2024-01-12', 'L'),
+('88a32ad2-5e66-4e8e-82fa-5c953c970828', '61c5c4d4-e28f-4ed9-8141-07e19be82ac4', 'Nike Tech Fleece Women''s Joggers', 'Comfortable women''s trousers', 'Nike', '2024-07-07'),
+('2e14a5cb-7a37-49de-8d32-04816b52108f', '61c5c4d4-e28f-4ed9-8141-07e19be82ac4', 'Adidas Tiro 19 Women''s Pants', 'Stylish women''s trousers', 'Adidas', '2024-06-23'),
+('234dbb5b-9883-4859-aab0-0d9972e635cf', '61c5c4d4-e28f-4ed9-8141-07e19be82ac4', 'Puma Evostripe Women''s Pants', 'Casual women''s trousers', 'Puma', '2024-02-16'),
+('c98d73c1-8d33-46d9-98dc-8e3c6e090827', '61c5c4d4-e28f-4ed9-8141-07e19be82ac4', 'Under Armour Threadborne Women''s Pants', 'Formal women''s trousers', 'Under Armour', '2024-01-22'),
+('ad9a5f95-dee5-47a7-aea6-44ec72d099a9', '61c5c4d4-e28f-4ed9-8141-07e19be82ac4', 'Reebok Workout Ready Women''s Joggers', 'Elegant women''s trousers', 'Reebok', '2024-03-27'),
 
-('96773a76-0e41-4454-985b-7eed3fef9fd0', '2687f23f-b4eb-4302-9097-9ce924cc1211', 'Nike Therma Women''s Hoodie', 'Warm women''s hoodie', 'Nike', 39.99, 100, '2024-07-02', 'M'),
-('3e5844ae-308b-4235-8d50-8805301c58aa', '2687f23f-b4eb-4302-9097-9ce924cc1211', 'Adidas Essentials Women''s Hoodie', 'Cozy women''s hoodie', 'Adidas', 41.99, 80, '2024-06-15', 'L'),
-('6cadcfe9-f759-4089-b2a3-6c3d011977c0', '2687f23f-b4eb-4302-9097-9ce924cc1211', 'Puma Big Logo Women''s Hoodie', 'Stylish women''s hoodie', 'Puma', 42.99, 60, '2024-04-14', 'S'),
-('c38d9763-32d1-4899-8dad-73e8400cfdf7', '2687f23f-b4eb-4302-9097-9ce924cc1211', 'Under Armour Rival Women''s Hoodie', 'Casual women''s hoodie', 'Under Armour', 38.99, 90, '2024-03-18', 'M'),
-('f0eb99e1-0f6b-434c-9da1-340d9c944a13', '2687f23f-b4eb-4302-9097-9ce924cc1211', 'Reebok Classics Women''s Hoodie', 'Elegant women''s hoodie', 'Reebok', 40.99, 50, '2024-02-27', 'L'),
+('c2e04fae-ad98-4b26-92c5-48687596a9b6', 'a6530b97-47b9-40b2-95b7-7583f33be315', 'Nike Dri-FIT Kids'' T-shirt', 'Comfortable kids'' T-shirt', 'Nike', '2024-05-30'),
+('15b33bb8-d39c-4933-81e4-059b080f485b', 'a6530b97-47b9-40b2-95b7-7583f33be315', 'Adidas Badge of Sport Kids'' T-shirt', 'Soft kids'' T-shirt', 'Adidas', '2024-06-01'),
+('df577be9-0084-4bd7-a641-9eae323981c8', 'a6530b97-47b9-40b2-95b7-7583f33be315', 'Puma Essentials Kids'' T-shirt', 'Stylish kids'' T-shirt', 'Puma', '2024-01-18'),
+('08dfb320-b8d3-4f70-8794-e91b13f77ad9', 'a6530b97-47b9-40b2-95b7-7583f33be315', 'Under Armour Tech Kids'' T-shirt', 'Casual kids'' T-shirt', 'Under Armour', '2024-02-20'),
+('f92a90ce-8cae-4a2f-a770-6fa4b975a1b8', 'a6530b97-47b9-40b2-95b7-7583f33be315', 'Reebok Les Mills Kids'' T-shirt', 'Elegant kids'' T-shirt', 'Reebok', '2024-03-12'),
 
-('4edb25f0-6394-49c6-9da6-85ae4e97ea6e', '0b1d49b8-4f22-4c3d-a9f3-1781326afaed', 'Nike Flex Women''s Shorts', 'Comfortable women''s shorts', 'Nike', 24.99, 100, '2024-05-20', 'M'),
-('38f44c3f-0fe5-42da-a208-2fe5471cb7aa', '0b1d49b8-4f22-4c3d-a9f3-1781326afaed', 'Adidas 4KRFT Women''s Shorts', 'Stylish women''s shorts', 'Adidas', 25.99, 80, '2024-06-05', 'L'),
-('878ee818-4cc5-4832-b766-a6597d7eddd3', '0b1d49b8-4f22-4c3d-a9f3-1781326afaed', 'Puma Active Women''s Shorts', 'Casual women''s shorts', 'Puma', 23.99, 60, '2024-03-12', 'S'),
-('2b10a6c1-ea45-4c8f-9a1e-f9583444285d', '0b1d49b8-4f22-4c3d-a9f3-1781326afaed', 'Under Armour Launch Women''s Shorts', 'Sporty women''s shorts', 'Under Armour', 22.99, 90, '2024-01-25', 'M'),
-('b120e91a-37ac-4104-95a5-223ff114852a', '0b1d49b8-4f22-4c3d-a9f3-1781326afaed', 'Reebok Speed Women''s Shorts', 'Elegant women''s shorts', 'Reebok', 26.99, 50, '2024-02-17', 'L'),
+('cc3a8dc8-4187-49ed-96a6-faa5f3002013', '867abc16-c1e9-49c5-8ae3-2df722b390ee', 'Nike Pro Kids'' Jersey', 'Sporty kids'' jersey', 'Nike', '2024-04-02'),
+('abc6bb36-2203-4742-9b4e-02904a803ae3', '867abc16-c1e9-49c5-8ae3-2df722b390ee', 'Adidas Condivo 20 Kids'' Jersey', 'Cool kids'' jersey', 'Adidas', '2024-07-12'),
+('3184f4e0-9a95-4ee9-9b9c-e8fdd0c12738', '867abc16-c1e9-49c5-8ae3-2df722b390ee', 'Puma Liga Kids'' Jersey', 'Comfortable kids'' jersey', 'Puma', '2024-01-22'),
+('44866d8b-e37d-4b48-8ef6-1a34ee805370', '867abc16-c1e9-49c5-8ae3-2df722b390ee', 'Under Armour Challenger Kids'' Jersey', 'Athletic kids'' jersey', 'Under Armour', '2024-02-25'),
+('fe6bc580-3781-440f-9048-7b30119a7a9a', '867abc16-c1e9-49c5-8ae3-2df722b390ee', 'Reebok Crossfit Kids'' Jersey', 'Durable kids'' jersey', 'Reebok', '2024-03-28'),
 
-('88a32ad2-5e66-4e8e-82fa-5c953c970828', '61c5c4d4-e28f-4ed9-8141-07e19be82ac4', 'Nike Tech Fleece Women''s Joggers', 'Comfortable women''s trousers', 'Nike', 34.99, 100, '2024-07-07', 'M'),
-('2e14a5cb-7a37-49de-8d32-04816b52108f', '61c5c4d4-e28f-4ed9-8141-07e19be82ac4', 'Adidas Tiro 19 Women''s Pants', 'Stylish women''s trousers', 'Adidas', 35.99, 80, '2024-06-23', 'L'),
-('234dbb5b-9883-4859-aab0-0d9972e635cf', '61c5c4d4-e28f-4ed9-8141-07e19be82ac4', 'Puma Evostripe Women''s Pants', 'Casual women''s trousers', 'Puma', 33.99, 60, '2024-02-16', 'S'),
-('c98d73c1-8d33-46d9-98dc-8e3c6e090827', '61c5c4d4-e28f-4ed9-8141-07e19be82ac4', 'Under Armour Threadborne Women''s Pants', 'Formal women''s trousers', 'Under Armour', 32.99, 90, '2024-01-22', 'M'),
-('ad9a5f95-dee5-47a7-aea6-44ec72d099a9', '61c5c4d4-e28f-4ed9-8141-07e19be82ac4', 'Reebok Workout Ready Women''s Joggers', 'Elegant women''s trousers', 'Reebok', 36.99, 50, '2024-03-27', 'L'),
+('7cc445e8-314a-4fec-b5ee-827f645c0466', '037ce04f-b291-45bf-8479-3bedaf276888', 'Nike Therma Kids'' Hoodie', 'Warm kids'' hoodie', 'Nike', '2024-05-02'),
+('f22c3fed-3365-499f-90e9-4c8d7a2545b9', '037ce04f-b291-45bf-8479-3bedaf276888', 'Adidas Essentials Kids'' Hoodie', 'Cozy kids'' hoodie', 'Adidas', '2024-07-01'),
+('b82b430a-6758-4613-8c72-ac72412076db', '037ce04f-b291-45bf-8479-3bedaf276888', 'Puma Big Logo Kids'' Hoodie', 'Stylish kids'' hoodie', 'Puma', '2024-04-18'),
+('8d8abe7d-1a6c-41bb-b2e6-db1c900c57ae', '037ce04f-b291-45bf-8479-3bedaf276888', 'Under Armour Rival Kids'' Hoodie', 'Casual kids'' hoodie', 'Under Armour', '2024-01-30'),
+('d83b03d1-9760-47b7-948f-20fc05d1602a', '037ce04f-b291-45bf-8479-3bedaf276888', 'Reebok Classics Kids'' Hoodie', 'Elegant kids'' hoodie', 'Reebok', '2024-06-05'),
 
-('c2e04fae-ad98-4b26-92c5-48687596a9b6', 'a6530b97-47b9-40b2-95b7-7583f33be315', 'Nike Dri-FIT Kids'' T-shirt', 'Comfortable kids'' T-shirt', 'Nike', 14.99, 100, '2024-05-30', 'M'),
-('15b33bb8-d39c-4933-81e4-059b080f485b', 'a6530b97-47b9-40b2-95b7-7583f33be315', 'Adidas Badge of Sport Kids'' T-shirt', 'Soft kids'' T-shirt', 'Adidas', 15.99, 80, '2024-06-01', 'L'),
-('df577be9-0084-4bd7-a641-9eae323981c8', 'a6530b97-47b9-40b2-95b7-7583f33be315', 'Puma Essentials Kids'' T-shirt', 'Stylish kids'' T-shirt', 'Puma', 16.99, 60, '2024-01-18', 'S'),
-('08dfb320-b8d3-4f70-8794-e91b13f77ad9', 'a6530b97-47b9-40b2-95b7-7583f33be315', 'Under Armour Tech Kids'' T-shirt', 'Casual kids'' T-shirt', 'Under Armour', 13.99, 90, '2024-02-20', 'M'),
-('f92a90ce-8cae-4a2f-a770-6fa4b975a1b8', 'a6530b97-47b9-40b2-95b7-7583f33be315', 'Reebok Les Mills Kids'' T-shirt', 'Elegant kids'' T-shirt', 'Reebok', 17.99, 50, '2024-03-12', 'L'),
+('4639f978-fd89-4de3-88cc-51194cea4dd5', '9c6671d2-b748-40ff-a412-db44951df581', 'Nike Flex Kids'' Shorts', 'Comfortable kids'' shorts', 'Nike', '2024-06-06'),
+('60d8da80-7d29-41ce-bd4d-c27374492cae', '9c6671d2-b748-40ff-a412-db44951df581', 'Adidas 4KRFT Kids'' Shorts', 'Stylish kids'' shorts', 'Adidas', '2024-05-10'),
+('9ae36f26-459c-4144-9e93-37cce5e08af7', '9c6671d2-b748-40ff-a412-db44951df581', 'Puma Active Kids'' Shorts', 'Casual kids'' shorts', 'Puma', '2024-07-14'),
+('e89698a4-6de4-4817-8fde-ef14f4f389d9', '9c6671d2-b748-40ff-a412-db44951df581', 'Under Armour Launch Kids'' Shorts', 'Sporty kids'' shorts', 'Under Armour', '2024-03-18'),
+('90949c88-2c8f-4cf1-aa06-d1ceb887a0e0', '9c6671d2-b748-40ff-a412-db44951df581', 'Reebok Speed Kids'' Shorts', 'Elegant kids'' shorts', 'Reebok', '2024-04-14'),
 
-('cc3a8dc8-4187-49ed-96a6-faa5f3002013', '867abc16-c1e9-49c5-8ae3-2df722b390ee', 'Nike Pro Kids'' Jersey', 'Sporty kids'' jersey', 'Nike', 24.99, 100, '2024-04-02', 'M'),
-('abc6bb36-2203-4742-9b4e-02904a803ae3', '867abc16-c1e9-49c5-8ae3-2df722b390ee', 'Adidas Condivo 20 Kids'' Jersey', 'Cool kids'' jersey', 'Adidas', 25.99, 80, '2024-07-12', 'L'),
-('3184f4e0-9a95-4ee9-9b9c-e8fdd0c12738', '867abc16-c1e9-49c5-8ae3-2df722b390ee', 'Puma Liga Kids'' Jersey', 'Comfortable kids'' jersey', 'Puma', 26.99, 60, '2024-01-22', 'S'),
-('44866d8b-e37d-4b48-8ef6-1a34ee805370', '867abc16-c1e9-49c5-8ae3-2df722b390ee', 'Under Armour Challenger Kids'' Jersey', 'Athletic kids'' jersey', 'Under Armour', 23.99, 90, '2024-02-25', 'M'),
-('fe6bc580-3781-440f-9048-7b30119a7a9a', '867abc16-c1e9-49c5-8ae3-2df722b390ee', 'Reebok Crossfit Kids'' Jersey', 'Durable kids'' jersey', 'Reebok', 27.99, 50, '2024-03-28', 'L'),
+('951ef1b2-2b89-4db2-87f9-771cae4eb8f5', '4dd9854e-1a88-43e8-a2cc-0a201e8d3f27', 'Nike Tech Fleece Kids'' Joggers', 'Comfortable kids'' trousers', 'Nike', '2024-03-02'),
+('1444119e-93f3-42ae-b64e-50ded75b0672', '4dd9854e-1a88-43e8-a2cc-0a201e8d3f27', 'Adidas Tiro 19 Kids'' Pants', 'Stylish kids'' trousers', 'Adidas', '2024-04-28'),
+('102b4f1f-dbf0-49f4-a11f-7b92ecf97748', '4dd9854e-1a88-43e8-a2cc-0a201e8d3f27', 'Puma Evostripe Kids'' Pants', 'Casual kids'' trousers', 'Puma', '2024-02-10'),
+('392a9d9c-ddb6-4dbc-81c3-4bd139482f9b', '4dd9854e-1a88-43e8-a2cc-0a201e8d3f27', 'Under Armour Threadborne Kids'' Pants', 'Formal kids'' trousers', 'Under Armour', '2024-05-30'),
+('49370a9a-c966-432d-bb18-9e7718cf9e03', '4dd9854e-1a88-43e8-a2cc-0a201e8d3f27', 'Reebok Workout Ready Kids'' Joggers', 'Elegant kids'' trousers', 'Reebok', '2024-06-19'),
 
-('7cc445e8-314a-4fec-b5ee-827f645c0466', '037ce04f-b291-45bf-8479-3bedaf276888', 'Nike Therma Kids'' Hoodie', 'Warm kids'' hoodie', 'Nike', 29.99, 100, '2024-05-02', 'M'),
-('f22c3fed-3365-499f-90e9-4c8d7a2545b9', '037ce04f-b291-45bf-8479-3bedaf276888', 'Adidas Essentials Kids'' Hoodie', 'Cozy kids'' hoodie', 'Adidas', 31.99, 80, '2024-07-01', 'L'),
-('b82b430a-6758-4613-8c72-ac72412076db', '037ce04f-b291-45bf-8479-3bedaf276888', 'Puma Big Logo Kids'' Hoodie', 'Stylish kids'' hoodie', 'Puma', 32.99, 60, '2024-04-18', 'S'),
-('8d8abe7d-1a6c-41bb-b2e6-db1c900c57ae', '037ce04f-b291-45bf-8479-3bedaf276888', 'Under Armour Rival Kids'' Hoodie', 'Casual kids'' hoodie', 'Under Armour', 28.99, 90, '2024-01-30', 'M'),
-('d83b03d1-9760-47b7-948f-20fc05d1602a', '037ce04f-b291-45bf-8479-3bedaf276888', 'Reebok Classics Kids'' Hoodie', 'Elegant kids'' hoodie', 'Reebok', 30.99, 50, '2024-06-05', 'L'),
+('e6aa1308-7c2c-4263-a9a8-388b7d2b203b', 'eefb4ee1-19e4-41af-bf54-41c68ff4a27e', 'Nike Air Zoom Pegasus', 'Comfortable men''s shoes', 'Nike', '2024-02-18'),
+('7e447892-ea7d-4310-a0f8-d3fb01e3fae0', 'eefb4ee1-19e4-41af-bf54-41c68ff4a27e', 'Adidas Ultraboost', 'Stylish men''s shoes', 'Adidas', '2024-04-15'),
+('2f1c2f91-ae13-481d-ab21-8a9d8c5eae87', 'eefb4ee1-19e4-41af-bf54-41c68ff4a27e', 'Puma Ignite', 'Casual men''s shoes', 'Puma', '2024-03-25'),
+('556c71cf-9380-490f-9877-44382cb4586a', 'eefb4ee1-19e4-41af-bf54-41c68ff4a27e', 'Under Armour HOVR', 'Sporty men''s shoes', 'Under Armour', '2024-07-07'),
+('11ec4344-bae7-4061-8c96-7f99788a8c81', 'eefb4ee1-19e4-41af-bf54-41c68ff4a27e', 'Reebok Nano X1', 'Elegant men''s shoes', 'Reebok', '2024-06-17'),
 
-('4639f978-fd89-4de3-88cc-51194cea4dd5', '9c6671d2-b748-40ff-a412-db44951df581', 'Nike Flex Kids'' Shorts', 'Comfortable kids'' shorts', 'Nike', 19.99, 100, '2024-06-06', 'M'),
-('60d8da80-7d29-41ce-bd4d-c27374492cae', '9c6671d2-b748-40ff-a412-db44951df581', 'Adidas 4KRFT Kids'' Shorts', 'Stylish kids'' shorts', 'Adidas', 20.99, 80, '2024-05-10', 'L'),
-('9ae36f26-459c-4144-9e93-37cce5e08af7', '9c6671d2-b748-40ff-a412-db44951df581', 'Puma Active Kids'' Shorts', 'Casual kids'' shorts', 'Puma', 21.99, 60, '2024-07-14', 'S'),
-('e89698a4-6de4-4817-8fde-ef14f4f389d9', '9c6671d2-b748-40ff-a412-db44951df581', 'Under Armour Launch Kids'' Shorts', 'Sporty kids'' shorts', 'Under Armour', 18.99, 90, '2024-03-18', 'M'),
-('90949c88-2c8f-4cf1-aa06-d1ceb887a0e0', '9c6671d2-b748-40ff-a412-db44951df581', 'Reebok Speed Kids'' Shorts', 'Elegant kids'' shorts', 'Reebok', 22.99, 50, '2024-04-14', 'L'),
+('3c6497df-17c5-4738-bf93-ada7645f67e6', 'e74124a9-e82d-44ff-b8e2-1ed78ccee264', 'Nike Air Max', 'Comfortable women''s shoes', 'Nike', '2024-01-25'),
+('b4025876-409a-4dcb-9b2b-40bcd5cead33', 'e74124a9-e82d-44ff-b8e2-1ed78ccee264', 'Adidas Pureboost', 'Stylish women''s shoes', 'Adidas', '2024-03-12'),
+('6c73a02e-8261-4378-9904-def1f1e247e8', 'e74124a9-e82d-44ff-b8e2-1ed78ccee264', 'Puma RS-X', 'Casual women''s shoes', 'Puma', '2024-02-14'),
+('a232aee4-7a2b-474a-9550-f2da5777610c', 'e74124a9-e82d-44ff-b8e2-1ed78ccee264', 'Under Armour Speedform', 'Sporty women''s shoes', 'Under Armour', '2024-04-17'),
+('0e17153e-7f2c-4be1-b8d3-1372b1a56f97', 'e74124a9-e82d-44ff-b8e2-1ed78ccee264', 'Reebok Zig Kinetica', 'Elegant women''s shoes', 'Reebok', '2024-06-21'),
 
-('951ef1b2-2b89-4db2-87f9-771cae4eb8f5', '4dd9854e-1a88-43e8-a2cc-0a201e8d3f27', 'Nike Tech Fleece Kids'' Joggers', 'Comfortable kids'' trousers', 'Nike', 24.99, 100, '2024-03-02', 'M'),
-('1444119e-93f3-42ae-b64e-50ded75b0672', '4dd9854e-1a88-43e8-a2cc-0a201e8d3f27', 'Adidas Tiro 19 Kids'' Pants', 'Stylish kids'' trousers', 'Adidas', 25.99, 80, '2024-04-28', 'L'),
-('102b4f1f-dbf0-49f4-a11f-7b92ecf97748', '4dd9854e-1a88-43e8-a2cc-0a201e8d3f27', 'Puma Evostripe Kids'' Pants', 'Casual kids'' trousers', 'Puma', 26.99, 60, '2024-02-10', 'S'),
-('392a9d9c-ddb6-4dbc-81c3-4bd139482f9b', '4dd9854e-1a88-43e8-a2cc-0a201e8d3f27', 'Under Armour Threadborne Kids'' Pants', 'Formal kids'' trousers', 'Under Armour', 23.99, 90, '2024-05-30', 'M'),
-('49370a9a-c966-432d-bb18-9e7718cf9e03', '4dd9854e-1a88-43e8-a2cc-0a201e8d3f27', 'Reebok Workout Ready Kids'' Joggers', 'Elegant kids'' trousers', 'Reebok', 27.99, 50, '2024-06-19', 'L'),
+('1e8228f6-c8f8-446f-a1af-3dc06d70a615', 'aea61a5a-4f39-4e46-85f9-aee374eb3716', 'Nike Revolution', 'Comfortable kids'' shoes', 'Nike', '2024-04-10'),
+('6256286b-d1f1-4ee3-bd14-f12625e45822', 'aea61a5a-4f39-4e46-85f9-aee374eb3716', 'Adidas Duramo', 'Stylish kids'' shoes', 'Adidas', '2024-02-23'),
+('ceb00eab-1960-4e30-8493-e8c7ee0055a0', 'aea61a5a-4f39-4e46-85f9-aee374eb3716', 'Puma Flyer', 'Casual kids'' shoes', 'Puma', '2024-01-30'),
+('aa430195-4eb5-42b0-94ae-1dea5ed85001', 'aea61a5a-4f39-4e46-85f9-aee374eb3716', 'Under Armour Charged', 'Sporty kids'' shoes', 'Under Armour', '2024-05-12'),
+('79976f10-1e06-4ebe-814c-7580a99ef18e', 'aea61a5a-4f39-4e46-85f9-aee374eb3716', 'Reebok Lite', 'Elegant kids'' shoes', 'Reebok', '2024-03-25'),
 
-('e6aa1308-7c2c-4263-a9a8-388b7d2b203b', 'eefb4ee1-19e4-41af-bf54-41c68ff4a27e', 'Nike Air Zoom Pegasus', 'Comfortable men''s shoes', 'Nike', 44.99, 100, '2024-02-18', '30'),
-('7e447892-ea7d-4310-a0f8-d3fb01e3fae0', 'eefb4ee1-19e4-41af-bf54-41c68ff4a27e', 'Adidas Ultraboost', 'Stylish men''s shoes', 'Adidas', 45.99, 80, '2024-04-15', '31'),
-('2f1c2f91-ae13-481d-ab21-8a9d8c5eae87', 'eefb4ee1-19e4-41af-bf54-41c68ff4a27e', 'Puma Ignite', 'Casual men''s shoes', 'Puma', 43.99, 60, '2024-03-25', '32'),
-('556c71cf-9380-490f-9877-44382cb4586a', 'eefb4ee1-19e4-41af-bf54-41c68ff4a27e', 'Under Armour HOVR', 'Sporty men''s shoes', 'Under Armour', 42.99, 90, '2024-07-07', '33'),
-('11ec4344-bae7-4061-8c96-7f99788a8c81', 'eefb4ee1-19e4-41af-bf54-41c68ff4a27e', 'Reebok Nano X1', 'Elegant men''s shoes', 'Reebok', 46.99, 50, '2024-06-17', '34'),
+('09e68f11-111a-4240-8ee8-a88a1cfffa8e', '32974795-e5a8-4df7-b900-a6a320309909', 'Spalding NBA Ball', 'Basketball 1', 'Spalding', '2024-01-15'),
+('3e96daba-aa8e-4970-a991-7d0625f689f8', '32974795-e5a8-4df7-b900-a6a320309909', 'Wilson Evolution Ball', 'Basketball 2', 'Wilson', '2024-03-28'),
+('fcf16336-31e5-4b9b-8728-38e66c257b45', '32974795-e5a8-4df7-b900-a6a320309909', 'Molten X-Series Ball', 'Basketball 3', 'Molten', '2024-02-14'),
+('7aa29cc5-bc72-4f42-a890-72958f4d3c69', '32974795-e5a8-4df7-b900-a6a320309909', 'Nike Elite Ball', 'Basketball 4', 'Nike', '2024-05-09'),
+('cd895c61-3b13-4e5c-b5b0-870e2b2d2b0a', '32974795-e5a8-4df7-b900-a6a320309909', 'Adidas Pro Ball', 'Basketball 5', 'Adidas', '2024-04-01'),
 
-('3c6497df-17c5-4738-bf93-ada7645f67e6', 'e74124a9-e82d-44ff-b8e2-1ed78ccee264', 'Nike Air Max', 'Comfortable women''s shoes', 'Nike', 44.99, 100, '2024-01-25', '35'),
-('b4025876-409a-4dcb-9b2b-40bcd5cead33', 'e74124a9-e82d-44ff-b8e2-1ed78ccee264', 'Adidas Pureboost', 'Stylish women''s shoes', 'Adidas', 45.99, 80, '2024-03-12', '36'),
-('6c73a02e-8261-4378-9904-def1f1e247e8', 'e74124a9-e82d-44ff-b8e2-1ed78ccee264', 'Puma RS-X', 'Casual women''s shoes', 'Puma', 43.99, 60, '2024-02-14', '37'),
-('a232aee4-7a2b-474a-9550-f2da5777610c', 'e74124a9-e82d-44ff-b8e2-1ed78ccee264', 'Under Armour Speedform', 'Sporty women''s shoes', 'Under Armour', 42.99, 90, '2024-04-17', '38'),
-('0e17153e-7f2c-4be1-b8d3-1372b1a56f97', 'e74124a9-e82d-44ff-b8e2-1ed78ccee264', 'Reebok Zig Kinetica', 'Elegant women''s shoes', 'Reebok', 46.99, 50, '2024-06-21', '39'),
+('4dc69a7b-6fab-4095-b95f-533294112983', 'ba1e6e65-2faa-4541-aca0-976bd8d20918', 'Nike Swoosh Band', 'Wristband 1', 'Nike', '2024-06-23'),
+('693f4e5b-c112-4fc5-acb9-fa64c521c8fc', 'ba1e6e65-2faa-4541-aca0-976bd8d20918', 'Adidas Performance Band', 'Wristband 2', 'Adidas', '2024-07-05'),
+('e139fc61-401b-4423-9f75-badd567f76ac', 'ba1e6e65-2faa-4541-aca0-976bd8d20918', 'Puma Sport Band', 'Wristband 3', 'Puma', '2024-03-12'),
+('1b778473-7441-46a0-a9f1-4e83d47dadac', 'ba1e6e65-2faa-4541-aca0-976bd8d20918', 'Under Armour Logo Band', 'Wristband 4', 'Under Armour', '2024-04-30'),
+('639b4750-c2a1-4a24-a9bd-be0939f1d2e7', 'ba1e6e65-2faa-4541-aca0-976bd8d20918', 'Reebok Training Band', 'Wristband 5', 'Reebok', '2024-05-29'),
 
-('1e8228f6-c8f8-446f-a1af-3dc06d70a615', 'aea61a5a-4f39-4e46-85f9-aee374eb3716', 'Nike Revolution', 'Comfortable kids'' shoes', 'Nike', 34.99, 100, '2024-04-10', '30'),
-('6256286b-d1f1-4ee3-bd14-f12625e45822', 'aea61a5a-4f39-4e46-85f9-aee374eb3716', 'Adidas Duramo', 'Stylish kids'' shoes', 'Adidas', 35.99, 80, '2024-02-23', '31'),
-('ceb00eab-1960-4e30-8493-e8c7ee0055a0', 'aea61a5a-4f39-4e46-85f9-aee374eb3716', 'Puma Flyer', 'Casual kids'' shoes', 'Puma', 33.99, 60, '2024-01-30', '32'),
-('aa430195-4eb5-42b0-94ae-1dea5ed85001', 'aea61a5a-4f39-4e46-85f9-aee374eb3716', 'Under Armour Charged', 'Sporty kids'' shoes', 'Under Armour', 32.99, 90, '2024-05-12', '33'),
-('79976f10-1e06-4ebe-814c-7580a99ef18e', 'aea61a5a-4f39-4e46-85f9-aee374eb3716', 'Reebok Lite', 'Elegant kids'' shoes', 'Reebok', 36.99, 50, '2024-03-25', '34'),
+('7a858a17-040b-4bd7-b254-047f2a828bf0', 'd4954e1a-eeb1-4b4b-ac77-0f9f5e347689', 'Nike Hyperfuel Water Bottle', 'Water bottle 1', 'Nike', '2024-03-24'),
+('1793b69e-28e1-43e7-ae5d-b684bd235dbb', 'd4954e1a-eeb1-4b4b-ac77-0f9f5e347689', 'Adidas Steel Water Bottle', 'Water bottle 2', 'Adidas', '2024-04-25'),
+('45820650-e436-46bc-9f76-d1b9a949ebe3', 'd4954e1a-eeb1-4b4b-ac77-0f9f5e347689', 'Puma Fitness Water Bottle', 'Water bottle 3', 'Puma', '2024-01-17'),
+('a5ea9a76-5a00-48c3-82bf-a903b97718d4', 'd4954e1a-eeb1-4b4b-ac77-0f9f5e347689', 'Under Armour Hydration Bottle', 'Water bottle 4', 'Under Armour', '2024-02-10'),
+('1d7447d2-b67b-4b06-a1f3-5f1022d15bf9', 'd4954e1a-eeb1-4b4b-ac77-0f9f5e347689', 'Reebok BPA-Free Bottle', 'Water bottle 5', 'Reebok', '2024-07-01'),
 
-('09e68f11-111a-4240-8ee8-a88a1cfffa8e', '32974795-e5a8-4df7-b900-a6a320309909', 'Spalding NBA Ball', 'Basketball 1', 'Spalding', 14.99, 100, '2024-01-15', 'M'),
-('3e96daba-aa8e-4970-a991-7d0625f689f8', '32974795-e5a8-4df7-b900-a6a320309909', 'Wilson Evolution Ball', 'Basketball 2', 'Wilson', 15.99, 80, '2024-02-14', 'L'),
-('489025b7-eb08-47e3-892d-38a211a15580', '32974795-e5a8-4df7-b900-a6a320309909', 'Molten GG7X Ball', 'Basketball 3', 'Molten', 16.99, 60, '2024-03-16', 'S'),
-('e0039bc8-f6f3-414c-acaa-cd84a9ceca19', '32974795-e5a8-4df7-b900-a6a320309909', 'Rawlings Contour Ball', 'Basketball 4', 'Rawlings', 13.99, 90, '2024-04-21', 'M'),
-('12f09310-ebbe-463c-90b5-5261b9d5eda9', '32974795-e5a8-4df7-b900-a6a320309909', 'Baden Elite Ball', 'Basketball 5', 'Baden', 17.99, 50, '2024-05-11', 'L'),
+('ab367332-60a6-4303-969a-68a9531ba514', '23919e53-14fd-47d3-bb2c-70e1a4336811', 'Nike Brasilia Backpack', 'Backpack 1', 'Nike', '2024-02-21'),
+('7251a16e-16f4-4316-bf7e-b676f3532ea9', '23919e53-14fd-47d3-bb2c-70e1a4336811', 'Adidas Classic Backpack', 'Backpack 2', 'Adidas', '2024-05-24'),
+('45b3b6e3-1ee9-4857-81fa-49c8eaa29fd8', '23919e53-14fd-47d3-bb2c-70e1a4336811', 'Puma Contender Backpack', 'Backpack 3', 'Puma', '2024-06-30'),
+('f65a0131-977b-4a54-b682-eb7f0180e8d8', '23919e53-14fd-47d3-bb2c-70e1a4336811', 'Under Armour Hustle Backpack', 'Backpack 4', 'Under Armour', '2024-07-09'),
+('b6302fd4-80a8-4658-a7fe-048852bd8f50', '23919e53-14fd-47d3-bb2c-70e1a4336811', 'Reebok Active Core Backpack', 'Backpack 5', 'Reebok', '2024-04-18'),
 
-('4dc69a7b-6fab-4095-b95f-533294112983', 'ba1e6e65-2faa-4541-aca0-976bd8d20918', 'Nike Swoosh Band', 'Wristband 1', 'Nike', 4.99, 100, '2024-06-23', 'M'),
-('693f4e5b-c112-4fc5-acb9-fa64c521c8fc', 'ba1e6e65-2faa-4541-aca0-976bd8d20918', 'Adidas Performance Band', 'Wristband 2', 'Adidas', 5.99, 80, '2024-07-05', 'L'),
-('e139fc61-401b-4423-9f75-badd567f76ac', 'ba1e6e65-2faa-4541-aca0-976bd8d20918', 'Puma Sport Band', 'Wristband 3', 'Puma', 6.99, 60, '2024-03-12', 'S'),
-('1b778473-7441-46a0-a9f1-4e83d47dadac', 'ba1e6e65-2faa-4541-aca0-976bd8d20918', 'Under Armour Logo Band', 'Wristband 4', 'Under Armour', 3.99, 90, '2024-04-30', 'M'),
-('639b4750-c2a1-4a24-a9bd-be0939f1d2e7', 'ba1e6e65-2faa-4541-aca0-976bd8d20918', 'Reebok Training Band', 'Wristband 5', 'Reebok', 7.99, 50, '2024-05-29', 'L'),
+('56f43dd7-4166-43c0-a606-d1c1940f0815', 'cb24f094-44df-41a5-8b83-aed2cde9c7a5', 'Nike Gym Tool', 'Sports tool 1', 'Nike', '2024-03-10'),
+('3cd0624c-e72e-4cf9-87b4-825894ae696c', 'cb24f094-44df-41a5-8b83-aed2cde9c7a5', 'Adidas Training Tool', 'Sports tool 2', 'Adidas', '2024-02-14'),
+('4ef580db-9947-4f5a-934b-764f951d8a6b', 'cb24f094-44df-41a5-8b83-aed2cde9c7a5', 'Puma Fitness Tool', 'Sports tool 3', 'Puma', '2024-07-10'),
+('755b8d58-5b1d-4766-aaef-254b406abe60', 'cb24f094-44df-41a5-8b83-aed2cde9c7a5', 'Under Armour Workout Tool', 'Sports tool 4', 'Under Armour', '2024-06-14'),
+('f355d295-0441-431d-a755-d8cb68aa596c', 'cb24f094-44df-41a5-8b83-aed2cde9c7a5', 'Reebok Crossfit Tool', 'Sports tool 5', 'Reebok', '2024-04-27');
 
-('7a858a17-040b-4bd7-b254-047f2a828bf0', 'd4954e1a-eeb1-4b4b-ac77-0f9f5e347689', 'Nike Hyperfuel Water Bottle', 'Water bottle 1', 'Nike', 9.99, 100, '2024-03-24', 'M'),
-('1793b69e-28e1-43e7-ae5d-b684bd235dbb', 'd4954e1a-eeb1-4b4b-ac77-0f9f5e347689', 'Adidas Steel Water Bottle', 'Water bottle 2', 'Adidas', 10.99, 80, '2024-04-25', 'L'),
-('45820650-e436-46bc-9f76-d1b9a949ebe3', 'd4954e1a-eeb1-4b4b-ac77-0f9f5e347689', 'Puma Fitness Water Bottle', 'Water bottle 3', 'Puma', 11.99, 60, '2024-01-17', 'S'),
-('a5ea9a76-5a00-48c3-82bf-a903b97718d4', 'd4954e1a-eeb1-4b4b-ac77-0f9f5e347689', 'Under Armour Hydration Bottle', 'Water bottle 4', 'Under Armour', 8.99, 90, '2024-02-10', 'M'),
-('1d7447d2-b67b-4b06-a1f3-5f1022d15bf9', 'd4954e1a-eeb1-4b4b-ac77-0f9f5e347689', 'Reebok BPA-Free Bottle', 'Water bottle 5', 'Reebok', 12.99, 50, '2024-07-01', 'L'),
 
-('ab367332-60a6-4303-969a-68a9531ba514', '23919e53-14fd-47d3-bb2c-70e1a4336811', 'Nike Brasilia Backpack', 'Backpack 1', 'Nike', 24.99, 100, '2024-02-21', 'M'),
-('7251a16e-16f4-4316-bf7e-b676f3532ea9', '23919e53-14fd-47d3-bb2c-70e1a4336811', 'Adidas Classic Backpack', 'Backpack 2', 'Adidas', 25.99, 80, '2024-05-24', 'L'),
-('45b3b6e3-1ee9-4857-81fa-49c8eaa29fd8', '23919e53-14fd-47d3-bb2c-70e1a4336811', 'Puma Contender Backpack', 'Backpack 3', 'Puma', 26.99, 60, '2024-06-30', 'S'),
-('f65a0131-977b-4a54-b682-eb7f0180e8d8', '23919e53-14fd-47d3-bb2c-70e1a4336811', 'Under Armour Hustle Backpack', 'Backpack 4', 'Under Armour', 23.99, 90, '2024-07-09', 'M'),
-('b6302fd4-80a8-4658-a7fe-048852bd8f50', '23919e53-14fd-47d3-bb2c-70e1a4336811', 'Reebok Active Core Backpack', 'Backpack 5', 'Reebok', 27.99, 50, '2024-04-18', 'L'),
-
-('56f43dd7-4166-43c0-a606-d1c1940f0815', 'cb24f094-44df-41a5-8b83-aed2cde9c7a5', 'Nike Gym Tool', 'Sports tool 1', 'Nike', 14.99, 100, '2024-03-10', 'M'),
-('3cd0624c-e72e-4cf9-87b4-825894ae696c', 'cb24f094-44df-41a5-8b83-aed2cde9c7a5', 'Adidas Training Tool', 'Sports tool 2', 'Adidas', 15.99, 80, '2024-02-14', 'L'),
-('4ef580db-9947-4f5a-934b-764f951d8a6b', 'cb24f094-44df-41a5-8b83-aed2cde9c7a5', 'Puma Fitness Tool', 'Sports tool 3', 'Puma', 16.99, 60, '2024-07-10', 'S'),
-('755b8d58-5b1d-4766-aaef-254b406abe60', 'cb24f094-44df-41a5-8b83-aed2cde9c7a5', 'Under Armour Workout Tool', 'Sports tool 4', 'Under Armour', 13.99, 90, '2024-06-14', 'M'),
-('f355d295-0441-431d-a755-d8cb68aa596c', 'cb24f094-44df-41a5-8b83-aed2cde9c7a5', 'Reebok Crossfit Tool', 'Sports tool 5', 'Reebok', 17.99, 50, '2024-04-27', 'L');
+INSERT INTO size (productID, size, stock, price) VALUES ('08dfb320-b8d3-4f70-8794-e91b13f77ad9', 38, 10, 80.03);
+INSERT INTO size (productID, size, stock, price) VALUES ('08dfb320-b8d3-4f70-8794-e91b13f77ad9', 39, 16, 61.94);
+INSERT INTO size (productID, size, stock, price) VALUES ('08dfb320-b8d3-4f70-8794-e91b13f77ad9', 40, 89, 186.16);
+INSERT INTO size (productID, size, stock, price) VALUES ('08dfb320-b8d3-4f70-8794-e91b13f77ad9', 41, 84, 101.16);
+INSERT INTO size (productID, size, stock, price) VALUES ('08dfb320-b8d3-4f70-8794-e91b13f77ad9', 42, 29, 187.54);
+INSERT INTO size (productID, size, stock, price) VALUES ('08dfb320-b8d3-4f70-8794-e91b13f77ad9', 43, 95, 85.74);
+INSERT INTO size (productID, size, stock, price) VALUES ('08dfb320-b8d3-4f70-8794-e91b13f77ad9', 44, 63, 182.17);
+INSERT INTO size (productID, size, stock, price) VALUES ('08dfb320-b8d3-4f70-8794-e91b13f77ad9', 45, 12, 113.51);
+INSERT INTO size (productID, size, stock, price) VALUES ('09e68f11-111a-4240-8ee8-a88a1cfffa8e', 38, 64, 171.33);
+INSERT INTO size (productID, size, stock, price) VALUES ('09e68f11-111a-4240-8ee8-a88a1cfffa8e', 39, 74, 102.08);
+INSERT INTO size (productID, size, stock, price) VALUES ('09e68f11-111a-4240-8ee8-a88a1cfffa8e', 40, 14, 188.07);
+INSERT INTO size (productID, size, stock, price) VALUES ('09e68f11-111a-4240-8ee8-a88a1cfffa8e', 41, 46, 190.86);
+INSERT INTO size (productID, size, stock, price) VALUES ('09e68f11-111a-4240-8ee8-a88a1cfffa8e', 42, 46, 148.42);
+INSERT INTO size (productID, size, stock, price) VALUES ('09e68f11-111a-4240-8ee8-a88a1cfffa8e', 43, 85, 194.23);
+INSERT INTO size (productID, size, stock, price) VALUES ('09e68f11-111a-4240-8ee8-a88a1cfffa8e', 44, 24, 188.98);
+INSERT INTO size (productID, size, stock, price) VALUES ('09e68f11-111a-4240-8ee8-a88a1cfffa8e', 45, 32, 146.36);
+INSERT INTO size (productID, size, stock, price) VALUES ('0b4da7b0-3391-4798-8661-492ef2109230', 38, 34, 61.58);
+INSERT INTO size (productID, size, stock, price) VALUES ('0b4da7b0-3391-4798-8661-492ef2109230', 39, 100, 165.83);
+INSERT INTO size (productID, size, stock, price) VALUES ('0b4da7b0-3391-4798-8661-492ef2109230', 40, 52, 70.96);
+INSERT INTO size (productID, size, stock, price) VALUES ('0b4da7b0-3391-4798-8661-492ef2109230', 41, 21, 71.55);
+INSERT INTO size (productID, size, stock, price) VALUES ('0b4da7b0-3391-4798-8661-492ef2109230', 42, 38, 130.48);
+INSERT INTO size (productID, size, stock, price) VALUES ('0b4da7b0-3391-4798-8661-492ef2109230', 43, 53, 197.97);
+INSERT INTO size (productID, size, stock, price) VALUES ('0b4da7b0-3391-4798-8661-492ef2109230', 44, 29, 96.97);
+INSERT INTO size (productID, size, stock, price) VALUES ('0b4da7b0-3391-4798-8661-492ef2109230', 45, 27, 128.44);
+INSERT INTO size (productID, size, stock, price) VALUES ('0e17153e-7f2c-4be1-b8d3-1372b1a56f97', 38, 26, 110.04);
+INSERT INTO size (productID, size, stock, price) VALUES ('0e17153e-7f2c-4be1-b8d3-1372b1a56f97', 39, 21, 183.26);
+INSERT INTO size (productID, size, stock, price) VALUES ('0e17153e-7f2c-4be1-b8d3-1372b1a56f97', 40, 31, 101.84);
+INSERT INTO size (productID, size, stock, price) VALUES ('0e17153e-7f2c-4be1-b8d3-1372b1a56f97', 41, 71, 178.03);
+INSERT INTO size (productID, size, stock, price) VALUES ('0e17153e-7f2c-4be1-b8d3-1372b1a56f97', 42, 26, 60.86);
+INSERT INTO size (productID, size, stock, price) VALUES ('0e17153e-7f2c-4be1-b8d3-1372b1a56f97', 43, 15, 50.25);
+INSERT INTO size (productID, size, stock, price) VALUES ('0e17153e-7f2c-4be1-b8d3-1372b1a56f97', 44, 36, 68.78);
+INSERT INTO size (productID, size, stock, price) VALUES ('0e17153e-7f2c-4be1-b8d3-1372b1a56f97', 45, 67, 123.68);
+INSERT INTO size (productID, size, stock, price) VALUES ('102b4f1f-dbf0-49f4-a11f-7b92ecf97748', 38, 65, 66.0);
+INSERT INTO size (productID, size, stock, price) VALUES ('102b4f1f-dbf0-49f4-a11f-7b92ecf97748', 39, 70, 145.11);
+INSERT INTO size (productID, size, stock, price) VALUES ('102b4f1f-dbf0-49f4-a11f-7b92ecf97748', 40, 65, 92.42);
+INSERT INTO size (productID, size, stock, price) VALUES ('102b4f1f-dbf0-49f4-a11f-7b92ecf97748', 41, 73, 54.98);
+INSERT INTO size (productID, size, stock, price) VALUES ('102b4f1f-dbf0-49f4-a11f-7b92ecf97748', 42, 95, 160.33);
+INSERT INTO size (productID, size, stock, price) VALUES ('102b4f1f-dbf0-49f4-a11f-7b92ecf97748', 43, 87, 161.06);
+INSERT INTO size (productID, size, stock, price) VALUES ('102b4f1f-dbf0-49f4-a11f-7b92ecf97748', 44, 42, 127.41);
+INSERT INTO size (productID, size, stock, price) VALUES ('102b4f1f-dbf0-49f4-a11f-7b92ecf97748', 45, 53, 172.32);
+INSERT INTO size (productID, size, stock, price) VALUES ('11ec4344-bae7-4061-8c96-7f99788a8c81', 38, 82, 144.02);
+INSERT INTO size (productID, size, stock, price) VALUES ('11ec4344-bae7-4061-8c96-7f99788a8c81', 39, 32, 94.16);
+INSERT INTO size (productID, size, stock, price) VALUES ('11ec4344-bae7-4061-8c96-7f99788a8c81', 40, 94, 143.95);
+INSERT INTO size (productID, size, stock, price) VALUES ('11ec4344-bae7-4061-8c96-7f99788a8c81', 41, 95, 140.69);
+INSERT INTO size (productID, size, stock, price) VALUES ('11ec4344-bae7-4061-8c96-7f99788a8c81', 42, 43, 136.3);
+INSERT INTO size (productID, size, stock, price) VALUES ('11ec4344-bae7-4061-8c96-7f99788a8c81', 43, 20, 146.6);
+INSERT INTO size (productID, size, stock, price) VALUES ('11ec4344-bae7-4061-8c96-7f99788a8c81', 44, 23, 71.12);
+INSERT INTO size (productID, size, stock, price) VALUES ('11ec4344-bae7-4061-8c96-7f99788a8c81', 45, 61, 83.96);
+INSERT INTO size (productID, size, stock, price) VALUES ('1444119e-93f3-42ae-b64e-50ded75b0672', 38, 30, 145.89);
+INSERT INTO size (productID, size, stock, price) VALUES ('1444119e-93f3-42ae-b64e-50ded75b0672', 39, 66, 179.04);
+INSERT INTO size (productID, size, stock, price) VALUES ('1444119e-93f3-42ae-b64e-50ded75b0672', 40, 63, 68.93);
+INSERT INTO size (productID, size, stock, price) VALUES ('1444119e-93f3-42ae-b64e-50ded75b0672', 41, 15, 50.45);
+INSERT INTO size (productID, size, stock, price) VALUES ('1444119e-93f3-42ae-b64e-50ded75b0672', 42, 40, 68.7);
+INSERT INTO size (productID, size, stock, price) VALUES ('1444119e-93f3-42ae-b64e-50ded75b0672', 43, 63, 181.48);
+INSERT INTO size (productID, size, stock, price) VALUES ('1444119e-93f3-42ae-b64e-50ded75b0672', 44, 41, 84.7);
+INSERT INTO size (productID, size, stock, price) VALUES ('1444119e-93f3-42ae-b64e-50ded75b0672', 45, 37, 135.06);
+INSERT INTO size (productID, size, stock, price) VALUES ('15b33bb8-d39c-4933-81e4-059b080f485b', 38, 40, 50.81);
+INSERT INTO size (productID, size, stock, price) VALUES ('15b33bb8-d39c-4933-81e4-059b080f485b', 39, 41, 76.44);
+INSERT INTO size (productID, size, stock, price) VALUES ('15b33bb8-d39c-4933-81e4-059b080f485b', 40, 78, 77.09);
+INSERT INTO size (productID, size, stock, price) VALUES ('15b33bb8-d39c-4933-81e4-059b080f485b', 41, 85, 174.28);
+INSERT INTO size (productID, size, stock, price) VALUES ('15b33bb8-d39c-4933-81e4-059b080f485b', 42, 25, 186.14);
+INSERT INTO size (productID, size, stock, price) VALUES ('15b33bb8-d39c-4933-81e4-059b080f485b', 43, 89, 139.34);
+INSERT INTO size (productID, size, stock, price) VALUES ('15b33bb8-d39c-4933-81e4-059b080f485b', 44, 41, 77.15);
+INSERT INTO size (productID, size, stock, price) VALUES ('15b33bb8-d39c-4933-81e4-059b080f485b', 45, 83, 100.03);
+INSERT INTO size (productID, size, stock, price) VALUES ('1793b69e-28e1-43e7-ae5d-b684bd235dbb', 38, 95, 191.21);
+INSERT INTO size (productID, size, stock, price) VALUES ('1793b69e-28e1-43e7-ae5d-b684bd235dbb', 39, 12, 163.92);
+INSERT INTO size (productID, size, stock, price) VALUES ('1793b69e-28e1-43e7-ae5d-b684bd235dbb', 40, 62, 159.89);
+INSERT INTO size (productID, size, stock, price) VALUES ('1793b69e-28e1-43e7-ae5d-b684bd235dbb', 41, 14, 72.09);
+INSERT INTO size (productID, size, stock, price) VALUES ('1793b69e-28e1-43e7-ae5d-b684bd235dbb', 42, 95, 99.67);
+INSERT INTO size (productID, size, stock, price) VALUES ('1793b69e-28e1-43e7-ae5d-b684bd235dbb', 43, 31, 199.47);
+INSERT INTO size (productID, size, stock, price) VALUES ('1793b69e-28e1-43e7-ae5d-b684bd235dbb', 44, 61, 72.25);
+INSERT INTO size (productID, size, stock, price) VALUES ('1793b69e-28e1-43e7-ae5d-b684bd235dbb', 45, 12, 107.97);
+INSERT INTO size (productID, size, stock, price) VALUES ('1b778473-7441-46a0-a9f1-4e83d47dadac', 38, 96, 199.92);
+INSERT INTO size (productID, size, stock, price) VALUES ('1b778473-7441-46a0-a9f1-4e83d47dadac', 39, 57, 153.14);
+INSERT INTO size (productID, size, stock, price) VALUES ('1b778473-7441-46a0-a9f1-4e83d47dadac', 40, 69, 103.66);
+INSERT INTO size (productID, size, stock, price) VALUES ('1b778473-7441-46a0-a9f1-4e83d47dadac', 41, 83, 127.66);
+INSERT INTO size (productID, size, stock, price) VALUES ('1b778473-7441-46a0-a9f1-4e83d47dadac', 42, 95, 73.26);
+INSERT INTO size (productID, size, stock, price) VALUES ('1b778473-7441-46a0-a9f1-4e83d47dadac', 43, 63, 180.27);
+INSERT INTO size (productID, size, stock, price) VALUES ('1b778473-7441-46a0-a9f1-4e83d47dadac', 44, 63, 100.7);
+INSERT INTO size (productID, size, stock, price) VALUES ('1b778473-7441-46a0-a9f1-4e83d47dadac', 45, 90, 136.12);
+INSERT INTO size (productID, size, stock, price) VALUES ('1d7447d2-b67b-4b06-a1f3-5f1022d15bf9', 38, 34, 98.62);
+INSERT INTO size (productID, size, stock, price) VALUES ('1d7447d2-b67b-4b06-a1f3-5f1022d15bf9', 39, 18, 68.89);
+INSERT INTO size (productID, size, stock, price) VALUES ('1d7447d2-b67b-4b06-a1f3-5f1022d15bf9', 40, 62, 55.26);
+INSERT INTO size (productID, size, stock, price) VALUES ('1d7447d2-b67b-4b06-a1f3-5f1022d15bf9', 41, 99, 75.4);
+INSERT INTO size (productID, size, stock, price) VALUES ('1d7447d2-b67b-4b06-a1f3-5f1022d15bf9', 42, 22, 59.74);
+INSERT INTO size (productID, size, stock, price) VALUES ('1d7447d2-b67b-4b06-a1f3-5f1022d15bf9', 43, 98, 114.58);
+INSERT INTO size (productID, size, stock, price) VALUES ('1d7447d2-b67b-4b06-a1f3-5f1022d15bf9', 44, 44, 53.53);
+INSERT INTO size (productID, size, stock, price) VALUES ('1d7447d2-b67b-4b06-a1f3-5f1022d15bf9', 45, 68, 132.34);
+INSERT INTO size (productID, size, stock, price) VALUES ('1e8228f6-c8f8-446f-a1af-3dc06d70a615', 38, 83, 156.78);
+INSERT INTO size (productID, size, stock, price) VALUES ('1e8228f6-c8f8-446f-a1af-3dc06d70a615', 39, 77, 195.99);
+INSERT INTO size (productID, size, stock, price) VALUES ('1e8228f6-c8f8-446f-a1af-3dc06d70a615', 40, 35, 165.72);
+INSERT INTO size (productID, size, stock, price) VALUES ('1e8228f6-c8f8-446f-a1af-3dc06d70a615', 41, 41, 51.26);
+INSERT INTO size (productID, size, stock, price) VALUES ('1e8228f6-c8f8-446f-a1af-3dc06d70a615', 42, 15, 157.25);
+INSERT INTO size (productID, size, stock, price) VALUES ('1e8228f6-c8f8-446f-a1af-3dc06d70a615', 43, 21, 134.79);
+INSERT INTO size (productID, size, stock, price) VALUES ('1e8228f6-c8f8-446f-a1af-3dc06d70a615', 44, 65, 69.66);
+INSERT INTO size (productID, size, stock, price) VALUES ('1e8228f6-c8f8-446f-a1af-3dc06d70a615', 45, 74, 54.01);
+INSERT INTO size (productID, size, stock, price) VALUES ('216abf79-2106-49d2-a0ce-36d5159417a6', 38, 10, 105.33);
+INSERT INTO size (productID, size, stock, price) VALUES ('216abf79-2106-49d2-a0ce-36d5159417a6', 39, 66, 149.35);
+INSERT INTO size (productID, size, stock, price) VALUES ('216abf79-2106-49d2-a0ce-36d5159417a6', 40, 26, 140.43);
+INSERT INTO size (productID, size, stock, price) VALUES ('216abf79-2106-49d2-a0ce-36d5159417a6', 41, 12, 184.92);
+INSERT INTO size (productID, size, stock, price) VALUES ('216abf79-2106-49d2-a0ce-36d5159417a6', 42, 56, 59.22);
+INSERT INTO size (productID, size, stock, price) VALUES ('216abf79-2106-49d2-a0ce-36d5159417a6', 43, 71, 61.85);
+INSERT INTO size (productID, size, stock, price) VALUES ('216abf79-2106-49d2-a0ce-36d5159417a6', 44, 45, 123.42);
+INSERT INTO size (productID, size, stock, price) VALUES ('216abf79-2106-49d2-a0ce-36d5159417a6', 45, 63, 179.88);
+INSERT INTO size (productID, size, stock, price) VALUES ('234dbb5b-9883-4859-aab0-0d9972e635cf', 38, 67, 55.7);
+INSERT INTO size (productID, size, stock, price) VALUES ('234dbb5b-9883-4859-aab0-0d9972e635cf', 39, 82, 72.86);
+INSERT INTO size (productID, size, stock, price) VALUES ('234dbb5b-9883-4859-aab0-0d9972e635cf', 40, 50, 161.55);
+INSERT INTO size (productID, size, stock, price) VALUES ('234dbb5b-9883-4859-aab0-0d9972e635cf', 41, 22, 107.99);
+INSERT INTO size (productID, size, stock, price) VALUES ('234dbb5b-9883-4859-aab0-0d9972e635cf', 42, 23, 143.57);
+INSERT INTO size (productID, size, stock, price) VALUES ('234dbb5b-9883-4859-aab0-0d9972e635cf', 43, 49, 77.3);
+INSERT INTO size (productID, size, stock, price) VALUES ('234dbb5b-9883-4859-aab0-0d9972e635cf', 44, 37, 168.6);
+INSERT INTO size (productID, size, stock, price) VALUES ('234dbb5b-9883-4859-aab0-0d9972e635cf', 45, 89, 87.78);
+INSERT INTO size (productID, size, stock, price) VALUES ('24c68852-11cf-4331-9110-bce1e5f2f9d9', 38, 84, 171.94);
+INSERT INTO size (productID, size, stock, price) VALUES ('24c68852-11cf-4331-9110-bce1e5f2f9d9', 39, 42, 196.61);
+INSERT INTO size (productID, size, stock, price) VALUES ('24c68852-11cf-4331-9110-bce1e5f2f9d9', 40, 45, 166.28);
+INSERT INTO size (productID, size, stock, price) VALUES ('24c68852-11cf-4331-9110-bce1e5f2f9d9', 41, 42, 162.15);
+INSERT INTO size (productID, size, stock, price) VALUES ('24c68852-11cf-4331-9110-bce1e5f2f9d9', 42, 100, 64.42);
+INSERT INTO size (productID, size, stock, price) VALUES ('24c68852-11cf-4331-9110-bce1e5f2f9d9', 43, 64, 171.5);
+INSERT INTO size (productID, size, stock, price) VALUES ('24c68852-11cf-4331-9110-bce1e5f2f9d9', 44, 80, 80.88);
+INSERT INTO size (productID, size, stock, price) VALUES ('24c68852-11cf-4331-9110-bce1e5f2f9d9', 45, 78, 160.1);
+INSERT INTO size (productID, size, stock, price) VALUES ('27abc067-a0e9-4d30-a0d2-9568ef8f8d69', 38, 53, 66.35);
+INSERT INTO size (productID, size, stock, price) VALUES ('27abc067-a0e9-4d30-a0d2-9568ef8f8d69', 39, 94, 121.45);
+INSERT INTO size (productID, size, stock, price) VALUES ('27abc067-a0e9-4d30-a0d2-9568ef8f8d69', 40, 47, 137.99);
+INSERT INTO size (productID, size, stock, price) VALUES ('27abc067-a0e9-4d30-a0d2-9568ef8f8d69', 41, 22, 179.46);
+INSERT INTO size (productID, size, stock, price) VALUES ('27abc067-a0e9-4d30-a0d2-9568ef8f8d69', 42, 66, 85.35);
+INSERT INTO size (productID, size, stock, price) VALUES ('27abc067-a0e9-4d30-a0d2-9568ef8f8d69', 43, 72, 138.15);
+INSERT INTO size (productID, size, stock, price) VALUES ('27abc067-a0e9-4d30-a0d2-9568ef8f8d69', 44, 40, 77.5);
+INSERT INTO size (productID, size, stock, price) VALUES ('27abc067-a0e9-4d30-a0d2-9568ef8f8d69', 45, 69, 168.82);
+INSERT INTO size (productID, size, stock, price) VALUES ('2a1859de-e52f-4728-aa60-7e3d1c8e2d11', 38, 61, 115.07);
+INSERT INTO size (productID, size, stock, price) VALUES ('2a1859de-e52f-4728-aa60-7e3d1c8e2d11', 39, 58, 189.36);
+INSERT INTO size (productID, size, stock, price) VALUES ('2a1859de-e52f-4728-aa60-7e3d1c8e2d11', 40, 18, 198.75);
+INSERT INTO size (productID, size, stock, price) VALUES ('2a1859de-e52f-4728-aa60-7e3d1c8e2d11', 41, 20, 76.69);
+INSERT INTO size (productID, size, stock, price) VALUES ('2a1859de-e52f-4728-aa60-7e3d1c8e2d11', 42, 100, 112.59);
+INSERT INTO size (productID, size, stock, price) VALUES ('2a1859de-e52f-4728-aa60-7e3d1c8e2d11', 43, 30, 85.39);
+INSERT INTO size (productID, size, stock, price) VALUES ('2a1859de-e52f-4728-aa60-7e3d1c8e2d11', 44, 24, 84.84);
+INSERT INTO size (productID, size, stock, price) VALUES ('2a1859de-e52f-4728-aa60-7e3d1c8e2d11', 45, 95, 64.18);
+INSERT INTO size (productID, size, stock, price) VALUES ('2b10a6c1-ea45-4c8f-9a1e-f9583444285d', 38, 50, 174.5);
+INSERT INTO size (productID, size, stock, price) VALUES ('2b10a6c1-ea45-4c8f-9a1e-f9583444285d', 39, 70, 132.58);
+INSERT INTO size (productID, size, stock, price) VALUES ('2b10a6c1-ea45-4c8f-9a1e-f9583444285d', 40, 95, 76.62);
+INSERT INTO size (productID, size, stock, price) VALUES ('2b10a6c1-ea45-4c8f-9a1e-f9583444285d', 41, 94, 160.21);
+INSERT INTO size (productID, size, stock, price) VALUES ('2b10a6c1-ea45-4c8f-9a1e-f9583444285d', 42, 35, 76.96);
+INSERT INTO size (productID, size, stock, price) VALUES ('2b10a6c1-ea45-4c8f-9a1e-f9583444285d', 43, 43, 87.06);
+INSERT INTO size (productID, size, stock, price) VALUES ('2b10a6c1-ea45-4c8f-9a1e-f9583444285d', 44, 33, 100.63);
+INSERT INTO size (productID, size, stock, price) VALUES ('2b10a6c1-ea45-4c8f-9a1e-f9583444285d', 45, 68, 59.97);
+INSERT INTO size (productID, size, stock, price) VALUES ('2e14a5cb-7a37-49de-8d32-04816b52108f', 38, 69, 137.74);
+INSERT INTO size (productID, size, stock, price) VALUES ('2e14a5cb-7a37-49de-8d32-04816b52108f', 39, 82, 103.26);
+INSERT INTO size (productID, size, stock, price) VALUES ('2e14a5cb-7a37-49de-8d32-04816b52108f', 40, 39, 119.04);
+INSERT INTO size (productID, size, stock, price) VALUES ('2e14a5cb-7a37-49de-8d32-04816b52108f', 41, 73, 130.37);
+INSERT INTO size (productID, size, stock, price) VALUES ('2e14a5cb-7a37-49de-8d32-04816b52108f', 42, 68, 98.75);
+INSERT INTO size (productID, size, stock, price) VALUES ('2e14a5cb-7a37-49de-8d32-04816b52108f', 43, 63, 74.76);
+INSERT INTO size (productID, size, stock, price) VALUES ('2e14a5cb-7a37-49de-8d32-04816b52108f', 44, 67, 55.15);
+INSERT INTO size (productID, size, stock, price) VALUES ('2e14a5cb-7a37-49de-8d32-04816b52108f', 45, 34, 188.42);
+INSERT INTO size (productID, size, stock, price) VALUES ('2f1c2f91-ae13-481d-ab21-8a9d8c5eae87', 38, 95, 124.91);
+INSERT INTO size (productID, size, stock, price) VALUES ('2f1c2f91-ae13-481d-ab21-8a9d8c5eae87', 39, 75, 153.96);
+INSERT INTO size (productID, size, stock, price) VALUES ('2f1c2f91-ae13-481d-ab21-8a9d8c5eae87', 40, 48, 180.91);
+INSERT INTO size (productID, size, stock, price) VALUES ('2f1c2f91-ae13-481d-ab21-8a9d8c5eae87', 41, 38, 105.58);
+INSERT INTO size (productID, size, stock, price) VALUES ('2f1c2f91-ae13-481d-ab21-8a9d8c5eae87', 42, 47, 180.99);
+INSERT INTO size (productID, size, stock, price) VALUES ('2f1c2f91-ae13-481d-ab21-8a9d8c5eae87', 43, 89, 103.94);
+INSERT INTO size (productID, size, stock, price) VALUES ('2f1c2f91-ae13-481d-ab21-8a9d8c5eae87', 44, 100, 163.62);
+INSERT INTO size (productID, size, stock, price) VALUES ('2f1c2f91-ae13-481d-ab21-8a9d8c5eae87', 45, 55, 181.4);
+INSERT INTO size (productID, size, stock, price) VALUES ('3184f4e0-9a95-4ee9-9b9c-e8fdd0c12738', 38, 53, 53.33);
+INSERT INTO size (productID, size, stock, price) VALUES ('3184f4e0-9a95-4ee9-9b9c-e8fdd0c12738', 39, 54, 164.06);
+INSERT INTO size (productID, size, stock, price) VALUES ('3184f4e0-9a95-4ee9-9b9c-e8fdd0c12738', 40, 85, 150.53);
+INSERT INTO size (productID, size, stock, price) VALUES ('3184f4e0-9a95-4ee9-9b9c-e8fdd0c12738', 41, 95, 165.96);
+INSERT INTO size (productID, size, stock, price) VALUES ('3184f4e0-9a95-4ee9-9b9c-e8fdd0c12738', 42, 40, 108.95);
+INSERT INTO size (productID, size, stock, price) VALUES ('3184f4e0-9a95-4ee9-9b9c-e8fdd0c12738', 43, 62, 118.47);
+INSERT INTO size (productID, size, stock, price) VALUES ('3184f4e0-9a95-4ee9-9b9c-e8fdd0c12738', 44, 43, 195.94);
+INSERT INTO size (productID, size, stock, price) VALUES ('3184f4e0-9a95-4ee9-9b9c-e8fdd0c12738', 45, 64, 131.07);
+INSERT INTO size (productID, size, stock, price) VALUES ('38f44c3f-0fe5-42da-a208-2fe5471cb7aa', 38, 19, 115.45);
+INSERT INTO size (productID, size, stock, price) VALUES ('38f44c3f-0fe5-42da-a208-2fe5471cb7aa', 39, 28, 153.26);
+INSERT INTO size (productID, size, stock, price) VALUES ('38f44c3f-0fe5-42da-a208-2fe5471cb7aa', 40, 83, 181.35);
+INSERT INTO size (productID, size, stock, price) VALUES ('38f44c3f-0fe5-42da-a208-2fe5471cb7aa', 41, 63, 61.13);
+INSERT INTO size (productID, size, stock, price) VALUES ('38f44c3f-0fe5-42da-a208-2fe5471cb7aa', 42, 68, 189.62);
+INSERT INTO size (productID, size, stock, price) VALUES ('38f44c3f-0fe5-42da-a208-2fe5471cb7aa', 43, 99, 173.17);
+INSERT INTO size (productID, size, stock, price) VALUES ('38f44c3f-0fe5-42da-a208-2fe5471cb7aa', 44, 86, 198.76);
+INSERT INTO size (productID, size, stock, price) VALUES ('38f44c3f-0fe5-42da-a208-2fe5471cb7aa', 45, 100, 80.52);
+INSERT INTO size (productID, size, stock, price) VALUES ('392a9d9c-ddb6-4dbc-81c3-4bd139482f9b', 38, 46, 164.01);
+INSERT INTO size (productID, size, stock, price) VALUES ('392a9d9c-ddb6-4dbc-81c3-4bd139482f9b', 39, 56, 119.17);
+INSERT INTO size (productID, size, stock, price) VALUES ('392a9d9c-ddb6-4dbc-81c3-4bd139482f9b', 40, 45, 160.67);
+INSERT INTO size (productID, size, stock, price) VALUES ('392a9d9c-ddb6-4dbc-81c3-4bd139482f9b', 41, 83, 69.06);
+INSERT INTO size (productID, size, stock, price) VALUES ('392a9d9c-ddb6-4dbc-81c3-4bd139482f9b', 42, 51, 139.4);
+INSERT INTO size (productID, size, stock, price) VALUES ('392a9d9c-ddb6-4dbc-81c3-4bd139482f9b', 43, 91, 177.58);
+INSERT INTO size (productID, size, stock, price) VALUES ('392a9d9c-ddb6-4dbc-81c3-4bd139482f9b', 44, 35, 111.02);
+INSERT INTO size (productID, size, stock, price) VALUES ('392a9d9c-ddb6-4dbc-81c3-4bd139482f9b', 45, 27, 72.21);
+INSERT INTO size (productID, size, stock, price) VALUES ('39b8cc8f-3b60-43a9-bb91-c7412f4880ca', 38, 87, 173.94);
+INSERT INTO size (productID, size, stock, price) VALUES ('39b8cc8f-3b60-43a9-bb91-c7412f4880ca', 39, 66, 51.37);
+INSERT INTO size (productID, size, stock, price) VALUES ('39b8cc8f-3b60-43a9-bb91-c7412f4880ca', 40, 74, 132.14);
+INSERT INTO size (productID, size, stock, price) VALUES ('39b8cc8f-3b60-43a9-bb91-c7412f4880ca', 41, 34, 64.32);
+INSERT INTO size (productID, size, stock, price) VALUES ('39b8cc8f-3b60-43a9-bb91-c7412f4880ca', 42, 35, 93.45);
+INSERT INTO size (productID, size, stock, price) VALUES ('39b8cc8f-3b60-43a9-bb91-c7412f4880ca', 43, 21, 89.03);
+INSERT INTO size (productID, size, stock, price) VALUES ('39b8cc8f-3b60-43a9-bb91-c7412f4880ca', 44, 17, 132.49);
+INSERT INTO size (productID, size, stock, price) VALUES ('39b8cc8f-3b60-43a9-bb91-c7412f4880ca', 45, 67, 130.14);
+INSERT INTO size (productID, size, stock, price) VALUES ('3c6497df-17c5-4738-bf93-ada7645f67e6', 38, 77, 162.35);
+INSERT INTO size (productID, size, stock, price) VALUES ('3c6497df-17c5-4738-bf93-ada7645f67e6', 39, 34, 92.44);
+INSERT INTO size (productID, size, stock, price) VALUES ('3c6497df-17c5-4738-bf93-ada7645f67e6', 40, 58, 93.17);
+INSERT INTO size (productID, size, stock, price) VALUES ('3c6497df-17c5-4738-bf93-ada7645f67e6', 41, 84, 50.53);
+INSERT INTO size (productID, size, stock, price) VALUES ('3c6497df-17c5-4738-bf93-ada7645f67e6', 42, 37, 159.61);
+INSERT INTO size (productID, size, stock, price) VALUES ('3c6497df-17c5-4738-bf93-ada7645f67e6', 43, 39, 59.0);
+INSERT INTO size (productID, size, stock, price) VALUES ('3c6497df-17c5-4738-bf93-ada7645f67e6', 44, 34, 128.32);
+INSERT INTO size (productID, size, stock, price) VALUES ('3c6497df-17c5-4738-bf93-ada7645f67e6', 45, 69, 109.52);
+INSERT INTO size (productID, size, stock, price) VALUES ('3cd0624c-e72e-4cf9-87b4-825894ae696c', 38, 82, 84.7);
+INSERT INTO size (productID, size, stock, price) VALUES ('3cd0624c-e72e-4cf9-87b4-825894ae696c', 39, 40, 151.73);
+INSERT INTO size (productID, size, stock, price) VALUES ('3cd0624c-e72e-4cf9-87b4-825894ae696c', 40, 17, 81.42);
+INSERT INTO size (productID, size, stock, price) VALUES ('3cd0624c-e72e-4cf9-87b4-825894ae696c', 41, 31, 78.41);
+INSERT INTO size (productID, size, stock, price) VALUES ('3cd0624c-e72e-4cf9-87b4-825894ae696c', 42, 21, 68.48);
+INSERT INTO size (productID, size, stock, price) VALUES ('3cd0624c-e72e-4cf9-87b4-825894ae696c', 43, 41, 138.45);
+INSERT INTO size (productID, size, stock, price) VALUES ('3cd0624c-e72e-4cf9-87b4-825894ae696c', 44, 30, 149.71);
+INSERT INTO size (productID, size, stock, price) VALUES ('3cd0624c-e72e-4cf9-87b4-825894ae696c', 45, 69, 93.51);
+INSERT INTO size (productID, size, stock, price) VALUES ('3da78831-014e-4546-8fb8-ded3fda6309b', 38, 90, 57.74);
+INSERT INTO size (productID, size, stock, price) VALUES ('3da78831-014e-4546-8fb8-ded3fda6309b', 39, 77, 90.52);
+INSERT INTO size (productID, size, stock, price) VALUES ('3da78831-014e-4546-8fb8-ded3fda6309b', 40, 13, 106.88);
+INSERT INTO size (productID, size, stock, price) VALUES ('3da78831-014e-4546-8fb8-ded3fda6309b', 41, 90, 199.25);
+INSERT INTO size (productID, size, stock, price) VALUES ('3da78831-014e-4546-8fb8-ded3fda6309b', 42, 71, 102.76);
+INSERT INTO size (productID, size, stock, price) VALUES ('3da78831-014e-4546-8fb8-ded3fda6309b', 43, 85, 141.13);
+INSERT INTO size (productID, size, stock, price) VALUES ('3da78831-014e-4546-8fb8-ded3fda6309b', 44, 53, 190.41);
+INSERT INTO size (productID, size, stock, price) VALUES ('3da78831-014e-4546-8fb8-ded3fda6309b', 45, 77, 89.64);
+INSERT INTO size (productID, size, stock, price) VALUES ('3e5844ae-308b-4235-8d50-8805301c58aa', 38, 67, 178.25);
+INSERT INTO size (productID, size, stock, price) VALUES ('3e5844ae-308b-4235-8d50-8805301c58aa', 39, 14, 59.32);
+INSERT INTO size (productID, size, stock, price) VALUES ('3e5844ae-308b-4235-8d50-8805301c58aa', 40, 79, 166.34);
+INSERT INTO size (productID, size, stock, price) VALUES ('3e5844ae-308b-4235-8d50-8805301c58aa', 41, 58, 120.85);
+INSERT INTO size (productID, size, stock, price) VALUES ('3e5844ae-308b-4235-8d50-8805301c58aa', 42, 43, 57.54);
+INSERT INTO size (productID, size, stock, price) VALUES ('3e5844ae-308b-4235-8d50-8805301c58aa', 43, 47, 185.66);
+INSERT INTO size (productID, size, stock, price) VALUES ('3e5844ae-308b-4235-8d50-8805301c58aa', 44, 38, 161.2);
+INSERT INTO size (productID, size, stock, price) VALUES ('3e5844ae-308b-4235-8d50-8805301c58aa', 45, 89, 100.91);
+INSERT INTO size (productID, size, stock, price) VALUES ('3e96daba-aa8e-4970-a991-7d0625f689f8', 38, 75, 67.4);
+INSERT INTO size (productID, size, stock, price) VALUES ('3e96daba-aa8e-4970-a991-7d0625f689f8', 39, 95, 178.63);
+INSERT INTO size (productID, size, stock, price) VALUES ('3e96daba-aa8e-4970-a991-7d0625f689f8', 40, 57, 139.92);
+INSERT INTO size (productID, size, stock, price) VALUES ('3e96daba-aa8e-4970-a991-7d0625f689f8', 41, 35, 92.64);
+INSERT INTO size (productID, size, stock, price) VALUES ('3e96daba-aa8e-4970-a991-7d0625f689f8', 42, 57, 123.11);
+INSERT INTO size (productID, size, stock, price) VALUES ('3e96daba-aa8e-4970-a991-7d0625f689f8', 43, 86, 63.84);
+INSERT INTO size (productID, size, stock, price) VALUES ('3e96daba-aa8e-4970-a991-7d0625f689f8', 44, 27, 185.8);
+INSERT INTO size (productID, size, stock, price) VALUES ('3e96daba-aa8e-4970-a991-7d0625f689f8', 45, 82, 59.87);
+INSERT INTO size (productID, size, stock, price) VALUES ('4232ca43-a33e-47a9-837d-a5ddd72bdfe9', 38, 42, 59.34);
+INSERT INTO size (productID, size, stock, price) VALUES ('4232ca43-a33e-47a9-837d-a5ddd72bdfe9', 39, 71, 174.06);
+INSERT INTO size (productID, size, stock, price) VALUES ('4232ca43-a33e-47a9-837d-a5ddd72bdfe9', 40, 74, 75.11);
+INSERT INTO size (productID, size, stock, price) VALUES ('4232ca43-a33e-47a9-837d-a5ddd72bdfe9', 41, 79, 155.66);
+INSERT INTO size (productID, size, stock, price) VALUES ('4232ca43-a33e-47a9-837d-a5ddd72bdfe9', 42, 48, 129.52);
+INSERT INTO size (productID, size, stock, price) VALUES ('4232ca43-a33e-47a9-837d-a5ddd72bdfe9', 43, 17, 135.82);
+INSERT INTO size (productID, size, stock, price) VALUES ('4232ca43-a33e-47a9-837d-a5ddd72bdfe9', 44, 13, 161.33);
+INSERT INTO size (productID, size, stock, price) VALUES ('4232ca43-a33e-47a9-837d-a5ddd72bdfe9', 45, 45, 122.2);
+INSERT INTO size (productID, size, stock, price) VALUES ('44866d8b-e37d-4b48-8ef6-1a34ee805370', 38, 54, 57.46);
+INSERT INTO size (productID, size, stock, price) VALUES ('44866d8b-e37d-4b48-8ef6-1a34ee805370', 39, 40, 143.13);
+INSERT INTO size (productID, size, stock, price) VALUES ('44866d8b-e37d-4b48-8ef6-1a34ee805370', 40, 44, 77.88);
+INSERT INTO size (productID, size, stock, price) VALUES ('44866d8b-e37d-4b48-8ef6-1a34ee805370', 41, 29, 165.27);
+INSERT INTO size (productID, size, stock, price) VALUES ('44866d8b-e37d-4b48-8ef6-1a34ee805370', 42, 62, 129.72);
+INSERT INTO size (productID, size, stock, price) VALUES ('44866d8b-e37d-4b48-8ef6-1a34ee805370', 43, 79, 79.89);
+INSERT INTO size (productID, size, stock, price) VALUES ('44866d8b-e37d-4b48-8ef6-1a34ee805370', 44, 73, 77.11);
+INSERT INTO size (productID, size, stock, price) VALUES ('44866d8b-e37d-4b48-8ef6-1a34ee805370', 45, 13, 82.79);
+INSERT INTO size (productID, size, stock, price) VALUES ('45820650-e436-46bc-9f76-d1b9a949ebe3', 38, 94, 138.88);
+INSERT INTO size (productID, size, stock, price) VALUES ('45820650-e436-46bc-9f76-d1b9a949ebe3', 39, 18, 100.74);
+INSERT INTO size (productID, size, stock, price) VALUES ('45820650-e436-46bc-9f76-d1b9a949ebe3', 40, 13, 141.56);
+INSERT INTO size (productID, size, stock, price) VALUES ('45820650-e436-46bc-9f76-d1b9a949ebe3', 41, 46, 191.88);
+INSERT INTO size (productID, size, stock, price) VALUES ('45820650-e436-46bc-9f76-d1b9a949ebe3', 42, 59, 119.65);
+INSERT INTO size (productID, size, stock, price) VALUES ('45820650-e436-46bc-9f76-d1b9a949ebe3', 43, 17, 164.51);
+INSERT INTO size (productID, size, stock, price) VALUES ('45820650-e436-46bc-9f76-d1b9a949ebe3', 44, 100, 87.19);
+INSERT INTO size (productID, size, stock, price) VALUES ('45820650-e436-46bc-9f76-d1b9a949ebe3', 45, 35, 73.09);
+INSERT INTO size (productID, size, stock, price) VALUES ('45b3b6e3-1ee9-4857-81fa-49c8eaa29fd8', 38, 75, 125.23);
+INSERT INTO size (productID, size, stock, price) VALUES ('45b3b6e3-1ee9-4857-81fa-49c8eaa29fd8', 39, 45, 103.35);
+INSERT INTO size (productID, size, stock, price) VALUES ('45b3b6e3-1ee9-4857-81fa-49c8eaa29fd8', 40, 59, 65.35);
+INSERT INTO size (productID, size, stock, price) VALUES ('45b3b6e3-1ee9-4857-81fa-49c8eaa29fd8', 41, 48, 92.35);
+INSERT INTO size (productID, size, stock, price) VALUES ('45b3b6e3-1ee9-4857-81fa-49c8eaa29fd8', 42, 27, 128.81);
+INSERT INTO size (productID, size, stock, price) VALUES ('45b3b6e3-1ee9-4857-81fa-49c8eaa29fd8', 43, 68, 177.73);
+INSERT INTO size (productID, size, stock, price) VALUES ('45b3b6e3-1ee9-4857-81fa-49c8eaa29fd8', 44, 69, 137.37);
+INSERT INTO size (productID, size, stock, price) VALUES ('45b3b6e3-1ee9-4857-81fa-49c8eaa29fd8', 45, 73, 105.33);
+INSERT INTO size (productID, size, stock, price) VALUES ('4639f978-fd89-4de3-88cc-51194cea4dd5', 38, 79, 187.57);
+INSERT INTO size (productID, size, stock, price) VALUES ('4639f978-fd89-4de3-88cc-51194cea4dd5', 39, 50, 95.02);
+INSERT INTO size (productID, size, stock, price) VALUES ('4639f978-fd89-4de3-88cc-51194cea4dd5', 40, 90, 94.92);
+INSERT INTO size (productID, size, stock, price) VALUES ('4639f978-fd89-4de3-88cc-51194cea4dd5', 41, 50, 140.64);
+INSERT INTO size (productID, size, stock, price) VALUES ('4639f978-fd89-4de3-88cc-51194cea4dd5', 42, 15, 80.74);
+INSERT INTO size (productID, size, stock, price) VALUES ('4639f978-fd89-4de3-88cc-51194cea4dd5', 43, 76, 153.25);
+INSERT INTO size (productID, size, stock, price) VALUES ('4639f978-fd89-4de3-88cc-51194cea4dd5', 44, 30, 80.48);
+INSERT INTO size (productID, size, stock, price) VALUES ('4639f978-fd89-4de3-88cc-51194cea4dd5', 45, 12, 56.85);
+INSERT INTO size (productID, size, stock, price) VALUES ('49370a9a-c966-432d-bb18-9e7718cf9e03', 38, 86, 183.19);
+INSERT INTO size (productID, size, stock, price) VALUES ('49370a9a-c966-432d-bb18-9e7718cf9e03', 39, 34, 149.39);
+INSERT INTO size (productID, size, stock, price) VALUES ('49370a9a-c966-432d-bb18-9e7718cf9e03', 40, 47, 155.37);
+INSERT INTO size (productID, size, stock, price) VALUES ('49370a9a-c966-432d-bb18-9e7718cf9e03', 41, 31, 161.77);
+INSERT INTO size (productID, size, stock, price) VALUES ('49370a9a-c966-432d-bb18-9e7718cf9e03', 42, 51, 118.69);
+INSERT INTO size (productID, size, stock, price) VALUES ('49370a9a-c966-432d-bb18-9e7718cf9e03', 43, 100, 176.7);
+INSERT INTO size (productID, size, stock, price) VALUES ('49370a9a-c966-432d-bb18-9e7718cf9e03', 44, 84, 73.96);
+INSERT INTO size (productID, size, stock, price) VALUES ('49370a9a-c966-432d-bb18-9e7718cf9e03', 45, 64, 145.62);
+INSERT INTO size (productID, size, stock, price) VALUES ('4cd34642-e9e1-4273-80db-974988e4f87d', 38, 70, 97.28);
+INSERT INTO size (productID, size, stock, price) VALUES ('4cd34642-e9e1-4273-80db-974988e4f87d', 39, 69, 174.47);
+INSERT INTO size (productID, size, stock, price) VALUES ('4cd34642-e9e1-4273-80db-974988e4f87d', 40, 43, 174.51);
+INSERT INTO size (productID, size, stock, price) VALUES ('4cd34642-e9e1-4273-80db-974988e4f87d', 41, 76, 134.56);
+INSERT INTO size (productID, size, stock, price) VALUES ('4cd34642-e9e1-4273-80db-974988e4f87d', 42, 29, 185.6);
+INSERT INTO size (productID, size, stock, price) VALUES ('4cd34642-e9e1-4273-80db-974988e4f87d', 43, 14, 104.37);
+INSERT INTO size (productID, size, stock, price) VALUES ('4cd34642-e9e1-4273-80db-974988e4f87d', 44, 55, 152.59);
+INSERT INTO size (productID, size, stock, price) VALUES ('4cd34642-e9e1-4273-80db-974988e4f87d', 45, 13, 186.41);
+INSERT INTO size (productID, size, stock, price) VALUES ('4dc69a7b-6fab-4095-b95f-533294112983', 38, 20, 96.0);
+INSERT INTO size (productID, size, stock, price) VALUES ('4dc69a7b-6fab-4095-b95f-533294112983', 39, 57, 198.16);
+INSERT INTO size (productID, size, stock, price) VALUES ('4dc69a7b-6fab-4095-b95f-533294112983', 40, 74, 140.63);
+INSERT INTO size (productID, size, stock, price) VALUES ('4dc69a7b-6fab-4095-b95f-533294112983', 41, 33, 163.76);
+INSERT INTO size (productID, size, stock, price) VALUES ('4dc69a7b-6fab-4095-b95f-533294112983', 42, 19, 68.58);
+INSERT INTO size (productID, size, stock, price) VALUES ('4dc69a7b-6fab-4095-b95f-533294112983', 43, 56, 94.51);
+INSERT INTO size (productID, size, stock, price) VALUES ('4dc69a7b-6fab-4095-b95f-533294112983', 44, 34, 94.94);
+INSERT INTO size (productID, size, stock, price) VALUES ('4dc69a7b-6fab-4095-b95f-533294112983', 45, 81, 181.26);
+INSERT INTO size (productID, size, stock, price) VALUES ('4edb25f0-6394-49c6-9da6-85ae4e97ea6e', 38, 64, 199.45);
+INSERT INTO size (productID, size, stock, price) VALUES ('4edb25f0-6394-49c6-9da6-85ae4e97ea6e', 39, 30, 67.15);
+INSERT INTO size (productID, size, stock, price) VALUES ('4edb25f0-6394-49c6-9da6-85ae4e97ea6e', 40, 76, 84.21);
+INSERT INTO size (productID, size, stock, price) VALUES ('4edb25f0-6394-49c6-9da6-85ae4e97ea6e', 41, 44, 129.46);
+INSERT INTO size (productID, size, stock, price) VALUES ('4edb25f0-6394-49c6-9da6-85ae4e97ea6e', 42, 14, 70.78);
+INSERT INTO size (productID, size, stock, price) VALUES ('4edb25f0-6394-49c6-9da6-85ae4e97ea6e', 43, 54, 57.83);
+INSERT INTO size (productID, size, stock, price) VALUES ('4edb25f0-6394-49c6-9da6-85ae4e97ea6e', 44, 17, 149.76);
+INSERT INTO size (productID, size, stock, price) VALUES ('4edb25f0-6394-49c6-9da6-85ae4e97ea6e', 45, 52, 179.23);
+INSERT INTO size (productID, size, stock, price) VALUES ('4ef580db-9947-4f5a-934b-764f951d8a6b', 38, 55, 92.53);
+INSERT INTO size (productID, size, stock, price) VALUES ('4ef580db-9947-4f5a-934b-764f951d8a6b', 39, 85, 55.67);
+INSERT INTO size (productID, size, stock, price) VALUES ('4ef580db-9947-4f5a-934b-764f951d8a6b', 40, 69, 125.93);
+INSERT INTO size (productID, size, stock, price) VALUES ('4ef580db-9947-4f5a-934b-764f951d8a6b', 41, 38, 69.42);
+INSERT INTO size (productID, size, stock, price) VALUES ('4ef580db-9947-4f5a-934b-764f951d8a6b', 42, 65, 151.58);
+INSERT INTO size (productID, size, stock, price) VALUES ('4ef580db-9947-4f5a-934b-764f951d8a6b', 43, 17, 63.12);
+INSERT INTO size (productID, size, stock, price) VALUES ('4ef580db-9947-4f5a-934b-764f951d8a6b', 44, 54, 180.51);
+INSERT INTO size (productID, size, stock, price) VALUES ('4ef580db-9947-4f5a-934b-764f951d8a6b', 45, 63, 97.89);
+INSERT INTO size (productID, size, stock, price) VALUES ('5005a75d-cc5d-451f-b42c-b584b1008205', 38, 53, 185.13);
+INSERT INTO size (productID, size, stock, price) VALUES ('5005a75d-cc5d-451f-b42c-b584b1008205', 39, 63, 109.35);
+INSERT INTO size (productID, size, stock, price) VALUES ('5005a75d-cc5d-451f-b42c-b584b1008205', 40, 50, 185.54);
+INSERT INTO size (productID, size, stock, price) VALUES ('5005a75d-cc5d-451f-b42c-b584b1008205', 41, 98, 193.18);
+INSERT INTO size (productID, size, stock, price) VALUES ('5005a75d-cc5d-451f-b42c-b584b1008205', 42, 84, 123.72);
+INSERT INTO size (productID, size, stock, price) VALUES ('5005a75d-cc5d-451f-b42c-b584b1008205', 43, 40, 55.0);
+INSERT INTO size (productID, size, stock, price) VALUES ('5005a75d-cc5d-451f-b42c-b584b1008205', 44, 37, 82.76);
+INSERT INTO size (productID, size, stock, price) VALUES ('5005a75d-cc5d-451f-b42c-b584b1008205', 45, 99, 144.07);
+INSERT INTO size (productID, size, stock, price) VALUES ('556c71cf-9380-490f-9877-44382cb4586a', 38, 82, 104.95);
+INSERT INTO size (productID, size, stock, price) VALUES ('556c71cf-9380-490f-9877-44382cb4586a', 39, 60, 61.23);
+INSERT INTO size (productID, size, stock, price) VALUES ('556c71cf-9380-490f-9877-44382cb4586a', 40, 77, 145.47);
+INSERT INTO size (productID, size, stock, price) VALUES ('556c71cf-9380-490f-9877-44382cb4586a', 41, 65, 56.09);
+INSERT INTO size (productID, size, stock, price) VALUES ('556c71cf-9380-490f-9877-44382cb4586a', 42, 69, 76.35);
+INSERT INTO size (productID, size, stock, price) VALUES ('556c71cf-9380-490f-9877-44382cb4586a', 43, 17, 149.1);
+INSERT INTO size (productID, size, stock, price) VALUES ('556c71cf-9380-490f-9877-44382cb4586a', 44, 86, 104.49);
+INSERT INTO size (productID, size, stock, price) VALUES ('556c71cf-9380-490f-9877-44382cb4586a', 45, 32, 113.79);
+INSERT INTO size (productID, size, stock, price) VALUES ('56f43dd7-4166-43c0-a606-d1c1940f0815', 38, 10, 119.51);
+INSERT INTO size (productID, size, stock, price) VALUES ('56f43dd7-4166-43c0-a606-d1c1940f0815', 39, 53, 130.47);
+INSERT INTO size (productID, size, stock, price) VALUES ('56f43dd7-4166-43c0-a606-d1c1940f0815', 40, 58, 141.63);
+INSERT INTO size (productID, size, stock, price) VALUES ('56f43dd7-4166-43c0-a606-d1c1940f0815', 41, 40, 92.26);
+INSERT INTO size (productID, size, stock, price) VALUES ('56f43dd7-4166-43c0-a606-d1c1940f0815', 42, 12, 179.74);
+INSERT INTO size (productID, size, stock, price) VALUES ('56f43dd7-4166-43c0-a606-d1c1940f0815', 43, 32, 103.74);
+INSERT INTO size (productID, size, stock, price) VALUES ('56f43dd7-4166-43c0-a606-d1c1940f0815', 44, 88, 144.36);
+INSERT INTO size (productID, size, stock, price) VALUES ('56f43dd7-4166-43c0-a606-d1c1940f0815', 45, 56, 192.94);
+INSERT INTO size (productID, size, stock, price) VALUES ('5a0854b5-589f-4232-8422-ab53b0315609', 38, 47, 89.66);
+INSERT INTO size (productID, size, stock, price) VALUES ('5a0854b5-589f-4232-8422-ab53b0315609', 39, 56, 75.88);
+INSERT INTO size (productID, size, stock, price) VALUES ('5a0854b5-589f-4232-8422-ab53b0315609', 40, 83, 153.89);
+INSERT INTO size (productID, size, stock, price) VALUES ('5a0854b5-589f-4232-8422-ab53b0315609', 41, 44, 64.38);
+INSERT INTO size (productID, size, stock, price) VALUES ('5a0854b5-589f-4232-8422-ab53b0315609', 42, 72, 103.05);
+INSERT INTO size (productID, size, stock, price) VALUES ('5a0854b5-589f-4232-8422-ab53b0315609', 43, 43, 185.46);
+INSERT INTO size (productID, size, stock, price) VALUES ('5a0854b5-589f-4232-8422-ab53b0315609', 44, 96, 133.93);
+INSERT INTO size (productID, size, stock, price) VALUES ('5a0854b5-589f-4232-8422-ab53b0315609', 45, 31, 57.74);
+INSERT INTO size (productID, size, stock, price) VALUES ('5ee788fa-4c10-4c86-9d5f-0cf8c6a4a29a', 38, 16, 164.77);
+INSERT INTO size (productID, size, stock, price) VALUES ('5ee788fa-4c10-4c86-9d5f-0cf8c6a4a29a', 39, 77, 154.58);
+INSERT INTO size (productID, size, stock, price) VALUES ('5ee788fa-4c10-4c86-9d5f-0cf8c6a4a29a', 40, 70, 119.59);
+INSERT INTO size (productID, size, stock, price) VALUES ('5ee788fa-4c10-4c86-9d5f-0cf8c6a4a29a', 41, 47, 125.55);
+INSERT INTO size (productID, size, stock, price) VALUES ('5ee788fa-4c10-4c86-9d5f-0cf8c6a4a29a', 42, 51, 165.08);
+INSERT INTO size (productID, size, stock, price) VALUES ('5ee788fa-4c10-4c86-9d5f-0cf8c6a4a29a', 43, 50, 141.48);
+INSERT INTO size (productID, size, stock, price) VALUES ('5ee788fa-4c10-4c86-9d5f-0cf8c6a4a29a', 44, 51, 138.18);
+INSERT INTO size (productID, size, stock, price) VALUES ('5ee788fa-4c10-4c86-9d5f-0cf8c6a4a29a', 45, 100, 134.44);
+INSERT INTO size (productID, size, stock, price) VALUES ('60d8da80-7d29-41ce-bd4d-c27374492cae', 38, 60, 71.84);
+INSERT INTO size (productID, size, stock, price) VALUES ('60d8da80-7d29-41ce-bd4d-c27374492cae', 39, 59, 191.64);
+INSERT INTO size (productID, size, stock, price) VALUES ('60d8da80-7d29-41ce-bd4d-c27374492cae', 40, 42, 117.92);
+INSERT INTO size (productID, size, stock, price) VALUES ('60d8da80-7d29-41ce-bd4d-c27374492cae', 41, 82, 85.17);
+INSERT INTO size (productID, size, stock, price) VALUES ('60d8da80-7d29-41ce-bd4d-c27374492cae', 42, 72, 59.82);
+INSERT INTO size (productID, size, stock, price) VALUES ('60d8da80-7d29-41ce-bd4d-c27374492cae', 43, 10, 191.87);
+INSERT INTO size (productID, size, stock, price) VALUES ('60d8da80-7d29-41ce-bd4d-c27374492cae', 44, 21, 128.16);
+INSERT INTO size (productID, size, stock, price) VALUES ('60d8da80-7d29-41ce-bd4d-c27374492cae', 45, 83, 132.63);
+INSERT INTO size (productID, size, stock, price) VALUES ('6256286b-d1f1-4ee3-bd14-f12625e45822', 38, 30, 175.09);
+INSERT INTO size (productID, size, stock, price) VALUES ('6256286b-d1f1-4ee3-bd14-f12625e45822', 39, 34, 152.43);
+INSERT INTO size (productID, size, stock, price) VALUES ('6256286b-d1f1-4ee3-bd14-f12625e45822', 40, 84, 113.15);
+INSERT INTO size (productID, size, stock, price) VALUES ('6256286b-d1f1-4ee3-bd14-f12625e45822', 41, 98, 148.01);
+INSERT INTO size (productID, size, stock, price) VALUES ('6256286b-d1f1-4ee3-bd14-f12625e45822', 42, 100, 136.79);
+INSERT INTO size (productID, size, stock, price) VALUES ('6256286b-d1f1-4ee3-bd14-f12625e45822', 43, 92, 93.13);
+INSERT INTO size (productID, size, stock, price) VALUES ('6256286b-d1f1-4ee3-bd14-f12625e45822', 44, 57, 50.31);
+INSERT INTO size (productID, size, stock, price) VALUES ('6256286b-d1f1-4ee3-bd14-f12625e45822', 45, 80, 118.76);
+INSERT INTO size (productID, size, stock, price) VALUES ('639b4750-c2a1-4a24-a9bd-be0939f1d2e7', 38, 57, 190.47);
+INSERT INTO size (productID, size, stock, price) VALUES ('639b4750-c2a1-4a24-a9bd-be0939f1d2e7', 39, 15, 104.37);
+INSERT INTO size (productID, size, stock, price) VALUES ('639b4750-c2a1-4a24-a9bd-be0939f1d2e7', 40, 51, 129.37);
+INSERT INTO size (productID, size, stock, price) VALUES ('639b4750-c2a1-4a24-a9bd-be0939f1d2e7', 41, 41, 90.35);
+INSERT INTO size (productID, size, stock, price) VALUES ('639b4750-c2a1-4a24-a9bd-be0939f1d2e7', 42, 35, 98.58);
+INSERT INTO size (productID, size, stock, price) VALUES ('639b4750-c2a1-4a24-a9bd-be0939f1d2e7', 43, 21, 82.27);
+INSERT INTO size (productID, size, stock, price) VALUES ('639b4750-c2a1-4a24-a9bd-be0939f1d2e7', 44, 50, 145.58);
+INSERT INTO size (productID, size, stock, price) VALUES ('639b4750-c2a1-4a24-a9bd-be0939f1d2e7', 45, 92, 94.72);
+INSERT INTO size (productID, size, stock, price) VALUES ('674e4519-96b3-482b-94c3-d78fc66db073', 38, 90, 93.85);
+INSERT INTO size (productID, size, stock, price) VALUES ('674e4519-96b3-482b-94c3-d78fc66db073', 39, 38, 102.59);
+INSERT INTO size (productID, size, stock, price) VALUES ('674e4519-96b3-482b-94c3-d78fc66db073', 40, 86, 96.42);
+INSERT INTO size (productID, size, stock, price) VALUES ('674e4519-96b3-482b-94c3-d78fc66db073', 41, 12, 143.95);
+INSERT INTO size (productID, size, stock, price) VALUES ('674e4519-96b3-482b-94c3-d78fc66db073', 42, 79, 104.27);
+INSERT INTO size (productID, size, stock, price) VALUES ('674e4519-96b3-482b-94c3-d78fc66db073', 43, 77, 124.97);
+INSERT INTO size (productID, size, stock, price) VALUES ('674e4519-96b3-482b-94c3-d78fc66db073', 44, 82, 174.91);
+INSERT INTO size (productID, size, stock, price) VALUES ('674e4519-96b3-482b-94c3-d78fc66db073', 45, 34, 80.97);
+INSERT INTO size (productID, size, stock, price) VALUES ('693f4e5b-c112-4fc5-acb9-fa64c521c8fc', 38, 77, 62.19);
+INSERT INTO size (productID, size, stock, price) VALUES ('693f4e5b-c112-4fc5-acb9-fa64c521c8fc', 39, 61, 86.27);
+INSERT INTO size (productID, size, stock, price) VALUES ('693f4e5b-c112-4fc5-acb9-fa64c521c8fc', 40, 29, 154.91);
+INSERT INTO size (productID, size, stock, price) VALUES ('693f4e5b-c112-4fc5-acb9-fa64c521c8fc', 41, 85, 85.58);
+INSERT INTO size (productID, size, stock, price) VALUES ('693f4e5b-c112-4fc5-acb9-fa64c521c8fc', 42, 65, 113.13);
+INSERT INTO size (productID, size, stock, price) VALUES ('693f4e5b-c112-4fc5-acb9-fa64c521c8fc', 43, 69, 172.54);
+INSERT INTO size (productID, size, stock, price) VALUES ('693f4e5b-c112-4fc5-acb9-fa64c521c8fc', 44, 20, 88.63);
+INSERT INTO size (productID, size, stock, price) VALUES ('693f4e5b-c112-4fc5-acb9-fa64c521c8fc', 45, 71, 199.17);
+INSERT INTO size (productID, size, stock, price) VALUES ('6c73a02e-8261-4378-9904-def1f1e247e8', 38, 59, 78.67);
+INSERT INTO size (productID, size, stock, price) VALUES ('6c73a02e-8261-4378-9904-def1f1e247e8', 39, 72, 191.78);
+INSERT INTO size (productID, size, stock, price) VALUES ('6c73a02e-8261-4378-9904-def1f1e247e8', 40, 61, 117.32);
+INSERT INTO size (productID, size, stock, price) VALUES ('6c73a02e-8261-4378-9904-def1f1e247e8', 41, 100, 133.64);
+INSERT INTO size (productID, size, stock, price) VALUES ('6c73a02e-8261-4378-9904-def1f1e247e8', 42, 85, 162.05);
+INSERT INTO size (productID, size, stock, price) VALUES ('6c73a02e-8261-4378-9904-def1f1e247e8', 43, 82, 145.96);
+INSERT INTO size (productID, size, stock, price) VALUES ('6c73a02e-8261-4378-9904-def1f1e247e8', 44, 95, 66.55);
+INSERT INTO size (productID, size, stock, price) VALUES ('6c73a02e-8261-4378-9904-def1f1e247e8', 45, 51, 68.01);
+INSERT INTO size (productID, size, stock, price) VALUES ('6cadcfe9-f759-4089-b2a3-6c3d011977c0', 38, 18, 153.36);
+INSERT INTO size (productID, size, stock, price) VALUES ('6cadcfe9-f759-4089-b2a3-6c3d011977c0', 39, 35, 94.05);
+INSERT INTO size (productID, size, stock, price) VALUES ('6cadcfe9-f759-4089-b2a3-6c3d011977c0', 40, 90, 121.23);
+INSERT INTO size (productID, size, stock, price) VALUES ('6cadcfe9-f759-4089-b2a3-6c3d011977c0', 41, 48, 84.87);
+INSERT INTO size (productID, size, stock, price) VALUES ('6cadcfe9-f759-4089-b2a3-6c3d011977c0', 42, 97, 116.54);
+INSERT INTO size (productID, size, stock, price) VALUES ('6cadcfe9-f759-4089-b2a3-6c3d011977c0', 43, 54, 147.88);
+INSERT INTO size (productID, size, stock, price) VALUES ('6cadcfe9-f759-4089-b2a3-6c3d011977c0', 44, 30, 116.74);
+INSERT INTO size (productID, size, stock, price) VALUES ('6cadcfe9-f759-4089-b2a3-6c3d011977c0', 45, 61, 52.58);
+INSERT INTO size (productID, size, stock, price) VALUES ('7251a16e-16f4-4316-bf7e-b676f3532ea9', 38, 25, 78.87);
+INSERT INTO size (productID, size, stock, price) VALUES ('7251a16e-16f4-4316-bf7e-b676f3532ea9', 39, 25, 63.4);
+INSERT INTO size (productID, size, stock, price) VALUES ('7251a16e-16f4-4316-bf7e-b676f3532ea9', 40, 72, 196.36);
+INSERT INTO size (productID, size, stock, price) VALUES ('7251a16e-16f4-4316-bf7e-b676f3532ea9', 41, 71, 62.03);
+INSERT INTO size (productID, size, stock, price) VALUES ('7251a16e-16f4-4316-bf7e-b676f3532ea9', 42, 51, 129.42);
+INSERT INTO size (productID, size, stock, price) VALUES ('7251a16e-16f4-4316-bf7e-b676f3532ea9', 43, 44, 112.18);
+INSERT INTO size (productID, size, stock, price) VALUES ('7251a16e-16f4-4316-bf7e-b676f3532ea9', 44, 31, 184.1);
+INSERT INTO size (productID, size, stock, price) VALUES ('7251a16e-16f4-4316-bf7e-b676f3532ea9', 45, 59, 164.95);
+INSERT INTO size (productID, size, stock, price) VALUES ('755b8d58-5b1d-4766-aaef-254b406abe60', 38, 32, 57.12);
+INSERT INTO size (productID, size, stock, price) VALUES ('755b8d58-5b1d-4766-aaef-254b406abe60', 39, 14, 71.66);
+INSERT INTO size (productID, size, stock, price) VALUES ('755b8d58-5b1d-4766-aaef-254b406abe60', 40, 44, 55.37);
+INSERT INTO size (productID, size, stock, price) VALUES ('755b8d58-5b1d-4766-aaef-254b406abe60', 41, 53, 145.69);
+INSERT INTO size (productID, size, stock, price) VALUES ('755b8d58-5b1d-4766-aaef-254b406abe60', 42, 25, 128.38);
+INSERT INTO size (productID, size, stock, price) VALUES ('755b8d58-5b1d-4766-aaef-254b406abe60', 43, 18, 79.77);
+INSERT INTO size (productID, size, stock, price) VALUES ('755b8d58-5b1d-4766-aaef-254b406abe60', 44, 64, 159.29);
+INSERT INTO size (productID, size, stock, price) VALUES ('755b8d58-5b1d-4766-aaef-254b406abe60', 45, 30, 70.06);
+INSERT INTO size (productID, size, stock, price) VALUES ('789d977e-dd80-4bef-8ebf-ae51b97ff57a', 38, 50, 107.52);
+INSERT INTO size (productID, size, stock, price) VALUES ('789d977e-dd80-4bef-8ebf-ae51b97ff57a', 39, 16, 168.1);
+INSERT INTO size (productID, size, stock, price) VALUES ('789d977e-dd80-4bef-8ebf-ae51b97ff57a', 40, 94, 170.28);
+INSERT INTO size (productID, size, stock, price) VALUES ('789d977e-dd80-4bef-8ebf-ae51b97ff57a', 41, 46, 103.9);
+INSERT INTO size (productID, size, stock, price) VALUES ('789d977e-dd80-4bef-8ebf-ae51b97ff57a', 42, 16, 176.99);
+INSERT INTO size (productID, size, stock, price) VALUES ('789d977e-dd80-4bef-8ebf-ae51b97ff57a', 43, 18, 118.32);
+INSERT INTO size (productID, size, stock, price) VALUES ('789d977e-dd80-4bef-8ebf-ae51b97ff57a', 44, 82, 144.29);
+INSERT INTO size (productID, size, stock, price) VALUES ('789d977e-dd80-4bef-8ebf-ae51b97ff57a', 45, 59, 173.74);
+INSERT INTO size (productID, size, stock, price) VALUES ('79976f10-1e06-4ebe-814c-7580a99ef18e', 38, 100, 169.39);
+INSERT INTO size (productID, size, stock, price) VALUES ('79976f10-1e06-4ebe-814c-7580a99ef18e', 39, 18, 131.37);
+INSERT INTO size (productID, size, stock, price) VALUES ('79976f10-1e06-4ebe-814c-7580a99ef18e', 40, 60, 59.43);
+INSERT INTO size (productID, size, stock, price) VALUES ('79976f10-1e06-4ebe-814c-7580a99ef18e', 41, 74, 73.6);
+INSERT INTO size (productID, size, stock, price) VALUES ('79976f10-1e06-4ebe-814c-7580a99ef18e', 42, 98, 91.3);
+INSERT INTO size (productID, size, stock, price) VALUES ('79976f10-1e06-4ebe-814c-7580a99ef18e', 43, 79, 123.0);
+INSERT INTO size (productID, size, stock, price) VALUES ('79976f10-1e06-4ebe-814c-7580a99ef18e', 44, 72, 182.77);
+INSERT INTO size (productID, size, stock, price) VALUES ('79976f10-1e06-4ebe-814c-7580a99ef18e', 45, 10, 71.25);
+INSERT INTO size (productID, size, stock, price) VALUES ('7a858a17-040b-4bd7-b254-047f2a828bf0', 38, 15, 125.03);
+INSERT INTO size (productID, size, stock, price) VALUES ('7a858a17-040b-4bd7-b254-047f2a828bf0', 39, 77, 186.16);
+INSERT INTO size (productID, size, stock, price) VALUES ('7a858a17-040b-4bd7-b254-047f2a828bf0', 40, 35, 188.98);
+INSERT INTO size (productID, size, stock, price) VALUES ('7a858a17-040b-4bd7-b254-047f2a828bf0', 41, 83, 87.46);
+INSERT INTO size (productID, size, stock, price) VALUES ('7a858a17-040b-4bd7-b254-047f2a828bf0', 42, 75, 84.07);
+INSERT INTO size (productID, size, stock, price) VALUES ('7a858a17-040b-4bd7-b254-047f2a828bf0', 43, 89, 91.97);
+INSERT INTO size (productID, size, stock, price) VALUES ('7a858a17-040b-4bd7-b254-047f2a828bf0', 44, 11, 54.32);
+INSERT INTO size (productID, size, stock, price) VALUES ('7a858a17-040b-4bd7-b254-047f2a828bf0', 45, 14, 132.32);
+INSERT INTO size (productID, size, stock, price) VALUES ('7aa29cc5-bc72-4f42-a890-72958f4d3c69', 38, 80, 121.07);
+INSERT INTO size (productID, size, stock, price) VALUES ('7aa29cc5-bc72-4f42-a890-72958f4d3c69', 39, 89, 166.51);
+INSERT INTO size (productID, size, stock, price) VALUES ('7aa29cc5-bc72-4f42-a890-72958f4d3c69', 40, 64, 59.03);
+INSERT INTO size (productID, size, stock, price) VALUES ('7aa29cc5-bc72-4f42-a890-72958f4d3c69', 41, 18, 197.48);
+INSERT INTO size (productID, size, stock, price) VALUES ('7aa29cc5-bc72-4f42-a890-72958f4d3c69', 42, 36, 150.64);
+INSERT INTO size (productID, size, stock, price) VALUES ('7aa29cc5-bc72-4f42-a890-72958f4d3c69', 43, 25, 131.09);
+INSERT INTO size (productID, size, stock, price) VALUES ('7aa29cc5-bc72-4f42-a890-72958f4d3c69', 44, 67, 95.57);
+INSERT INTO size (productID, size, stock, price) VALUES ('7aa29cc5-bc72-4f42-a890-72958f4d3c69', 45, 12, 159.14);
+INSERT INTO size (productID, size, stock, price) VALUES ('7cc445e8-314a-4fec-b5ee-827f645c0466', 38, 44, 124.03);
+INSERT INTO size (productID, size, stock, price) VALUES ('7cc445e8-314a-4fec-b5ee-827f645c0466', 39, 84, 177.21);
+INSERT INTO size (productID, size, stock, price) VALUES ('7cc445e8-314a-4fec-b5ee-827f645c0466', 40, 24, 68.23);
+INSERT INTO size (productID, size, stock, price) VALUES ('7cc445e8-314a-4fec-b5ee-827f645c0466', 41, 61, 68.65);
+INSERT INTO size (productID, size, stock, price) VALUES ('7cc445e8-314a-4fec-b5ee-827f645c0466', 42, 37, 101.06);
+INSERT INTO size (productID, size, stock, price) VALUES ('7cc445e8-314a-4fec-b5ee-827f645c0466', 43, 56, 80.64);
+INSERT INTO size (productID, size, stock, price) VALUES ('7cc445e8-314a-4fec-b5ee-827f645c0466', 44, 85, 142.84);
+INSERT INTO size (productID, size, stock, price) VALUES ('7cc445e8-314a-4fec-b5ee-827f645c0466', 45, 73, 131.56);
+INSERT INTO size (productID, size, stock, price) VALUES ('7e447892-ea7d-4310-a0f8-d3fb01e3fae0', 38, 78, 63.65);
+INSERT INTO size (productID, size, stock, price) VALUES ('7e447892-ea7d-4310-a0f8-d3fb01e3fae0', 39, 45, 154.29);
+INSERT INTO size (productID, size, stock, price) VALUES ('7e447892-ea7d-4310-a0f8-d3fb01e3fae0', 40, 98, 83.61);
+INSERT INTO size (productID, size, stock, price) VALUES ('7e447892-ea7d-4310-a0f8-d3fb01e3fae0', 41, 66, 76.63);
+INSERT INTO size (productID, size, stock, price) VALUES ('7e447892-ea7d-4310-a0f8-d3fb01e3fae0', 42, 17, 157.24);
+INSERT INTO size (productID, size, stock, price) VALUES ('7e447892-ea7d-4310-a0f8-d3fb01e3fae0', 43, 48, 77.72);
+INSERT INTO size (productID, size, stock, price) VALUES ('7e447892-ea7d-4310-a0f8-d3fb01e3fae0', 44, 78, 161.36);
+INSERT INTO size (productID, size, stock, price) VALUES ('7e447892-ea7d-4310-a0f8-d3fb01e3fae0', 45, 57, 163.41);
+INSERT INTO size (productID, size, stock, price) VALUES ('7f25afa5-b53b-40cf-a7af-072743fd9592', 38, 41, 104.75);
+INSERT INTO size (productID, size, stock, price) VALUES ('7f25afa5-b53b-40cf-a7af-072743fd9592', 39, 88, 162.59);
+INSERT INTO size (productID, size, stock, price) VALUES ('7f25afa5-b53b-40cf-a7af-072743fd9592', 40, 18, 60.36);
+INSERT INTO size (productID, size, stock, price) VALUES ('7f25afa5-b53b-40cf-a7af-072743fd9592', 41, 80, 105.52);
+INSERT INTO size (productID, size, stock, price) VALUES ('7f25afa5-b53b-40cf-a7af-072743fd9592', 42, 71, 74.71);
+INSERT INTO size (productID, size, stock, price) VALUES ('7f25afa5-b53b-40cf-a7af-072743fd9592', 43, 38, 134.95);
+INSERT INTO size (productID, size, stock, price) VALUES ('7f25afa5-b53b-40cf-a7af-072743fd9592', 44, 88, 81.26);
+INSERT INTO size (productID, size, stock, price) VALUES ('7f25afa5-b53b-40cf-a7af-072743fd9592', 45, 54, 152.24);
+INSERT INTO size (productID, size, stock, price) VALUES ('7ffe74a5-ebcc-43a7-97c9-b471870a672b', 38, 66, 51.39);
+INSERT INTO size (productID, size, stock, price) VALUES ('7ffe74a5-ebcc-43a7-97c9-b471870a672b', 39, 66, 123.0);
+INSERT INTO size (productID, size, stock, price) VALUES ('7ffe74a5-ebcc-43a7-97c9-b471870a672b', 40, 29, 128.54);
+INSERT INTO size (productID, size, stock, price) VALUES ('7ffe74a5-ebcc-43a7-97c9-b471870a672b', 41, 68, 94.58);
+INSERT INTO size (productID, size, stock, price) VALUES ('7ffe74a5-ebcc-43a7-97c9-b471870a672b', 42, 29, 108.46);
+INSERT INTO size (productID, size, stock, price) VALUES ('7ffe74a5-ebcc-43a7-97c9-b471870a672b', 43, 69, 122.97);
+INSERT INTO size (productID, size, stock, price) VALUES ('7ffe74a5-ebcc-43a7-97c9-b471870a672b', 44, 83, 161.76);
+INSERT INTO size (productID, size, stock, price) VALUES ('7ffe74a5-ebcc-43a7-97c9-b471870a672b', 45, 47, 81.06);
+INSERT INTO size (productID, size, stock, price) VALUES ('80e23e43-db64-4e74-823b-906786c455d3', 38, 54, 82.94);
+INSERT INTO size (productID, size, stock, price) VALUES ('80e23e43-db64-4e74-823b-906786c455d3', 39, 88, 59.23);
+INSERT INTO size (productID, size, stock, price) VALUES ('80e23e43-db64-4e74-823b-906786c455d3', 40, 72, 104.0);
+INSERT INTO size (productID, size, stock, price) VALUES ('80e23e43-db64-4e74-823b-906786c455d3', 41, 69, 104.15);
+INSERT INTO size (productID, size, stock, price) VALUES ('80e23e43-db64-4e74-823b-906786c455d3', 42, 61, 127.44);
+INSERT INTO size (productID, size, stock, price) VALUES ('80e23e43-db64-4e74-823b-906786c455d3', 43, 30, 91.03);
+INSERT INTO size (productID, size, stock, price) VALUES ('80e23e43-db64-4e74-823b-906786c455d3', 44, 67, 135.19);
+INSERT INTO size (productID, size, stock, price) VALUES ('80e23e43-db64-4e74-823b-906786c455d3', 45, 32, 64.12);
+INSERT INTO size (productID, size, stock, price) VALUES ('878ee818-4cc5-4832-b766-a6597d7eddd3', 38, 51, 196.93);
+INSERT INTO size (productID, size, stock, price) VALUES ('878ee818-4cc5-4832-b766-a6597d7eddd3', 39, 52, 111.79);
+INSERT INTO size (productID, size, stock, price) VALUES ('878ee818-4cc5-4832-b766-a6597d7eddd3', 40, 22, 86.47);
+INSERT INTO size (productID, size, stock, price) VALUES ('878ee818-4cc5-4832-b766-a6597d7eddd3', 41, 23, 182.23);
+INSERT INTO size (productID, size, stock, price) VALUES ('878ee818-4cc5-4832-b766-a6597d7eddd3', 42, 85, 193.64);
+INSERT INTO size (productID, size, stock, price) VALUES ('878ee818-4cc5-4832-b766-a6597d7eddd3', 43, 75, 69.01);
+INSERT INTO size (productID, size, stock, price) VALUES ('878ee818-4cc5-4832-b766-a6597d7eddd3', 44, 30, 55.8);
+INSERT INTO size (productID, size, stock, price) VALUES ('878ee818-4cc5-4832-b766-a6597d7eddd3', 45, 71, 61.93);
+INSERT INTO size (productID, size, stock, price) VALUES ('88a32ad2-5e66-4e8e-82fa-5c953c970828', 38, 46, 105.47);
+INSERT INTO size (productID, size, stock, price) VALUES ('88a32ad2-5e66-4e8e-82fa-5c953c970828', 39, 68, 53.49);
+INSERT INTO size (productID, size, stock, price) VALUES ('88a32ad2-5e66-4e8e-82fa-5c953c970828', 40, 56, 80.7);
+INSERT INTO size (productID, size, stock, price) VALUES ('88a32ad2-5e66-4e8e-82fa-5c953c970828', 41, 51, 118.56);
+INSERT INTO size (productID, size, stock, price) VALUES ('88a32ad2-5e66-4e8e-82fa-5c953c970828', 42, 31, 176.86);
+INSERT INTO size (productID, size, stock, price) VALUES ('88a32ad2-5e66-4e8e-82fa-5c953c970828', 43, 46, 70.27);
+INSERT INTO size (productID, size, stock, price) VALUES ('88a32ad2-5e66-4e8e-82fa-5c953c970828', 44, 14, 94.65);
+INSERT INTO size (productID, size, stock, price) VALUES ('88a32ad2-5e66-4e8e-82fa-5c953c970828', 45, 31, 119.51);
+INSERT INTO size (productID, size, stock, price) VALUES ('8d8abe7d-1a6c-41bb-b2e6-db1c900c57ae', 38, 21, 97.16);
+INSERT INTO size (productID, size, stock, price) VALUES ('8d8abe7d-1a6c-41bb-b2e6-db1c900c57ae', 39, 23, 87.59);
+INSERT INTO size (productID, size, stock, price) VALUES ('8d8abe7d-1a6c-41bb-b2e6-db1c900c57ae', 40, 67, 50.86);
+INSERT INTO size (productID, size, stock, price) VALUES ('8d8abe7d-1a6c-41bb-b2e6-db1c900c57ae', 41, 30, 150.6);
+INSERT INTO size (productID, size, stock, price) VALUES ('8d8abe7d-1a6c-41bb-b2e6-db1c900c57ae', 42, 36, 87.26);
+INSERT INTO size (productID, size, stock, price) VALUES ('8d8abe7d-1a6c-41bb-b2e6-db1c900c57ae', 43, 28, 107.56);
+INSERT INTO size (productID, size, stock, price) VALUES ('8d8abe7d-1a6c-41bb-b2e6-db1c900c57ae', 44, 65, 143.88);
+INSERT INTO size (productID, size, stock, price) VALUES ('8d8abe7d-1a6c-41bb-b2e6-db1c900c57ae', 45, 66, 103.57);
+INSERT INTO size (productID, size, stock, price) VALUES ('8f41cee6-3cef-458d-b942-124838194a4b', 38, 69, 170.83);
+INSERT INTO size (productID, size, stock, price) VALUES ('8f41cee6-3cef-458d-b942-124838194a4b', 39, 21, 192.69);
+INSERT INTO size (productID, size, stock, price) VALUES ('8f41cee6-3cef-458d-b942-124838194a4b', 40, 24, 127.25);
+INSERT INTO size (productID, size, stock, price) VALUES ('8f41cee6-3cef-458d-b942-124838194a4b', 41, 22, 68.3);
+INSERT INTO size (productID, size, stock, price) VALUES ('8f41cee6-3cef-458d-b942-124838194a4b', 42, 74, 152.4);
+INSERT INTO size (productID, size, stock, price) VALUES ('8f41cee6-3cef-458d-b942-124838194a4b', 43, 25, 159.82);
+INSERT INTO size (productID, size, stock, price) VALUES ('8f41cee6-3cef-458d-b942-124838194a4b', 44, 11, 124.48);
+INSERT INTO size (productID, size, stock, price) VALUES ('8f41cee6-3cef-458d-b942-124838194a4b', 45, 42, 143.28);
+INSERT INTO size (productID, size, stock, price) VALUES ('90949c88-2c8f-4cf1-aa06-d1ceb887a0e0', 38, 35, 184.36);
+INSERT INTO size (productID, size, stock, price) VALUES ('90949c88-2c8f-4cf1-aa06-d1ceb887a0e0', 39, 19, 104.54);
+INSERT INTO size (productID, size, stock, price) VALUES ('90949c88-2c8f-4cf1-aa06-d1ceb887a0e0', 40, 92, 114.72);
+INSERT INTO size (productID, size, stock, price) VALUES ('90949c88-2c8f-4cf1-aa06-d1ceb887a0e0', 41, 17, 187.37);
+INSERT INTO size (productID, size, stock, price) VALUES ('90949c88-2c8f-4cf1-aa06-d1ceb887a0e0', 42, 96, 186.77);
+INSERT INTO size (productID, size, stock, price) VALUES ('90949c88-2c8f-4cf1-aa06-d1ceb887a0e0', 43, 73, 155.81);
+INSERT INTO size (productID, size, stock, price) VALUES ('90949c88-2c8f-4cf1-aa06-d1ceb887a0e0', 44, 19, 133.64);
+INSERT INTO size (productID, size, stock, price) VALUES ('90949c88-2c8f-4cf1-aa06-d1ceb887a0e0', 45, 74, 64.17);
+INSERT INTO size (productID, size, stock, price) VALUES ('9308094a-0ae5-481e-ae69-1c9c6044a0ca', 38, 37, 135.59);
+INSERT INTO size (productID, size, stock, price) VALUES ('9308094a-0ae5-481e-ae69-1c9c6044a0ca', 39, 67, 160.61);
+INSERT INTO size (productID, size, stock, price) VALUES ('9308094a-0ae5-481e-ae69-1c9c6044a0ca', 40, 27, 86.16);
+INSERT INTO size (productID, size, stock, price) VALUES ('9308094a-0ae5-481e-ae69-1c9c6044a0ca', 41, 79, 91.97);
+INSERT INTO size (productID, size, stock, price) VALUES ('9308094a-0ae5-481e-ae69-1c9c6044a0ca', 42, 78, 169.23);
+INSERT INTO size (productID, size, stock, price) VALUES ('9308094a-0ae5-481e-ae69-1c9c6044a0ca', 43, 87, 129.06);
+INSERT INTO size (productID, size, stock, price) VALUES ('9308094a-0ae5-481e-ae69-1c9c6044a0ca', 44, 61, 114.89);
+INSERT INTO size (productID, size, stock, price) VALUES ('9308094a-0ae5-481e-ae69-1c9c6044a0ca', 45, 39, 140.54);
+INSERT INTO size (productID, size, stock, price) VALUES ('951ef1b2-2b89-4db2-87f9-771cae4eb8f5', 38, 93, 150.68);
+INSERT INTO size (productID, size, stock, price) VALUES ('951ef1b2-2b89-4db2-87f9-771cae4eb8f5', 39, 74, 107.34);
+INSERT INTO size (productID, size, stock, price) VALUES ('951ef1b2-2b89-4db2-87f9-771cae4eb8f5', 40, 64, 142.55);
+INSERT INTO size (productID, size, stock, price) VALUES ('951ef1b2-2b89-4db2-87f9-771cae4eb8f5', 41, 67, 93.79);
+INSERT INTO size (productID, size, stock, price) VALUES ('951ef1b2-2b89-4db2-87f9-771cae4eb8f5', 42, 79, 166.23);
+INSERT INTO size (productID, size, stock, price) VALUES ('951ef1b2-2b89-4db2-87f9-771cae4eb8f5', 43, 10, 100.24);
+INSERT INTO size (productID, size, stock, price) VALUES ('951ef1b2-2b89-4db2-87f9-771cae4eb8f5', 44, 35, 116.6);
+INSERT INTO size (productID, size, stock, price) VALUES ('951ef1b2-2b89-4db2-87f9-771cae4eb8f5', 45, 53, 80.72);
+INSERT INTO size (productID, size, stock, price) VALUES ('96773a76-0e41-4454-985b-7eed3fef9fd0', 38, 27, 106.76);
+INSERT INTO size (productID, size, stock, price) VALUES ('96773a76-0e41-4454-985b-7eed3fef9fd0', 39, 63, 113.14);
+INSERT INTO size (productID, size, stock, price) VALUES ('96773a76-0e41-4454-985b-7eed3fef9fd0', 40, 38, 58.5);
+INSERT INTO size (productID, size, stock, price) VALUES ('96773a76-0e41-4454-985b-7eed3fef9fd0', 41, 61, 73.58);
+INSERT INTO size (productID, size, stock, price) VALUES ('96773a76-0e41-4454-985b-7eed3fef9fd0', 42, 81, 54.96);
+INSERT INTO size (productID, size, stock, price) VALUES ('96773a76-0e41-4454-985b-7eed3fef9fd0', 43, 51, 80.81);
+INSERT INTO size (productID, size, stock, price) VALUES ('96773a76-0e41-4454-985b-7eed3fef9fd0', 44, 62, 177.64);
+INSERT INTO size (productID, size, stock, price) VALUES ('96773a76-0e41-4454-985b-7eed3fef9fd0', 45, 28, 167.64);
+INSERT INTO size (productID, size, stock, price) VALUES ('9a67dc75-6cd7-4bda-b96a-ce639a407db4', 38, 66, 101.19);
+INSERT INTO size (productID, size, stock, price) VALUES ('9a67dc75-6cd7-4bda-b96a-ce639a407db4', 39, 88, 106.42);
+INSERT INTO size (productID, size, stock, price) VALUES ('9a67dc75-6cd7-4bda-b96a-ce639a407db4', 40, 61, 180.64);
+INSERT INTO size (productID, size, stock, price) VALUES ('9a67dc75-6cd7-4bda-b96a-ce639a407db4', 41, 71, 180.73);
+INSERT INTO size (productID, size, stock, price) VALUES ('9a67dc75-6cd7-4bda-b96a-ce639a407db4', 42, 94, 139.63);
+INSERT INTO size (productID, size, stock, price) VALUES ('9a67dc75-6cd7-4bda-b96a-ce639a407db4', 43, 47, 64.28);
+INSERT INTO size (productID, size, stock, price) VALUES ('9a67dc75-6cd7-4bda-b96a-ce639a407db4', 44, 75, 177.63);
+INSERT INTO size (productID, size, stock, price) VALUES ('9a67dc75-6cd7-4bda-b96a-ce639a407db4', 45, 73, 108.51);
+INSERT INTO size (productID, size, stock, price) VALUES ('9ae36f26-459c-4144-9e93-37cce5e08af7', 38, 45, 69.35);
+INSERT INTO size (productID, size, stock, price) VALUES ('9ae36f26-459c-4144-9e93-37cce5e08af7', 39, 12, 63.18);
+INSERT INTO size (productID, size, stock, price) VALUES ('9ae36f26-459c-4144-9e93-37cce5e08af7', 40, 86, 131.73);
+INSERT INTO size (productID, size, stock, price) VALUES ('9ae36f26-459c-4144-9e93-37cce5e08af7', 41, 30, 175.03);
+INSERT INTO size (productID, size, stock, price) VALUES ('9ae36f26-459c-4144-9e93-37cce5e08af7', 42, 12, 172.41);
+INSERT INTO size (productID, size, stock, price) VALUES ('9ae36f26-459c-4144-9e93-37cce5e08af7', 43, 57, 180.98);
+INSERT INTO size (productID, size, stock, price) VALUES ('9ae36f26-459c-4144-9e93-37cce5e08af7', 44, 83, 175.95);
+INSERT INTO size (productID, size, stock, price) VALUES ('9ae36f26-459c-4144-9e93-37cce5e08af7', 45, 70, 150.48);
+INSERT INTO size (productID, size, stock, price) VALUES ('9d2a2fe5-3db0-470d-9e0a-6028200c60fa', 38, 89, 194.45);
+INSERT INTO size (productID, size, stock, price) VALUES ('9d2a2fe5-3db0-470d-9e0a-6028200c60fa', 39, 20, 188.78);
+INSERT INTO size (productID, size, stock, price) VALUES ('9d2a2fe5-3db0-470d-9e0a-6028200c60fa', 40, 44, 157.26);
+INSERT INTO size (productID, size, stock, price) VALUES ('9d2a2fe5-3db0-470d-9e0a-6028200c60fa', 41, 98, 109.95);
+INSERT INTO size (productID, size, stock, price) VALUES ('9d2a2fe5-3db0-470d-9e0a-6028200c60fa', 42, 35, 113.9);
+INSERT INTO size (productID, size, stock, price) VALUES ('9d2a2fe5-3db0-470d-9e0a-6028200c60fa', 43, 16, 98.6);
+INSERT INTO size (productID, size, stock, price) VALUES ('9d2a2fe5-3db0-470d-9e0a-6028200c60fa', 44, 75, 151.18);
+INSERT INTO size (productID, size, stock, price) VALUES ('9d2a2fe5-3db0-470d-9e0a-6028200c60fa', 45, 43, 96.5);
+INSERT INTO size (productID, size, stock, price) VALUES ('a16a3409-5966-4537-8b42-193fd6070547', 38, 21, 159.47);
+INSERT INTO size (productID, size, stock, price) VALUES ('a16a3409-5966-4537-8b42-193fd6070547', 39, 38, 92.18);
+INSERT INTO size (productID, size, stock, price) VALUES ('a16a3409-5966-4537-8b42-193fd6070547', 40, 12, 89.01);
+INSERT INTO size (productID, size, stock, price) VALUES ('a16a3409-5966-4537-8b42-193fd6070547', 41, 42, 149.41);
+INSERT INTO size (productID, size, stock, price) VALUES ('a16a3409-5966-4537-8b42-193fd6070547', 42, 64, 102.89);
+INSERT INTO size (productID, size, stock, price) VALUES ('a16a3409-5966-4537-8b42-193fd6070547', 43, 33, 185.01);
+INSERT INTO size (productID, size, stock, price) VALUES ('a16a3409-5966-4537-8b42-193fd6070547', 44, 25, 137.59);
+INSERT INTO size (productID, size, stock, price) VALUES ('a16a3409-5966-4537-8b42-193fd6070547', 45, 44, 111.64);
+INSERT INTO size (productID, size, stock, price) VALUES ('a232aee4-7a2b-474a-9550-f2da5777610c', 38, 87, 114.12);
+INSERT INTO size (productID, size, stock, price) VALUES ('a232aee4-7a2b-474a-9550-f2da5777610c', 39, 78, 199.12);
+INSERT INTO size (productID, size, stock, price) VALUES ('a232aee4-7a2b-474a-9550-f2da5777610c', 40, 62, 115.17);
+INSERT INTO size (productID, size, stock, price) VALUES ('a232aee4-7a2b-474a-9550-f2da5777610c', 41, 49, 106.59);
+INSERT INTO size (productID, size, stock, price) VALUES ('a232aee4-7a2b-474a-9550-f2da5777610c', 42, 10, 124.23);
+INSERT INTO size (productID, size, stock, price) VALUES ('a232aee4-7a2b-474a-9550-f2da5777610c', 43, 49, 52.3);
+INSERT INTO size (productID, size, stock, price) VALUES ('a232aee4-7a2b-474a-9550-f2da5777610c', 44, 86, 82.7);
+INSERT INTO size (productID, size, stock, price) VALUES ('a232aee4-7a2b-474a-9550-f2da5777610c', 45, 82, 136.03);
+INSERT INTO size (productID, size, stock, price) VALUES ('a3a074c2-cd37-486f-8235-9238e02dcfd8', 38, 16, 132.4);
+INSERT INTO size (productID, size, stock, price) VALUES ('a3a074c2-cd37-486f-8235-9238e02dcfd8', 39, 19, 166.6);
+INSERT INTO size (productID, size, stock, price) VALUES ('a3a074c2-cd37-486f-8235-9238e02dcfd8', 40, 68, 186.21);
+INSERT INTO size (productID, size, stock, price) VALUES ('a3a074c2-cd37-486f-8235-9238e02dcfd8', 41, 27, 149.11);
+INSERT INTO size (productID, size, stock, price) VALUES ('a3a074c2-cd37-486f-8235-9238e02dcfd8', 42, 60, 93.77);
+INSERT INTO size (productID, size, stock, price) VALUES ('a3a074c2-cd37-486f-8235-9238e02dcfd8', 43, 11, 105.92);
+INSERT INTO size (productID, size, stock, price) VALUES ('a3a074c2-cd37-486f-8235-9238e02dcfd8', 44, 12, 159.39);
+INSERT INTO size (productID, size, stock, price) VALUES ('a3a074c2-cd37-486f-8235-9238e02dcfd8', 45, 80, 81.59);
+INSERT INTO size (productID, size, stock, price) VALUES ('a5ea9a76-5a00-48c3-82bf-a903b97718d4', 38, 70, 75.1);
+INSERT INTO size (productID, size, stock, price) VALUES ('a5ea9a76-5a00-48c3-82bf-a903b97718d4', 39, 43, 115.32);
+INSERT INTO size (productID, size, stock, price) VALUES ('a5ea9a76-5a00-48c3-82bf-a903b97718d4', 40, 45, 85.06);
+INSERT INTO size (productID, size, stock, price) VALUES ('a5ea9a76-5a00-48c3-82bf-a903b97718d4', 41, 48, 132.39);
+INSERT INTO size (productID, size, stock, price) VALUES ('a5ea9a76-5a00-48c3-82bf-a903b97718d4', 42, 32, 160.44);
+INSERT INTO size (productID, size, stock, price) VALUES ('a5ea9a76-5a00-48c3-82bf-a903b97718d4', 43, 40, 118.17);
+INSERT INTO size (productID, size, stock, price) VALUES ('a5ea9a76-5a00-48c3-82bf-a903b97718d4', 44, 29, 189.88);
+INSERT INTO size (productID, size, stock, price) VALUES ('a5ea9a76-5a00-48c3-82bf-a903b97718d4', 45, 83, 71.41);
+INSERT INTO size (productID, size, stock, price) VALUES ('aa430195-4eb5-42b0-94ae-1dea5ed85001', 38, 42, 198.08);
+INSERT INTO size (productID, size, stock, price) VALUES ('aa430195-4eb5-42b0-94ae-1dea5ed85001', 39, 14, 56.35);
+INSERT INTO size (productID, size, stock, price) VALUES ('aa430195-4eb5-42b0-94ae-1dea5ed85001', 40, 75, 94.88);
+INSERT INTO size (productID, size, stock, price) VALUES ('aa430195-4eb5-42b0-94ae-1dea5ed85001', 41, 10, 110.35);
+INSERT INTO size (productID, size, stock, price) VALUES ('aa430195-4eb5-42b0-94ae-1dea5ed85001', 42, 60, 196.19);
+INSERT INTO size (productID, size, stock, price) VALUES ('aa430195-4eb5-42b0-94ae-1dea5ed85001', 43, 28, 156.23);
+INSERT INTO size (productID, size, stock, price) VALUES ('aa430195-4eb5-42b0-94ae-1dea5ed85001', 44, 32, 152.96);
+INSERT INTO size (productID, size, stock, price) VALUES ('aa430195-4eb5-42b0-94ae-1dea5ed85001', 45, 18, 113.53);
+INSERT INTO size (productID, size, stock, price) VALUES ('ab367332-60a6-4303-969a-68a9531ba514', 38, 28, 127.74);
+INSERT INTO size (productID, size, stock, price) VALUES ('ab367332-60a6-4303-969a-68a9531ba514', 39, 80, 104.11);
+INSERT INTO size (productID, size, stock, price) VALUES ('ab367332-60a6-4303-969a-68a9531ba514', 40, 36, 111.96);
+INSERT INTO size (productID, size, stock, price) VALUES ('ab367332-60a6-4303-969a-68a9531ba514', 41, 20, 96.38);
+INSERT INTO size (productID, size, stock, price) VALUES ('ab367332-60a6-4303-969a-68a9531ba514', 42, 17, 140.79);
+INSERT INTO size (productID, size, stock, price) VALUES ('ab367332-60a6-4303-969a-68a9531ba514', 43, 85, 72.52);
+INSERT INTO size (productID, size, stock, price) VALUES ('ab367332-60a6-4303-969a-68a9531ba514', 44, 59, 180.31);
+INSERT INTO size (productID, size, stock, price) VALUES ('ab367332-60a6-4303-969a-68a9531ba514', 45, 22, 125.63);
+INSERT INTO size (productID, size, stock, price) VALUES ('abc6bb36-2203-4742-9b4e-02904a803ae3', 38, 65, 140.11);
+INSERT INTO size (productID, size, stock, price) VALUES ('abc6bb36-2203-4742-9b4e-02904a803ae3', 39, 13, 100.48);
+INSERT INTO size (productID, size, stock, price) VALUES ('abc6bb36-2203-4742-9b4e-02904a803ae3', 40, 81, 89.65);
+INSERT INTO size (productID, size, stock, price) VALUES ('abc6bb36-2203-4742-9b4e-02904a803ae3', 41, 26, 100.98);
+INSERT INTO size (productID, size, stock, price) VALUES ('abc6bb36-2203-4742-9b4e-02904a803ae3', 42, 64, 132.23);
+INSERT INTO size (productID, size, stock, price) VALUES ('abc6bb36-2203-4742-9b4e-02904a803ae3', 43, 67, 132.9);
+INSERT INTO size (productID, size, stock, price) VALUES ('abc6bb36-2203-4742-9b4e-02904a803ae3', 44, 37, 108.52);
+INSERT INTO size (productID, size, stock, price) VALUES ('abc6bb36-2203-4742-9b4e-02904a803ae3', 45, 21, 147.45);
+INSERT INTO size (productID, size, stock, price) VALUES ('ad9a5f95-dee5-47a7-aea6-44ec72d099a9', 38, 21, 166.86);
+INSERT INTO size (productID, size, stock, price) VALUES ('ad9a5f95-dee5-47a7-aea6-44ec72d099a9', 39, 66, 112.6);
+INSERT INTO size (productID, size, stock, price) VALUES ('ad9a5f95-dee5-47a7-aea6-44ec72d099a9', 40, 48, 164.6);
+INSERT INTO size (productID, size, stock, price) VALUES ('ad9a5f95-dee5-47a7-aea6-44ec72d099a9', 41, 44, 122.07);
+INSERT INTO size (productID, size, stock, price) VALUES ('ad9a5f95-dee5-47a7-aea6-44ec72d099a9', 42, 29, 84.16);
+INSERT INTO size (productID, size, stock, price) VALUES ('ad9a5f95-dee5-47a7-aea6-44ec72d099a9', 43, 91, 61.15);
+INSERT INTO size (productID, size, stock, price) VALUES ('ad9a5f95-dee5-47a7-aea6-44ec72d099a9', 44, 44, 163.76);
+INSERT INTO size (productID, size, stock, price) VALUES ('ad9a5f95-dee5-47a7-aea6-44ec72d099a9', 45, 71, 92.27);
+INSERT INTO size (productID, size, stock, price) VALUES ('b120e91a-37ac-4104-95a5-223ff114852a', 38, 67, 195.22);
+INSERT INTO size (productID, size, stock, price) VALUES ('b120e91a-37ac-4104-95a5-223ff114852a', 39, 42, 176.71);
+INSERT INTO size (productID, size, stock, price) VALUES ('b120e91a-37ac-4104-95a5-223ff114852a', 40, 41, 125.31);
+INSERT INTO size (productID, size, stock, price) VALUES ('b120e91a-37ac-4104-95a5-223ff114852a', 41, 15, 77.7);
+INSERT INTO size (productID, size, stock, price) VALUES ('b120e91a-37ac-4104-95a5-223ff114852a', 42, 16, 72.27);
+INSERT INTO size (productID, size, stock, price) VALUES ('b120e91a-37ac-4104-95a5-223ff114852a', 43, 86, 89.17);
+INSERT INTO size (productID, size, stock, price) VALUES ('b120e91a-37ac-4104-95a5-223ff114852a', 44, 40, 145.43);
+INSERT INTO size (productID, size, stock, price) VALUES ('b120e91a-37ac-4104-95a5-223ff114852a', 45, 10, 88.34);
+INSERT INTO size (productID, size, stock, price) VALUES ('b28e3529-ed10-4cbb-8495-dab2404218c6', 38, 77, 172.91);
+INSERT INTO size (productID, size, stock, price) VALUES ('b28e3529-ed10-4cbb-8495-dab2404218c6', 39, 19, 52.21);
+INSERT INTO size (productID, size, stock, price) VALUES ('b28e3529-ed10-4cbb-8495-dab2404218c6', 40, 88, 53.53);
+INSERT INTO size (productID, size, stock, price) VALUES ('b28e3529-ed10-4cbb-8495-dab2404218c6', 41, 92, 52.97);
+INSERT INTO size (productID, size, stock, price) VALUES ('b28e3529-ed10-4cbb-8495-dab2404218c6', 42, 78, 97.51);
+INSERT INTO size (productID, size, stock, price) VALUES ('b28e3529-ed10-4cbb-8495-dab2404218c6', 43, 79, 70.06);
+INSERT INTO size (productID, size, stock, price) VALUES ('b28e3529-ed10-4cbb-8495-dab2404218c6', 44, 91, 176.11);
+INSERT INTO size (productID, size, stock, price) VALUES ('b28e3529-ed10-4cbb-8495-dab2404218c6', 45, 96, 163.79);
+INSERT INTO size (productID, size, stock, price) VALUES ('b4025876-409a-4dcb-9b2b-40bcd5cead33', 38, 14, 62.41);
+INSERT INTO size (productID, size, stock, price) VALUES ('b4025876-409a-4dcb-9b2b-40bcd5cead33', 39, 51, 185.29);
+INSERT INTO size (productID, size, stock, price) VALUES ('b4025876-409a-4dcb-9b2b-40bcd5cead33', 40, 66, 122.59);
+INSERT INTO size (productID, size, stock, price) VALUES ('b4025876-409a-4dcb-9b2b-40bcd5cead33', 41, 92, 159.88);
+INSERT INTO size (productID, size, stock, price) VALUES ('b4025876-409a-4dcb-9b2b-40bcd5cead33', 42, 41, 108.03);
+INSERT INTO size (productID, size, stock, price) VALUES ('b4025876-409a-4dcb-9b2b-40bcd5cead33', 43, 44, 58.87);
+INSERT INTO size (productID, size, stock, price) VALUES ('b4025876-409a-4dcb-9b2b-40bcd5cead33', 44, 50, 89.37);
+INSERT INTO size (productID, size, stock, price) VALUES ('b4025876-409a-4dcb-9b2b-40bcd5cead33', 45, 81, 57.91);
+INSERT INTO size (productID, size, stock, price) VALUES ('b6302fd4-80a8-4658-a7fe-048852bd8f50', 38, 22, 108.55);
+INSERT INTO size (productID, size, stock, price) VALUES ('b6302fd4-80a8-4658-a7fe-048852bd8f50', 39, 66, 114.48);
+INSERT INTO size (productID, size, stock, price) VALUES ('b6302fd4-80a8-4658-a7fe-048852bd8f50', 40, 94, 179.02);
+INSERT INTO size (productID, size, stock, price) VALUES ('b6302fd4-80a8-4658-a7fe-048852bd8f50', 41, 78, 172.08);
+INSERT INTO size (productID, size, stock, price) VALUES ('b6302fd4-80a8-4658-a7fe-048852bd8f50', 42, 86, 162.43);
+INSERT INTO size (productID, size, stock, price) VALUES ('b6302fd4-80a8-4658-a7fe-048852bd8f50', 43, 97, 163.63);
+INSERT INTO size (productID, size, stock, price) VALUES ('b6302fd4-80a8-4658-a7fe-048852bd8f50', 44, 94, 181.05);
+INSERT INTO size (productID, size, stock, price) VALUES ('b6302fd4-80a8-4658-a7fe-048852bd8f50', 45, 46, 175.61);
+INSERT INTO size (productID, size, stock, price) VALUES ('b6a40252-a981-4f33-a85a-c0b2f4fb78fa', 38, 77, 53.18);
+INSERT INTO size (productID, size, stock, price) VALUES ('b6a40252-a981-4f33-a85a-c0b2f4fb78fa', 39, 90, 112.36);
+INSERT INTO size (productID, size, stock, price) VALUES ('b6a40252-a981-4f33-a85a-c0b2f4fb78fa', 40, 50, 137.5);
+INSERT INTO size (productID, size, stock, price) VALUES ('b6a40252-a981-4f33-a85a-c0b2f4fb78fa', 41, 59, 197.04);
+INSERT INTO size (productID, size, stock, price) VALUES ('b6a40252-a981-4f33-a85a-c0b2f4fb78fa', 42, 13, 170.28);
+INSERT INTO size (productID, size, stock, price) VALUES ('b6a40252-a981-4f33-a85a-c0b2f4fb78fa', 43, 75, 191.87);
+INSERT INTO size (productID, size, stock, price) VALUES ('b6a40252-a981-4f33-a85a-c0b2f4fb78fa', 44, 69, 187.83);
+INSERT INTO size (productID, size, stock, price) VALUES ('b6a40252-a981-4f33-a85a-c0b2f4fb78fa', 45, 19, 183.62);
+INSERT INTO size (productID, size, stock, price) VALUES ('b82b430a-6758-4613-8c72-ac72412076db', 38, 19, 146.06);
+INSERT INTO size (productID, size, stock, price) VALUES ('b82b430a-6758-4613-8c72-ac72412076db', 39, 55, 189.19);
+INSERT INTO size (productID, size, stock, price) VALUES ('b82b430a-6758-4613-8c72-ac72412076db', 40, 92, 185.42);
+INSERT INTO size (productID, size, stock, price) VALUES ('b82b430a-6758-4613-8c72-ac72412076db', 41, 63, 61.71);
+INSERT INTO size (productID, size, stock, price) VALUES ('b82b430a-6758-4613-8c72-ac72412076db', 42, 74, 75.95);
+INSERT INTO size (productID, size, stock, price) VALUES ('b82b430a-6758-4613-8c72-ac72412076db', 43, 98, 80.63);
+INSERT INTO size (productID, size, stock, price) VALUES ('b82b430a-6758-4613-8c72-ac72412076db', 44, 12, 106.56);
+INSERT INTO size (productID, size, stock, price) VALUES ('b82b430a-6758-4613-8c72-ac72412076db', 45, 90, 199.19);
+INSERT INTO size (productID, size, stock, price) VALUES ('bda9e2d4-a4d5-417f-9999-f62194b4285f', 38, 69, 160.17);
+INSERT INTO size (productID, size, stock, price) VALUES ('bda9e2d4-a4d5-417f-9999-f62194b4285f', 39, 53, 92.75);
+INSERT INTO size (productID, size, stock, price) VALUES ('bda9e2d4-a4d5-417f-9999-f62194b4285f', 40, 48, 125.9);
+INSERT INTO size (productID, size, stock, price) VALUES ('bda9e2d4-a4d5-417f-9999-f62194b4285f', 41, 11, 120.18);
+INSERT INTO size (productID, size, stock, price) VALUES ('bda9e2d4-a4d5-417f-9999-f62194b4285f', 42, 12, 144.32);
+INSERT INTO size (productID, size, stock, price) VALUES ('bda9e2d4-a4d5-417f-9999-f62194b4285f', 43, 26, 124.47);
+INSERT INTO size (productID, size, stock, price) VALUES ('bda9e2d4-a4d5-417f-9999-f62194b4285f', 44, 47, 147.37);
+INSERT INTO size (productID, size, stock, price) VALUES ('bda9e2d4-a4d5-417f-9999-f62194b4285f', 45, 41, 175.66);
+INSERT INTO size (productID, size, stock, price) VALUES ('c2e04fae-ad98-4b26-92c5-48687596a9b6', 38, 16, 131.48);
+INSERT INTO size (productID, size, stock, price) VALUES ('c2e04fae-ad98-4b26-92c5-48687596a9b6', 39, 12, 157.05);
+INSERT INTO size (productID, size, stock, price) VALUES ('c2e04fae-ad98-4b26-92c5-48687596a9b6', 40, 11, 192.82);
+INSERT INTO size (productID, size, stock, price) VALUES ('c2e04fae-ad98-4b26-92c5-48687596a9b6', 41, 48, 113.1);
+INSERT INTO size (productID, size, stock, price) VALUES ('c2e04fae-ad98-4b26-92c5-48687596a9b6', 42, 30, 121.35);
+INSERT INTO size (productID, size, stock, price) VALUES ('c2e04fae-ad98-4b26-92c5-48687596a9b6', 43, 78, 91.62);
+INSERT INTO size (productID, size, stock, price) VALUES ('c2e04fae-ad98-4b26-92c5-48687596a9b6', 44, 45, 187.66);
+INSERT INTO size (productID, size, stock, price) VALUES ('c2e04fae-ad98-4b26-92c5-48687596a9b6', 45, 54, 167.95);
+INSERT INTO size (productID, size, stock, price) VALUES ('c2f1fa08-f699-4d0c-b5cd-7b27c07fee3e', 38, 43, 106.48);
+INSERT INTO size (productID, size, stock, price) VALUES ('c2f1fa08-f699-4d0c-b5cd-7b27c07fee3e', 39, 23, 145.0);
+INSERT INTO size (productID, size, stock, price) VALUES ('c2f1fa08-f699-4d0c-b5cd-7b27c07fee3e', 40, 22, 92.73);
+INSERT INTO size (productID, size, stock, price) VALUES ('c2f1fa08-f699-4d0c-b5cd-7b27c07fee3e', 41, 47, 57.93);
+INSERT INTO size (productID, size, stock, price) VALUES ('c2f1fa08-f699-4d0c-b5cd-7b27c07fee3e', 42, 35, 57.54);
+INSERT INTO size (productID, size, stock, price) VALUES ('c2f1fa08-f699-4d0c-b5cd-7b27c07fee3e', 43, 53, 134.08);
+INSERT INTO size (productID, size, stock, price) VALUES ('c2f1fa08-f699-4d0c-b5cd-7b27c07fee3e', 44, 44, 134.01);
+INSERT INTO size (productID, size, stock, price) VALUES ('c2f1fa08-f699-4d0c-b5cd-7b27c07fee3e', 45, 41, 109.2);
+INSERT INTO size (productID, size, stock, price) VALUES ('c38d9763-32d1-4899-8dad-73e8400cfdf7', 38, 44, 75.72);
+INSERT INTO size (productID, size, stock, price) VALUES ('c38d9763-32d1-4899-8dad-73e8400cfdf7', 39, 77, 164.98);
+INSERT INTO size (productID, size, stock, price) VALUES ('c38d9763-32d1-4899-8dad-73e8400cfdf7', 40, 92, 178.53);
+INSERT INTO size (productID, size, stock, price) VALUES ('c38d9763-32d1-4899-8dad-73e8400cfdf7', 41, 54, 196.85);
+INSERT INTO size (productID, size, stock, price) VALUES ('c38d9763-32d1-4899-8dad-73e8400cfdf7', 42, 81, 152.93);
+INSERT INTO size (productID, size, stock, price) VALUES ('c38d9763-32d1-4899-8dad-73e8400cfdf7', 43, 52, 71.67);
+INSERT INTO size (productID, size, stock, price) VALUES ('c38d9763-32d1-4899-8dad-73e8400cfdf7', 44, 61, 170.01);
+INSERT INTO size (productID, size, stock, price) VALUES ('c38d9763-32d1-4899-8dad-73e8400cfdf7', 45, 55, 138.15);
+INSERT INTO size (productID, size, stock, price) VALUES ('c8ab7b05-99d1-467b-a923-6987ed4d7804', 38, 100, 198.6);
+INSERT INTO size (productID, size, stock, price) VALUES ('c8ab7b05-99d1-467b-a923-6987ed4d7804', 39, 66, 57.47);
+INSERT INTO size (productID, size, stock, price) VALUES ('c8ab7b05-99d1-467b-a923-6987ed4d7804', 40, 48, 57.76);
+INSERT INTO size (productID, size, stock, price) VALUES ('c8ab7b05-99d1-467b-a923-6987ed4d7804', 41, 31, 192.47);
+INSERT INTO size (productID, size, stock, price) VALUES ('c8ab7b05-99d1-467b-a923-6987ed4d7804', 42, 23, 166.25);
+INSERT INTO size (productID, size, stock, price) VALUES ('c8ab7b05-99d1-467b-a923-6987ed4d7804', 43, 84, 191.99);
+INSERT INTO size (productID, size, stock, price) VALUES ('c8ab7b05-99d1-467b-a923-6987ed4d7804', 44, 86, 177.08);
+INSERT INTO size (productID, size, stock, price) VALUES ('c8ab7b05-99d1-467b-a923-6987ed4d7804', 45, 57, 136.51);
+INSERT INTO size (productID, size, stock, price) VALUES ('c98d73c1-8d33-46d9-98dc-8e3c6e090827', 38, 74, 123.81);
+INSERT INTO size (productID, size, stock, price) VALUES ('c98d73c1-8d33-46d9-98dc-8e3c6e090827', 39, 51, 124.23);
+INSERT INTO size (productID, size, stock, price) VALUES ('c98d73c1-8d33-46d9-98dc-8e3c6e090827', 40, 71, 126.21);
+INSERT INTO size (productID, size, stock, price) VALUES ('c98d73c1-8d33-46d9-98dc-8e3c6e090827', 41, 21, 176.65);
+INSERT INTO size (productID, size, stock, price) VALUES ('c98d73c1-8d33-46d9-98dc-8e3c6e090827', 42, 18, 112.03);
+INSERT INTO size (productID, size, stock, price) VALUES ('c98d73c1-8d33-46d9-98dc-8e3c6e090827', 43, 85, 168.2);
+INSERT INTO size (productID, size, stock, price) VALUES ('c98d73c1-8d33-46d9-98dc-8e3c6e090827', 44, 25, 61.08);
+INSERT INTO size (productID, size, stock, price) VALUES ('c98d73c1-8d33-46d9-98dc-8e3c6e090827', 45, 44, 61.74);
+INSERT INTO size (productID, size, stock, price) VALUES ('cc3a8dc8-4187-49ed-96a6-faa5f3002013', 38, 16, 181.02);
+INSERT INTO size (productID, size, stock, price) VALUES ('cc3a8dc8-4187-49ed-96a6-faa5f3002013', 39, 79, 101.84);
+INSERT INTO size (productID, size, stock, price) VALUES ('cc3a8dc8-4187-49ed-96a6-faa5f3002013', 40, 78, 189.54);
+INSERT INTO size (productID, size, stock, price) VALUES ('cc3a8dc8-4187-49ed-96a6-faa5f3002013', 41, 43, 161.05);
+INSERT INTO size (productID, size, stock, price) VALUES ('cc3a8dc8-4187-49ed-96a6-faa5f3002013', 42, 73, 197.97);
+INSERT INTO size (productID, size, stock, price) VALUES ('cc3a8dc8-4187-49ed-96a6-faa5f3002013', 43, 76, 195.44);
+INSERT INTO size (productID, size, stock, price) VALUES ('cc3a8dc8-4187-49ed-96a6-faa5f3002013', 44, 14, 97.36);
+INSERT INTO size (productID, size, stock, price) VALUES ('cc3a8dc8-4187-49ed-96a6-faa5f3002013', 45, 10, 162.01);
+INSERT INTO size (productID, size, stock, price) VALUES ('cd895c61-3b13-4e5c-b5b0-870e2b2d2b0a', 38, 24, 80.2);
+INSERT INTO size (productID, size, stock, price) VALUES ('cd895c61-3b13-4e5c-b5b0-870e2b2d2b0a', 39, 90, 116.33);
+INSERT INTO size (productID, size, stock, price) VALUES ('cd895c61-3b13-4e5c-b5b0-870e2b2d2b0a', 40, 77, 141.01);
+INSERT INTO size (productID, size, stock, price) VALUES ('cd895c61-3b13-4e5c-b5b0-870e2b2d2b0a', 41, 39, 122.81);
+INSERT INTO size (productID, size, stock, price) VALUES ('cd895c61-3b13-4e5c-b5b0-870e2b2d2b0a', 42, 22, 140.89);
+INSERT INTO size (productID, size, stock, price) VALUES ('cd895c61-3b13-4e5c-b5b0-870e2b2d2b0a', 43, 65, 177.28);
+INSERT INTO size (productID, size, stock, price) VALUES ('cd895c61-3b13-4e5c-b5b0-870e2b2d2b0a', 44, 36, 128.66);
+INSERT INTO size (productID, size, stock, price) VALUES ('cd895c61-3b13-4e5c-b5b0-870e2b2d2b0a', 45, 81, 194.8);
+INSERT INTO size (productID, size, stock, price) VALUES ('ceb00eab-1960-4e30-8493-e8c7ee0055a0', 38, 25, 68.77);
+INSERT INTO size (productID, size, stock, price) VALUES ('ceb00eab-1960-4e30-8493-e8c7ee0055a0', 39, 14, 185.97);
+INSERT INTO size (productID, size, stock, price) VALUES ('ceb00eab-1960-4e30-8493-e8c7ee0055a0', 40, 78, 171.17);
+INSERT INTO size (productID, size, stock, price) VALUES ('ceb00eab-1960-4e30-8493-e8c7ee0055a0', 41, 85, 52.46);
+INSERT INTO size (productID, size, stock, price) VALUES ('ceb00eab-1960-4e30-8493-e8c7ee0055a0', 42, 35, 144.79);
+INSERT INTO size (productID, size, stock, price) VALUES ('ceb00eab-1960-4e30-8493-e8c7ee0055a0', 43, 28, 195.05);
+INSERT INTO size (productID, size, stock, price) VALUES ('ceb00eab-1960-4e30-8493-e8c7ee0055a0', 44, 17, 113.97);
+INSERT INTO size (productID, size, stock, price) VALUES ('ceb00eab-1960-4e30-8493-e8c7ee0055a0', 45, 28, 173.8);
+INSERT INTO size (productID, size, stock, price) VALUES ('cebd0415-ef11-4a97-a5c9-32e3f729a33b', 38, 91, 97.13);
+INSERT INTO size (productID, size, stock, price) VALUES ('cebd0415-ef11-4a97-a5c9-32e3f729a33b', 39, 58, 88.17);
+INSERT INTO size (productID, size, stock, price) VALUES ('cebd0415-ef11-4a97-a5c9-32e3f729a33b', 40, 83, 196.44);
+INSERT INTO size (productID, size, stock, price) VALUES ('cebd0415-ef11-4a97-a5c9-32e3f729a33b', 41, 14, 170.43);
+INSERT INTO size (productID, size, stock, price) VALUES ('cebd0415-ef11-4a97-a5c9-32e3f729a33b', 42, 39, 112.69);
+INSERT INTO size (productID, size, stock, price) VALUES ('cebd0415-ef11-4a97-a5c9-32e3f729a33b', 43, 97, 189.18);
+INSERT INTO size (productID, size, stock, price) VALUES ('cebd0415-ef11-4a97-a5c9-32e3f729a33b', 44, 40, 175.0);
+INSERT INTO size (productID, size, stock, price) VALUES ('cebd0415-ef11-4a97-a5c9-32e3f729a33b', 45, 67, 179.68);
+INSERT INTO size (productID, size, stock, price) VALUES ('d83b03d1-9760-47b7-948f-20fc05d1602a', 38, 17, 134.69);
+INSERT INTO size (productID, size, stock, price) VALUES ('d83b03d1-9760-47b7-948f-20fc05d1602a', 39, 35, 61.56);
+INSERT INTO size (productID, size, stock, price) VALUES ('d83b03d1-9760-47b7-948f-20fc05d1602a', 40, 59, 117.88);
+INSERT INTO size (productID, size, stock, price) VALUES ('d83b03d1-9760-47b7-948f-20fc05d1602a', 41, 80, 114.79);
+INSERT INTO size (productID, size, stock, price) VALUES ('d83b03d1-9760-47b7-948f-20fc05d1602a', 42, 88, 79.6);
+INSERT INTO size (productID, size, stock, price) VALUES ('d83b03d1-9760-47b7-948f-20fc05d1602a', 43, 29, 78.25);
+INSERT INTO size (productID, size, stock, price) VALUES ('d83b03d1-9760-47b7-948f-20fc05d1602a', 44, 35, 119.22);
+INSERT INTO size (productID, size, stock, price) VALUES ('d83b03d1-9760-47b7-948f-20fc05d1602a', 45, 15, 90.26);
+INSERT INTO size (productID, size, stock, price) VALUES ('dce4f957-4832-4e13-ad99-782642b7f794', 38, 83, 97.13);
+INSERT INTO size (productID, size, stock, price) VALUES ('dce4f957-4832-4e13-ad99-782642b7f794', 39, 76, 112.33);
+INSERT INTO size (productID, size, stock, price) VALUES ('dce4f957-4832-4e13-ad99-782642b7f794', 40, 30, 66.95);
+INSERT INTO size (productID, size, stock, price) VALUES ('dce4f957-4832-4e13-ad99-782642b7f794', 41, 82, 50.35);
+INSERT INTO size (productID, size, stock, price) VALUES ('dce4f957-4832-4e13-ad99-782642b7f794', 42, 73, 76.13);
+INSERT INTO size (productID, size, stock, price) VALUES ('dce4f957-4832-4e13-ad99-782642b7f794', 43, 76, 140.41);
+INSERT INTO size (productID, size, stock, price) VALUES ('dce4f957-4832-4e13-ad99-782642b7f794', 44, 67, 67.92);
+INSERT INTO size (productID, size, stock, price) VALUES ('dce4f957-4832-4e13-ad99-782642b7f794', 45, 33, 184.27);
+INSERT INTO size (productID, size, stock, price) VALUES ('df577be9-0084-4bd7-a641-9eae323981c8', 38, 93, 144.89);
+INSERT INTO size (productID, size, stock, price) VALUES ('df577be9-0084-4bd7-a641-9eae323981c8', 39, 24, 122.33);
+INSERT INTO size (productID, size, stock, price) VALUES ('df577be9-0084-4bd7-a641-9eae323981c8', 40, 100, 76.28);
+INSERT INTO size (productID, size, stock, price) VALUES ('df577be9-0084-4bd7-a641-9eae323981c8', 41, 92, 103.58);
+INSERT INTO size (productID, size, stock, price) VALUES ('df577be9-0084-4bd7-a641-9eae323981c8', 42, 67, 138.89);
+INSERT INTO size (productID, size, stock, price) VALUES ('df577be9-0084-4bd7-a641-9eae323981c8', 43, 62, 67.97);
+INSERT INTO size (productID, size, stock, price) VALUES ('df577be9-0084-4bd7-a641-9eae323981c8', 44, 83, 188.17);
+INSERT INTO size (productID, size, stock, price) VALUES ('df577be9-0084-4bd7-a641-9eae323981c8', 45, 50, 104.83);
+INSERT INTO size (productID, size, stock, price) VALUES ('e139fc61-401b-4423-9f75-badd567f76ac', 38, 82, 61.2);
+INSERT INTO size (productID, size, stock, price) VALUES ('e139fc61-401b-4423-9f75-badd567f76ac', 39, 55, 181.47);
+INSERT INTO size (productID, size, stock, price) VALUES ('e139fc61-401b-4423-9f75-badd567f76ac', 40, 81, 53.83);
+INSERT INTO size (productID, size, stock, price) VALUES ('e139fc61-401b-4423-9f75-badd567f76ac', 41, 94, 61.16);
+INSERT INTO size (productID, size, stock, price) VALUES ('e139fc61-401b-4423-9f75-badd567f76ac', 42, 33, 114.6);
+INSERT INTO size (productID, size, stock, price) VALUES ('e139fc61-401b-4423-9f75-badd567f76ac', 43, 31, 148.89);
+INSERT INTO size (productID, size, stock, price) VALUES ('e139fc61-401b-4423-9f75-badd567f76ac', 44, 47, 150.58);
+INSERT INTO size (productID, size, stock, price) VALUES ('e139fc61-401b-4423-9f75-badd567f76ac', 45, 29, 190.78);
+INSERT INTO size (productID, size, stock, price) VALUES ('e3323eed-9682-4e29-bf21-bf127399f67b', 38, 30, 163.39);
+INSERT INTO size (productID, size, stock, price) VALUES ('e3323eed-9682-4e29-bf21-bf127399f67b', 39, 48, 139.47);
+INSERT INTO size (productID, size, stock, price) VALUES ('e3323eed-9682-4e29-bf21-bf127399f67b', 40, 100, 141.9);
+INSERT INTO size (productID, size, stock, price) VALUES ('e3323eed-9682-4e29-bf21-bf127399f67b', 41, 31, 150.26);
+INSERT INTO size (productID, size, stock, price) VALUES ('e3323eed-9682-4e29-bf21-bf127399f67b', 42, 47, 124.29);
+INSERT INTO size (productID, size, stock, price) VALUES ('e3323eed-9682-4e29-bf21-bf127399f67b', 43, 41, 53.87);
+INSERT INTO size (productID, size, stock, price) VALUES ('e3323eed-9682-4e29-bf21-bf127399f67b', 44, 85, 185.43);
+INSERT INTO size (productID, size, stock, price) VALUES ('e3323eed-9682-4e29-bf21-bf127399f67b', 45, 63, 86.41);
+INSERT INTO size (productID, size, stock, price) VALUES ('e6aa1308-7c2c-4263-a9a8-388b7d2b203b', 38, 55, 161.57);
+INSERT INTO size (productID, size, stock, price) VALUES ('e6aa1308-7c2c-4263-a9a8-388b7d2b203b', 39, 76, 168.22);
+INSERT INTO size (productID, size, stock, price) VALUES ('e6aa1308-7c2c-4263-a9a8-388b7d2b203b', 40, 77, 118.59);
+INSERT INTO size (productID, size, stock, price) VALUES ('e6aa1308-7c2c-4263-a9a8-388b7d2b203b', 41, 43, 125.56);
+INSERT INTO size (productID, size, stock, price) VALUES ('e6aa1308-7c2c-4263-a9a8-388b7d2b203b', 42, 22, 82.32);
+INSERT INTO size (productID, size, stock, price) VALUES ('e6aa1308-7c2c-4263-a9a8-388b7d2b203b', 43, 69, 193.24);
+INSERT INTO size (productID, size, stock, price) VALUES ('e6aa1308-7c2c-4263-a9a8-388b7d2b203b', 44, 90, 162.92);
+INSERT INTO size (productID, size, stock, price) VALUES ('e6aa1308-7c2c-4263-a9a8-388b7d2b203b', 45, 38, 103.04);
+INSERT INTO size (productID, size, stock, price) VALUES ('e89698a4-6de4-4817-8fde-ef14f4f389d9', 38, 54, 80.41);
+INSERT INTO size (productID, size, stock, price) VALUES ('e89698a4-6de4-4817-8fde-ef14f4f389d9', 39, 69, 107.61);
+INSERT INTO size (productID, size, stock, price) VALUES ('e89698a4-6de4-4817-8fde-ef14f4f389d9', 40, 59, 162.75);
+INSERT INTO size (productID, size, stock, price) VALUES ('e89698a4-6de4-4817-8fde-ef14f4f389d9', 41, 57, 154.38);
+INSERT INTO size (productID, size, stock, price) VALUES ('e89698a4-6de4-4817-8fde-ef14f4f389d9', 42, 59, 88.98);
+INSERT INTO size (productID, size, stock, price) VALUES ('e89698a4-6de4-4817-8fde-ef14f4f389d9', 43, 63, 69.5);
+INSERT INTO size (productID, size, stock, price) VALUES ('e89698a4-6de4-4817-8fde-ef14f4f389d9', 44, 22, 70.65);
+INSERT INTO size (productID, size, stock, price) VALUES ('e89698a4-6de4-4817-8fde-ef14f4f389d9', 45, 36, 148.68);
+INSERT INTO size (productID, size, stock, price) VALUES ('e948169d-a57f-4955-b8bd-3606cd9902a3', 38, 66, 135.4);
+INSERT INTO size (productID, size, stock, price) VALUES ('e948169d-a57f-4955-b8bd-3606cd9902a3', 39, 36, 163.42);
+INSERT INTO size (productID, size, stock, price) VALUES ('e948169d-a57f-4955-b8bd-3606cd9902a3', 40, 79, 53.34);
+INSERT INTO size (productID, size, stock, price) VALUES ('e948169d-a57f-4955-b8bd-3606cd9902a3', 41, 38, 144.11);
+INSERT INTO size (productID, size, stock, price) VALUES ('e948169d-a57f-4955-b8bd-3606cd9902a3', 42, 90, 64.54);
+INSERT INTO size (productID, size, stock, price) VALUES ('e948169d-a57f-4955-b8bd-3606cd9902a3', 43, 56, 142.71);
+INSERT INTO size (productID, size, stock, price) VALUES ('e948169d-a57f-4955-b8bd-3606cd9902a3', 44, 88, 182.0);
+INSERT INTO size (productID, size, stock, price) VALUES ('e948169d-a57f-4955-b8bd-3606cd9902a3', 45, 56, 172.78);
+INSERT INTO size (productID, size, stock, price) VALUES ('eda7e9a4-1cac-465d-a136-2111d5190ff1', 38, 30, 176.08);
+INSERT INTO size (productID, size, stock, price) VALUES ('eda7e9a4-1cac-465d-a136-2111d5190ff1', 39, 31, 62.72);
+INSERT INTO size (productID, size, stock, price) VALUES ('eda7e9a4-1cac-465d-a136-2111d5190ff1', 40, 46, 82.9);
+INSERT INTO size (productID, size, stock, price) VALUES ('eda7e9a4-1cac-465d-a136-2111d5190ff1', 41, 85, 165.01);
+INSERT INTO size (productID, size, stock, price) VALUES ('eda7e9a4-1cac-465d-a136-2111d5190ff1', 42, 21, 157.06);
+INSERT INTO size (productID, size, stock, price) VALUES ('eda7e9a4-1cac-465d-a136-2111d5190ff1', 43, 56, 126.59);
+INSERT INTO size (productID, size, stock, price) VALUES ('eda7e9a4-1cac-465d-a136-2111d5190ff1', 44, 36, 99.76);
+INSERT INTO size (productID, size, stock, price) VALUES ('eda7e9a4-1cac-465d-a136-2111d5190ff1', 45, 35, 76.79);
+INSERT INTO size (productID, size, stock, price) VALUES ('f0eb99e1-0f6b-434c-9da1-340d9c944a13', 38, 30, 176.01);
+INSERT INTO size (productID, size, stock, price) VALUES ('f0eb99e1-0f6b-434c-9da1-340d9c944a13', 39, 43, 98.86);
+INSERT INTO size (productID, size, stock, price) VALUES ('f0eb99e1-0f6b-434c-9da1-340d9c944a13', 40, 74, 62.25);
+INSERT INTO size (productID, size, stock, price) VALUES ('f0eb99e1-0f6b-434c-9da1-340d9c944a13', 41, 71, 90.42);
+INSERT INTO size (productID, size, stock, price) VALUES ('f0eb99e1-0f6b-434c-9da1-340d9c944a13', 42, 24, 106.55);
+INSERT INTO size (productID, size, stock, price) VALUES ('f0eb99e1-0f6b-434c-9da1-340d9c944a13', 43, 39, 133.71);
+INSERT INTO size (productID, size, stock, price) VALUES ('f0eb99e1-0f6b-434c-9da1-340d9c944a13', 44, 53, 167.39);
+INSERT INTO size (productID, size, stock, price) VALUES ('f0eb99e1-0f6b-434c-9da1-340d9c944a13', 45, 38, 197.95);
+INSERT INTO size (productID, size, stock, price) VALUES ('f22c3fed-3365-499f-90e9-4c8d7a2545b9', 38, 86, 95.26);
+INSERT INTO size (productID, size, stock, price) VALUES ('f22c3fed-3365-499f-90e9-4c8d7a2545b9', 39, 66, 122.39);
+INSERT INTO size (productID, size, stock, price) VALUES ('f22c3fed-3365-499f-90e9-4c8d7a2545b9', 40, 35, 151.15);
+INSERT INTO size (productID, size, stock, price) VALUES ('f22c3fed-3365-499f-90e9-4c8d7a2545b9', 41, 97, 150.04);
+INSERT INTO size (productID, size, stock, price) VALUES ('f22c3fed-3365-499f-90e9-4c8d7a2545b9', 42, 100, 196.37);
+INSERT INTO size (productID, size, stock, price) VALUES ('f22c3fed-3365-499f-90e9-4c8d7a2545b9', 43, 55, 164.43);
+INSERT INTO size (productID, size, stock, price) VALUES ('f22c3fed-3365-499f-90e9-4c8d7a2545b9', 44, 73, 90.56);
+INSERT INTO size (productID, size, stock, price) VALUES ('f22c3fed-3365-499f-90e9-4c8d7a2545b9', 45, 70, 143.41);
+INSERT INTO size (productID, size, stock, price) VALUES ('f355d295-0441-431d-a755-d8cb68aa596c', 38, 35, 53.08);
+INSERT INTO size (productID, size, stock, price) VALUES ('f355d295-0441-431d-a755-d8cb68aa596c', 39, 70, 128.97);
+INSERT INTO size (productID, size, stock, price) VALUES ('f355d295-0441-431d-a755-d8cb68aa596c', 40, 74, 88.5);
+INSERT INTO size (productID, size, stock, price) VALUES ('f355d295-0441-431d-a755-d8cb68aa596c', 41, 28, 198.21);
+INSERT INTO size (productID, size, stock, price) VALUES ('f355d295-0441-431d-a755-d8cb68aa596c', 42, 17, 127.03);
+INSERT INTO size (productID, size, stock, price) VALUES ('f355d295-0441-431d-a755-d8cb68aa596c', 43, 68, 93.51);
+INSERT INTO size (productID, size, stock, price) VALUES ('f355d295-0441-431d-a755-d8cb68aa596c', 44, 75, 183.35);
+INSERT INTO size (productID, size, stock, price) VALUES ('f355d295-0441-431d-a755-d8cb68aa596c', 45, 51, 107.48);
+INSERT INTO size (productID, size, stock, price) VALUES ('f65a0131-977b-4a54-b682-eb7f0180e8d8', 38, 79, 111.86);
+INSERT INTO size (productID, size, stock, price) VALUES ('f65a0131-977b-4a54-b682-eb7f0180e8d8', 39, 49, 71.06);
+INSERT INTO size (productID, size, stock, price) VALUES ('f65a0131-977b-4a54-b682-eb7f0180e8d8', 40, 90, 150.71);
+INSERT INTO size (productID, size, stock, price) VALUES ('f65a0131-977b-4a54-b682-eb7f0180e8d8', 41, 65, 163.29);
+INSERT INTO size (productID, size, stock, price) VALUES ('f65a0131-977b-4a54-b682-eb7f0180e8d8', 42, 21, 58.93);
+INSERT INTO size (productID, size, stock, price) VALUES ('f65a0131-977b-4a54-b682-eb7f0180e8d8', 43, 16, 79.37);
+INSERT INTO size (productID, size, stock, price) VALUES ('f65a0131-977b-4a54-b682-eb7f0180e8d8', 44, 24, 73.03);
+INSERT INTO size (productID, size, stock, price) VALUES ('f65a0131-977b-4a54-b682-eb7f0180e8d8', 45, 16, 75.66);
+INSERT INTO size (productID, size, stock, price) VALUES ('f87b74be-7147-4379-abff-dcb87acbc65b', 38, 80, 91.77);
+INSERT INTO size (productID, size, stock, price) VALUES ('f87b74be-7147-4379-abff-dcb87acbc65b', 39, 87, 76.42);
+INSERT INTO size (productID, size, stock, price) VALUES ('f87b74be-7147-4379-abff-dcb87acbc65b', 40, 32, 91.89);
+INSERT INTO size (productID, size, stock, price) VALUES ('f87b74be-7147-4379-abff-dcb87acbc65b', 41, 71, 184.13);
+INSERT INTO size (productID, size, stock, price) VALUES ('f87b74be-7147-4379-abff-dcb87acbc65b', 42, 62, 59.61);
+INSERT INTO size (productID, size, stock, price) VALUES ('f87b74be-7147-4379-abff-dcb87acbc65b', 43, 61, 60.55);
+INSERT INTO size (productID, size, stock, price) VALUES ('f87b74be-7147-4379-abff-dcb87acbc65b', 44, 37, 147.63);
+INSERT INTO size (productID, size, stock, price) VALUES ('f87b74be-7147-4379-abff-dcb87acbc65b', 45, 35, 187.92);
+INSERT INTO size (productID, size, stock, price) VALUES ('f92a90ce-8cae-4a2f-a770-6fa4b975a1b8', 38, 63, 94.76);
+INSERT INTO size (productID, size, stock, price) VALUES ('f92a90ce-8cae-4a2f-a770-6fa4b975a1b8', 39, 64, 173.59);
+INSERT INTO size (productID, size, stock, price) VALUES ('f92a90ce-8cae-4a2f-a770-6fa4b975a1b8', 40, 81, 80.83);
+INSERT INTO size (productID, size, stock, price) VALUES ('f92a90ce-8cae-4a2f-a770-6fa4b975a1b8', 41, 79, 104.94);
+INSERT INTO size (productID, size, stock, price) VALUES ('f92a90ce-8cae-4a2f-a770-6fa4b975a1b8', 42, 78, 156.96);
+INSERT INTO size (productID, size, stock, price) VALUES ('f92a90ce-8cae-4a2f-a770-6fa4b975a1b8', 43, 27, 83.71);
+INSERT INTO size (productID, size, stock, price) VALUES ('f92a90ce-8cae-4a2f-a770-6fa4b975a1b8', 44, 24, 193.76);
+INSERT INTO size (productID, size, stock, price) VALUES ('f92a90ce-8cae-4a2f-a770-6fa4b975a1b8', 45, 90, 75.04);
+INSERT INTO size (productID, size, stock, price) VALUES ('fcf16336-31e5-4b9b-8728-38e66c257b45', 38, 80, 140.19);
+INSERT INTO size (productID, size, stock, price) VALUES ('fcf16336-31e5-4b9b-8728-38e66c257b45', 39, 22, 80.11);
+INSERT INTO size (productID, size, stock, price) VALUES ('fcf16336-31e5-4b9b-8728-38e66c257b45', 40, 31, 128.25);
+INSERT INTO size (productID, size, stock, price) VALUES ('fcf16336-31e5-4b9b-8728-38e66c257b45', 41, 66, 88.32);
+INSERT INTO size (productID, size, stock, price) VALUES ('fcf16336-31e5-4b9b-8728-38e66c257b45', 42, 14, 110.32);
+INSERT INTO size (productID, size, stock, price) VALUES ('fcf16336-31e5-4b9b-8728-38e66c257b45', 43, 51, 53.62);
+INSERT INTO size (productID, size, stock, price) VALUES ('fcf16336-31e5-4b9b-8728-38e66c257b45', 44, 73, 94.83);
+INSERT INTO size (productID, size, stock, price) VALUES ('fcf16336-31e5-4b9b-8728-38e66c257b45', 45, 65, 145.49);
+INSERT INTO size (productID, size, stock, price) VALUES ('fe6bc580-3781-440f-9048-7b30119a7a9a', 38, 31, 197.03);
+INSERT INTO size (productID, size, stock, price) VALUES ('fe6bc580-3781-440f-9048-7b30119a7a9a', 39, 60, 85.64);
+INSERT INTO size (productID, size, stock, price) VALUES ('fe6bc580-3781-440f-9048-7b30119a7a9a', 40, 45, 139.09);
+INSERT INTO size (productID, size, stock, price) VALUES ('fe6bc580-3781-440f-9048-7b30119a7a9a', 41, 67, 79.77);
+INSERT INTO size (productID, size, stock, price) VALUES ('fe6bc580-3781-440f-9048-7b30119a7a9a', 42, 60, 157.34);
+INSERT INTO size (productID, size, stock, price) VALUES ('fe6bc580-3781-440f-9048-7b30119a7a9a', 43, 22, 77.07);
+INSERT INTO size (productID, size, stock, price) VALUES ('fe6bc580-3781-440f-9048-7b30119a7a9a', 44, 67, 53.75);
+INSERT INTO size (productID, size, stock, price) VALUES ('fe6bc580-3781-440f-9048-7b30119a7a9a', 45, 72, 142.4);
+INSERT INTO size (productID, size, stock, price) VALUES ('ffbd927c-e0c5-4973-8a6e-6dffcddc1b44', 38, 21, 150.42);
+INSERT INTO size (productID, size, stock, price) VALUES ('ffbd927c-e0c5-4973-8a6e-6dffcddc1b44', 39, 64, 181.39);
+INSERT INTO size (productID, size, stock, price) VALUES ('ffbd927c-e0c5-4973-8a6e-6dffcddc1b44', 40, 43, 60.76);
+INSERT INTO size (productID, size, stock, price) VALUES ('ffbd927c-e0c5-4973-8a6e-6dffcddc1b44', 41, 66, 157.57);
+INSERT INTO size (productID, size, stock, price) VALUES ('ffbd927c-e0c5-4973-8a6e-6dffcddc1b44', 42, 76, 126.65);
+INSERT INTO size (productID, size, stock, price) VALUES ('ffbd927c-e0c5-4973-8a6e-6dffcddc1b44', 43, 20, 146.95);
+INSERT INTO size (productID, size, stock, price) VALUES ('ffbd927c-e0c5-4973-8a6e-6dffcddc1b44', 44, 39, 150.81);
+INSERT INTO size (productID, size, stock, price) VALUES ('ffbd927c-e0c5-4973-8a6e-6dffcddc1b44', 45, 81, 85.55);

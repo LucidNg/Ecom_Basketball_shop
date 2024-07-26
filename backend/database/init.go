@@ -79,10 +79,7 @@ func CreateTable(db *sqlitecloud.SQCloud) error {
 		"productName" TEXT NOT NULL,
 		"description" TEXT NOT NULL,
 		"brand" TEXT NOT NULL,
-		"price" REAL NOT NULL,
-		"stock" INTEGER NOT NULL,
 		"dateAdded" TEXT NOT NULL,
-		"size" TEXT NOT NULL,
 		FOREIGN KEY(categoryID) REFERENCES category(categoryID)
 	);`
 
@@ -132,6 +129,15 @@ func CreateTable(db *sqlitecloud.SQCloud) error {
 		"cost" INTEGER NOT NULL,
 		"expiryDate" TEXT NOT NULL,
 		"status" TEXT NOT NULL
+	);`
+
+	sizeTable := `CREATE TABLE IF NOT EXISTS size (
+		"productID" TEXT NOT NULL,
+		"size" INTEGER NOT NULL,
+		"stock" INTEGER NOT NULL,
+		"price" REAL NOT NULL,
+		PRIMARY KEY(productID, size),
+		FOREIGN KEY(productID) REFERENCES product(productID)
 	);`
 
 	if err := db.Execute(userTable); err != nil {
@@ -187,6 +193,10 @@ func CreateTable(db *sqlitecloud.SQCloud) error {
 	}
 
 	if err := db.Execute(giftCardTable); err != nil {
+		return err
+	}
+
+	if err := db.Execute(sizeTable); err != nil {
 		return err
 	}
 

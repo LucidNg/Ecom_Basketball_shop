@@ -18,7 +18,7 @@ export default function Rating() {
             counts[rating as keyof typeof counts]++;
         });
         setRatingCounts(counts);
-    }, [ratings]);
+    }, []);
 
     // Get the maximum number of ratings for any single level to set the max for the progress bars
     const maxRatings = Math.max(...Object.values(ratingCounts));

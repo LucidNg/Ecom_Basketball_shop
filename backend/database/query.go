@@ -1,6 +1,7 @@
 package database
 
 import (
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"strconv"
@@ -73,73 +74,56 @@ func QueryProductByCategory(db *sqlitecloud.SQCloud, w http.ResponseWriter, r *h
 	}
 
 	fmt.Println(category, method, maxPriceValue, minPriceValue)
+	// var query string
 	var query string
 	var values []interface{}
 
-	// Base query
-	baseQuery := `
-		WITH ranked_products AS (
-			SELECT 
-				p.productID, 
-				p.categoryID, 
-				p.productName, 
-				p.description, 
-				p.brand, 
-				p.price, 
-				p.stock, 
-				p.dateAdded, 
-				p.size,
-				ROW_NUMBER() OVER (PARTITION BY p.productName ORDER BY p.dateAdded DESC) as row_num
-			FROM 
-				product p
-			JOIN 
-				category c ON p.categoryID = c.categoryID
-			WHERE 
-				c.categoryName LIKE ?
-		)
-		SELECT 
-			productID, 
-			categoryID, 
-			productName, 
-			description, 
-			brand, 
-			price, 
-			stock, 
-			dateAdded, 
-			size
-		FROM 
-			ranked_products
-		WHERE 
-			row_num = 1`
-
-	values = append(values, value)
-
 	switch method {
 	case "latest":
-		query = baseQuery + " ORDER BY dateAdded DESC;"
+		query = `
+		SELECT p.productID, p.productName, p.description, p.brand, p.dateAdded, MIN(s.price) AS price
+		FROM product p
+		JOIN category c ON p.categoryID = c.categoryID
+		LEFT JOIN size s ON p.productID = s.productID
+		WHERE c.categoryName LIKE ?
+		GROUP BY p.productID
+		ORDER BY p.dateAdded DESC`
 	case "bestselling":
-		query = baseQuery + `
-			ORDER BY 
-				(SELECT COUNT(*) 
-				 FROM purchase 
-				 WHERE productID = ranked_products.productID) DESC;`
+		query = `
+		SELECT p.productID, p.productName, p.description, p.brand, p.dateAdded, 
+		       COALESCE(SUM(pu.quantity), 0) AS totalQuantity, MIN(s.price) AS price
+		FROM product p
+		JOIN category c ON p.categoryID = c.categoryID
+		LEFT JOIN purchase pu ON p.productID = pu.productID
+		LEFT JOIN size s ON p.productID = s.productID
+		WHERE c.categoryName LIKE ?
+		GROUP BY p.productID
+		ORDER BY totalQuantity DESC`
 	case "max", "min":
-		if maxPrice != "" {
-			query = baseQuery + " AND price <= ? AND price >= ?"
-			values = append(values, maxPriceValue, minPriceValue)
-		}
-		if method == "max" {
-			query = query + " ORDER BY price DESC;"
+		query = `
+		SELECT p.productID, p.productName, p.description, p.brand, p.dateAdded, MIN(s.price) AS price
+		FROM product p
+		JOIN category c ON p.categoryID = c.categoryID
+		JOIN size s ON p.productID = s.productID
+		WHERE c.categoryName LIKE ? AND s.price BETWEEN ? AND ?
+		GROUP BY p.productID`
+		if method == "min" {
+			query += " ORDER BY price ASC"
 		} else {
-			query = query + " ORDER BY price ASC;"
+			query += " ORDER BY price DESC"
 		}
 	default:
-		query = baseQuery + " ORDER BY dateAdded DESC;"
+		return fmt.Errorf("invalid method: %s", method)
 	}
-
 	fmt.Println(query)
-
-	rows, err := db.SelectArray(query, values)
+	var rows *sqlitecloud.Result
+	if method == "max" || method == "min" {
+		values = append(values, value, maxPriceValue, minPriceValue)
+		rows, err = db.SelectArray(query, values)
+	} else {
+		values = append(values, value)
+		rows, err = db.SelectArray(query, values)
+	}
 	if err != nil {
 		fmt.Println(err)
 		return err
@@ -158,22 +142,54 @@ func QueryProductByCategory(db *sqlitecloud.SQCloud, w http.ResponseWriter, r *h
 func QueryProductByID(db *sqlitecloud.SQCloud, w http.ResponseWriter, r *http.Request) error {
 	vars := mux.Vars(r)
 	productID := vars["productID"]
-	query := `SELECT p2.*
-        FROM product p1
-        JOIN product p2 ON p1.productName = p2.productName
-        WHERE p1.productID = ?`
+	query := `SELECT 
+		p.productID,
+		p.categoryID,
+		p.productName,
+		p.description,
+		p.brand,
+		p.dateAdded
+	FROM 
+		product p
+	WHERE 
+		p.productID = ?;`
 	values := []interface{}{productID}
 
-	rows, err := db.SelectArray(query, values)
+	query2 := `SELECT 
+		s.size,
+		s.stock,
+		s.price
+	FROM 
+		size s
+	WHERE 
+		s.productID = ?;`
+
+	rows1, err := db.SelectArray(query, values)
 	if err != nil {
 		return err
 	}
 
-	_, err = w.Write([]byte(rows.ToJSON()))
+	rows2, err := db.SelectArray(query2, values)
 	if err != nil {
+		return err
+	}
+
+	type Response struct {
+		ProductDetails json.RawMessage `json:"productDetails"`
+		Sizes          json.RawMessage `json:"sizes"`
+	}
+
+	response := Response{
+		ProductDetails: json.RawMessage(rows1.ToJSON()),
+		Sizes:          json.RawMessage(rows2.ToJSON()),
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	if err := json.NewEncoder(w).Encode(response); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return err
 	}
+
 	return nil
 
 }
@@ -199,3 +215,24 @@ func QueryProductByName(db *sqlitecloud.SQCloud, w http.ResponseWriter, r *http.
 	return nil
 
 }
+
+// func QueryAllReviews(db *sqlitecloud.SQCloud, w http.ResponseWriter, r *http.Request) error {
+// 	vars := mux.Vars(r)
+// 	productID := vars["productID"]
+// 	query := `SELECT * FROM product WHERE productName LIKE ? LIMIT 5`
+
+// 	values := []interface{}{value}
+
+// 	rows, err := db.SelectArray(query, values)
+// 	if err != nil {
+// 		return err
+// 	}
+// 	defer rows.Dump()
+// 	_, err = w.Write([]byte(rows.ToJSON()))
+// 	if err != nil {
+// 		http.Error(w, err.Error(), http.StatusInternalServerError)
+// 		return err
+// 	}
+// 	return nil
+
+// }

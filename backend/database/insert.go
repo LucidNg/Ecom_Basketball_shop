@@ -81,8 +81,16 @@ func InsertProduct(db *sqlitecloud.SQCloud, categoryID string, name string, desc
 		return err
 	}
 
-	insertProductSQL := "INSERT INTO product (productID, categoryID, productName, description, brand, price, stock, dateAdded, size) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)"
-	values := []interface{}{id, categoryID, name, description, brand, priceValue, stockInt, dateAdded, size}
+	insertProductSQL := "INSERT INTO product (productID, categoryID, productName, description, brand, dateAdded) VALUES (?, ?, ?, ?, ?, ?)"
+	values := []interface{}{id, categoryID, name, description, brand, dateAdded}
 	err = db.ExecuteArray(insertProductSQL, values)
+	if err != nil {
+		fmt.Println("Error:", err)
+		return err
+	}
+
+	insertSizeSQL := "INSERT INTO size (productID, size, stock, price) VALUES (?, ?, ?, ?)"
+	values2 := []interface{}{id, size, stockInt, priceValue}
+	err = db.ExecuteArray(insertSizeSQL, values2)
 	return err
 }
