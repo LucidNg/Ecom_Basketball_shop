@@ -40,7 +40,16 @@ func QueryCategory(db *sqlitecloud.SQCloud, w http.ResponseWriter) error {
 }
 
 func QueryProduct(db *sqlitecloud.SQCloud, w http.ResponseWriter) error {
-	rows, err := db.Select("SELECT * FROM product")
+	rows, err := db.Select(
+		`SELECT p.productID, p.productName, p.description, p.brand, p.dateAdded,
+			COALESCE(SUM(pu.quantity), 0) AS totalQuantity,
+			MIN(s.price) AS price
+		FROM product p
+		LEFT JOIN purchase pu ON p.productID = pu.productID
+		LEFT JOIN size s ON p.productID = s.productID
+		GROUP BY p.productID
+		ORDER BY totalQuantity DESC
+		LIMIT 5;`)
 	if err != nil {
 		return err
 	}
@@ -201,6 +210,32 @@ func QueryProductByName(db *sqlitecloud.SQCloud, w http.ResponseWriter, r *http.
 	query := `SELECT * FROM product WHERE productName LIKE ? LIMIT 5`
 
 	values := []interface{}{value}
+
+	rows, err := db.SelectArray(query, values)
+	if err != nil {
+		return err
+	}
+	defer rows.Dump()
+	_, err = w.Write([]byte(rows.ToJSON()))
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return err
+	}
+	return nil
+
+}
+
+func QueryProductByBrand(db *sqlitecloud.SQCloud, w http.ResponseWriter, r *http.Request) error {
+	vars := mux.Vars(r)
+	brand := vars["brand"]
+	query := `SELECT p.productID, p.productName, p.description, p.brand, p.dateAdded,
+		       MIN(s.price) AS price
+				FROM product p
+				LEFT JOIN size s ON p.productID = s.productID
+				WHERE p.brand LIKE ?
+				GROUP BY p.productID`
+
+	values := []interface{}{brand}
 
 	rows, err := db.SelectArray(query, values)
 	if err != nil {

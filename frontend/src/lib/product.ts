@@ -32,7 +32,7 @@ export async function FetchProductByCategory(
 ): Promise<Array<Product>> {
   let url = process.env.API_ENDPOINT
     ? process.env.API_ENDPOINT
-    : `${connectString}/categoryProduct/${category}/${method}/${maxPrice}/${minPrice}`;
+    : `${connectString}/categoryProduct/${category}/${method}/${minPrice}/${maxPrice}`;
   console.log("category: ", category);
   const response = await fetch(url, {
     method: "GET",
@@ -43,6 +43,27 @@ export async function FetchProductByCategory(
 
   if (!response.ok) {
     throw new Error(`Failed to fetch products for category: ${category}`);
+  }
+
+  const data = await response.json();
+  return data as Array<Product>;
+}
+
+export async function FetchProductByBrand(
+  brand: string
+): Promise<Array<Product>> {
+  let url = process.env.API_ENDPOINT
+    ? process.env.API_ENDPOINT
+    : `${connectString}/brand/${brand}`;
+  const response = await fetch(url, {
+    method: "GET",
+    credentials: "include",
+    mode: "cors",
+    cache: "no-cache",
+  });
+
+  if (!response.ok) {
+    throw new Error(`Failed to fetch products for brand: ${brand}`);
   }
 
   const data = await response.json();

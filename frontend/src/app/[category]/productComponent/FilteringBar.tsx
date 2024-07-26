@@ -44,7 +44,7 @@ const FilterBar: React.FC<FilterBarProps> = ({ sortBy, setSortBy, minPrice, setM
 
   const handleClearFilter = () => {
     setMinPrice("0");
-    setMaxPrice("0");
+    setMaxPrice("1000");
     setError(null);
     console.log("Clearing filters");
   };

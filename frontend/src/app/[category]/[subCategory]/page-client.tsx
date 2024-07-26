@@ -15,7 +15,7 @@ export default function ProductPageCli({ children1 }: ProductPageCliProps) {
 
   const [sortBy, setSortBy] = useState("latest");
   const [minPrice, setMinPrice] = useState("0");
-  const [maxPrice, setMaxPrice] = useState("0");
+  const [maxPrice, setMaxPrice] = useState("1000");
 
   const normalizedSubCategory = subCategory === 'wm' ? 'women' : subCategory;
 
@@ -30,6 +30,8 @@ export default function ProductPageCli({ children1 }: ProductPageCliProps) {
   const checkHasMoreProducts = (hasMore: boolean) => {
     setHasMoreProducts(hasMore);
   };
+
+ 
 
   return (
     <div className="lg:pt-10 bg-base-100 w-screen">

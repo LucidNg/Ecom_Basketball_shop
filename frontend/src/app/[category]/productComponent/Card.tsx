@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { FetchProductByCategory, Product } from "../../../lib/product";
+import { FetchProductByCategory, FetchProductByBrand, Product } from "../../../lib/product";
 
 interface CardProps {
   limit?: number;
@@ -20,10 +20,21 @@ const Card: React.FC<CardProps> = ({ limit, category, currentPage, itemsPerPage,
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const fetchedProducts = await FetchProductByCategory(category, sortBy, maxPrice, minPrice);
+        let fetchedProducts;
+        
+        if (category.includes("brand's")) {
+          // Extract the brand name from the category
+          const brandName = category.split(" ").pop(); // Get the last word after the last space
+          if (brandName !== undefined) {
+            fetchedProducts = await FetchProductByBrand(brandName);
+          }
+        } else {
+          fetchedProducts = await FetchProductByCategory(category, sortBy, maxPrice, minPrice);
+        }
+
         setProducts(fetchedProducts || []); // Ensure products is not null
         // Check if there are more products available for the next page
-        const hasMore = fetchedProducts && fetchedProducts.length > currentPage * itemsPerPage;
+        const hasMore = Boolean(fetchedProducts && fetchedProducts.length > currentPage * itemsPerPage);
         checkHasMoreProducts(hasMore);
       } catch (error) {
         console.error(`Failed to fetch products for category ${category}:`, error);
