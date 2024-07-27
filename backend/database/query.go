@@ -228,22 +228,77 @@ func QueryProductByName(db *sqlitecloud.SQCloud, w http.ResponseWriter, r *http.
 func QueryProductByBrand(db *sqlitecloud.SQCloud, w http.ResponseWriter, r *http.Request) error {
 	vars := mux.Vars(r)
 	brand := vars["brand"]
-	query := `SELECT p.productID, p.productName, p.description, p.brand, p.dateAdded,
-		       MIN(s.price) AS price
-				FROM product p
-				LEFT JOIN size s ON p.productID = s.productID
-				WHERE p.brand LIKE ?
-				GROUP BY p.productID`
+	method := vars["method"]
+	maxPrice := vars["maxPrice"]
+	minPrice := vars["minPrice"]
 
-	values := []interface{}{brand}
-
-	rows, err := db.SelectArray(query, values)
+	maxPriceValue, err := strconv.ParseFloat(maxPrice, 64)
 	if err != nil {
+		fmt.Println("Error:", err)
 		return err
 	}
-	defer rows.Dump()
+
+	minPriceValue, err := strconv.ParseFloat(minPrice, 64)
+	if err != nil {
+		fmt.Println("Error:", err)
+		return err
+	}
+
+	fmt.Println(brand, method, maxPriceValue, minPriceValue)
+	// var query string
+	var query string
+	var values []interface{}
+
+	switch method {
+	case "latest":
+		query = `
+		SELECT p.productID, p.productName, p.description, p.brand, p.dateAdded, MIN(s.price) AS price
+		FROM product p
+		JOIN size s ON p.productID = s.productID
+		WHERE p.brand LIKE ?
+		GROUP BY p.productID
+		ORDER BY p.dateAdded DESC`
+	case "bestselling":
+		query = `
+		SELECT p.productID, p.productName, p.description, p.brand, p.dateAdded, COALESCE(SUM(pu.quantity), 0) AS totalQuantity, MIN(s.price) AS price
+		FROM product p
+		LEFT JOIN purchase pu ON p.productID = pu.productID
+		LEFT JOIN size s ON p.productID = s.productID
+		WHERE p.brand LIKE ?
+		GROUP BY p.productID, p.productName, p.description, p.brand, p.dateAdded
+		ORDER BY totalQuantity DESC;`
+	case "max", "min":
+		query = `
+		SELECT p.productID, p.productName, p.description, p.brand, p.dateAdded, MIN(s.price) AS price
+		FROM product p
+		JOIN size s ON p.productID = s.productID
+		WHERE p.brand LIKE ? AND s.price BETWEEN ? AND ?
+		GROUP BY p.productID`
+		if method == "min" {
+			query += " ORDER BY price ASC"
+		} else {
+			query += " ORDER BY price DESC"
+		}
+	default:
+		return fmt.Errorf("invalid method: %s", method)
+	}
+	fmt.Println(query)
+	var rows *sqlitecloud.Result
+	if method == "max" || method == "min" {
+		values = append(values, brand, maxPriceValue, minPriceValue)
+		rows, err = db.SelectArray(query, values)
+	} else {
+		values = append(values, brand)
+		rows, err = db.SelectArray(query, values)
+	}
+	if err != nil {
+		fmt.Println(err)
+		return err
+	}
+
 	_, err = w.Write([]byte(rows.ToJSON()))
 	if err != nil {
+		fmt.Println(err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return err
 	}
