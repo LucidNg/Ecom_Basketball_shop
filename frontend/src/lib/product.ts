@@ -9,7 +9,6 @@ export async function FetchProduct(): Promise<Array<Product>> {
     ? process.env.API_ENDPOINT
     : connectString + "/product";
 
-  console.log("url: ",url)
   const response = await fetch(url, {
     method: "GET",
     credentials: "include",
@@ -17,7 +16,6 @@ export async function FetchProduct(): Promise<Array<Product>> {
     cache: "no-cache",
   });
 
-  console.log("respone url: ",response.url);
 
   if (!response.ok) {
     throw new Error("Failed to fetch products");
@@ -33,7 +31,6 @@ export async function FetchProductByCategory(
   let url = process.env.API_ENDPOINT
     ? process.env.API_ENDPOINT
     : `${connectString}/categoryProduct/${category}/${method}/${minPrice}/${maxPrice}`;
-  console.log("category: ", category);
   const response = await fetch(url, {
     method: "GET",
     credentials: "include",
@@ -55,7 +52,6 @@ export async function FetchProductByBrand(
   let url = process.env.API_ENDPOINT
     ? process.env.API_ENDPOINT
     : `${connectString}/brand/${brand}/${method}/${minPrice}/${maxPrice}`;
-    console.log(url)
   const response = await fetch(url, {
     method: "GET",
     credentials: "include",

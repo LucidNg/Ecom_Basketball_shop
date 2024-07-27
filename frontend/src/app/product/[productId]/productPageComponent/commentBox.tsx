@@ -4,7 +4,7 @@ import Comment from "./comment";
 
 export default function CommentBox() {
     const [showAll, setShowAll] = useState(false);
-    const comments = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+    const comments = [1];
 
     const displayedComments = showAll ? comments : comments.slice(0, 3);
 

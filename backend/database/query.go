@@ -82,7 +82,6 @@ func QueryProductByCategory(db *sqlitecloud.SQCloud, w http.ResponseWriter, r *h
 		return err
 	}
 
-	fmt.Println(category, method, maxPriceValue, minPriceValue)
 	// var query string
 	var query string
 	var values []interface{}
