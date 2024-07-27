@@ -142,6 +142,18 @@ func main() {
 		}
 	})).Methods(http.MethodGet)
 
+	r.HandleFunc("/reviews/{productID}", corsMiddleware(func(w http.ResponseWriter, r *http.Request) {
+		if r.Method == http.MethodGet {
+			err := database.QueryAllReviews(db, w, r)
+			if err != nil {
+				http.Error(w, "Failed to query products", http.StatusInternalServerError)
+				return
+			}
+		} else {
+			http.Error(w, "Unsupported method", http.StatusMethodNotAllowed)
+		}
+	})).Methods(http.MethodGet)
+
 	r.HandleFunc("/product", corsMiddleware(func(w http.ResponseWriter, r *http.Request) {
 		if r.Method == http.MethodGet {
 			err := database.QueryProduct(db, w)

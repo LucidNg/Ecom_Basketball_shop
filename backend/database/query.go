@@ -303,23 +303,64 @@ func QueryProductByBrand(db *sqlitecloud.SQCloud, w http.ResponseWriter, r *http
 
 }
 
-// func QueryAllReviews(db *sqlitecloud.SQCloud, w http.ResponseWriter, r *http.Request) error {
-// 	vars := mux.Vars(r)
-// 	productID := vars["productID"]
-// 	query := `SELECT * FROM product WHERE productName LIKE ? LIMIT 5`
+func QueryAllReviews(db *sqlitecloud.SQCloud, w http.ResponseWriter, r *http.Request) error {
+	vars := mux.Vars(r)
+	productID := vars["productID"]
+	query1 := `SELECT 
+    r.comment, r.rating
+	FROM review r
+	JOIN product p ON r.productID = p.productID
+	WHERE p.productID = ?;`
 
-// 	values := []interface{}{value}
+	query2 := `SELECT 
+    AVG(r.rating) AS averageRating
+	FROM review r
+	WHERE r.productID = ?;`
 
-// 	rows, err := db.SelectArray(query, values)
-// 	if err != nil {
-// 		return err
-// 	}
-// 	defer rows.Dump()
-// 	_, err = w.Write([]byte(rows.ToJSON()))
-// 	if err != nil {
-// 		http.Error(w, err.Error(), http.StatusInternalServerError)
-// 		return err
-// 	}
-// 	return nil
+	query3 := `SELECT
+    SUM(CASE WHEN r.rating = 1 THEN 1 ELSE 0 END) AS one_star_count,
+    SUM(CASE WHEN r.rating = 2 THEN 1 ELSE 0 END) AS two_star,
+    SUM(CASE WHEN r.rating = 3 THEN 1 ELSE 0 END) AS three_star,
+    SUM(CASE WHEN r.rating = 4 THEN 1 ELSE 0 END) AS four_star,
+    SUM(CASE WHEN r.rating = 5 THEN 1 ELSE 0 END) AS five_star
+	FROM review r
+	WHERE r.productID = ?;`
 
-// }
+	values := []interface{}{productID}
+
+	rows1, err := db.SelectArray(query1, values)
+	if err != nil {
+		return err
+	}
+
+	rows2, err := db.SelectArray(query2, values)
+	if err != nil {
+		return err
+	}
+
+	rows3, err := db.SelectArray(query3, values)
+	if err != nil {
+		return err
+	}
+
+	type Response struct {
+		Comment       json.RawMessage `json:"comment"`
+		AverageRating json.RawMessage `json:"averageRating"`
+		RatingCount   json.RawMessage `json:"ratingCount"`
+	}
+
+	response := Response{
+		Comment:       json.RawMessage(rows1.ToJSON()),
+		AverageRating: json.RawMessage(rows2.ToJSON()),
+		RatingCount:   json.RawMessage(rows3.ToJSON()),
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	if err := json.NewEncoder(w).Encode(response); err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return err
+	}
+
+	return nil
+
+}
