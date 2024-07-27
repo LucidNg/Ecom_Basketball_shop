@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
-import { ProductResponse, FetchProductByID } from '@/lib/product';
+import { ProductResponse, FetchProductByID } from '@/lib/productDetail';
 import Image from 'next/image';
 import Rating from './productPageComponent/rating';
 import CommentBox from './productPageComponent/commentBox';

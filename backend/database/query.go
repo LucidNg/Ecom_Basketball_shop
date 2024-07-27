@@ -306,19 +306,59 @@ func QueryProductByBrand(db *sqlitecloud.SQCloud, w http.ResponseWriter, r *http
 func QueryAllReviews(db *sqlitecloud.SQCloud, w http.ResponseWriter, r *http.Request) error {
 	vars := mux.Vars(r)
 	productID := vars["productID"]
-	query1 := `SELECT 
-    r.comment, r.rating
+	query := `SELECT 
+    r.comment, r.rating, r.date
 	FROM review r
 	JOIN product p ON r.productID = p.productID
-	WHERE p.productID = ?;`
+	WHERE p.productID = ?
+	ORDER BY r.date DESC;`
 
-	query2 := `SELECT 
+	values := []interface{}{productID}
+
+	rows, err := db.SelectArray(query, values)
+	if err != nil {
+		return err
+	}
+	_, err = w.Write([]byte(rows.ToJSON()))
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return err
+	}
+	return nil
+
+}
+
+func QueryAverageRating(db *sqlitecloud.SQCloud, w http.ResponseWriter, r *http.Request) error {
+	vars := mux.Vars(r)
+	productID := vars["productID"]
+
+	query := `SELECT 
     AVG(r.rating) AS averageRating
 	FROM review r
 	WHERE r.productID = ?;`
 
-	query3 := `SELECT
-    SUM(CASE WHEN r.rating = 1 THEN 1 ELSE 0 END) AS one_star_count,
+	values := []interface{}{productID}
+
+	rows, err := db.SelectArray(query, values)
+	if err != nil {
+		return err
+	}
+
+	_, err = w.Write([]byte(rows.ToJSON()))
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return err
+	}
+	return nil
+
+}
+
+func QueryRatingCount(db *sqlitecloud.SQCloud, w http.ResponseWriter, r *http.Request) error {
+	vars := mux.Vars(r)
+	productID := vars["productID"]
+
+	query := `SELECT
+    SUM(CASE WHEN r.rating = 1 THEN 1 ELSE 0 END) AS one_star,
     SUM(CASE WHEN r.rating = 2 THEN 1 ELSE 0 END) AS two_star,
     SUM(CASE WHEN r.rating = 3 THEN 1 ELSE 0 END) AS three_star,
     SUM(CASE WHEN r.rating = 4 THEN 1 ELSE 0 END) AS four_star,
@@ -328,39 +368,15 @@ func QueryAllReviews(db *sqlitecloud.SQCloud, w http.ResponseWriter, r *http.Req
 
 	values := []interface{}{productID}
 
-	rows1, err := db.SelectArray(query1, values)
+	rows, err := db.SelectArray(query, values)
 	if err != nil {
 		return err
 	}
-
-	rows2, err := db.SelectArray(query2, values)
+	_, err = w.Write([]byte(rows.ToJSON()))
 	if err != nil {
-		return err
-	}
-
-	rows3, err := db.SelectArray(query3, values)
-	if err != nil {
-		return err
-	}
-
-	type Response struct {
-		Comment       json.RawMessage `json:"comment"`
-		AverageRating json.RawMessage `json:"averageRating"`
-		RatingCount   json.RawMessage `json:"ratingCount"`
-	}
-
-	response := Response{
-		Comment:       json.RawMessage(rows1.ToJSON()),
-		AverageRating: json.RawMessage(rows2.ToJSON()),
-		RatingCount:   json.RawMessage(rows3.ToJSON()),
-	}
-
-	w.Header().Set("Content-Type", "application/json")
-	if err := json.NewEncoder(w).Encode(response); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return err
 	}
-
 	return nil
 
 }

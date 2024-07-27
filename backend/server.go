@@ -146,7 +146,31 @@ func main() {
 		if r.Method == http.MethodGet {
 			err := database.QueryAllReviews(db, w, r)
 			if err != nil {
-				http.Error(w, "Failed to query products", http.StatusInternalServerError)
+				http.Error(w, "Failed to query reviews", http.StatusInternalServerError)
+				return
+			}
+		} else {
+			http.Error(w, "Unsupported method", http.StatusMethodNotAllowed)
+		}
+	})).Methods(http.MethodGet)
+
+	r.HandleFunc("/averageRating/{productID}", corsMiddleware(func(w http.ResponseWriter, r *http.Request) {
+		if r.Method == http.MethodGet {
+			err := database.QueryAverageRating(db, w, r)
+			if err != nil {
+				http.Error(w, "Failed to query rating", http.StatusInternalServerError)
+				return
+			}
+		} else {
+			http.Error(w, "Unsupported method", http.StatusMethodNotAllowed)
+		}
+	})).Methods(http.MethodGet)
+
+	r.HandleFunc("/ratingCount/{productID}", corsMiddleware(func(w http.ResponseWriter, r *http.Request) {
+		if r.Method == http.MethodGet {
+			err := database.QueryRatingCount(db, w, r)
+			if err != nil {
+				http.Error(w, "Failed to query rating", http.StatusInternalServerError)
 				return
 			}
 		} else {
