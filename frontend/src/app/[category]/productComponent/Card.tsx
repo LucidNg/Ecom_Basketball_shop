@@ -22,9 +22,10 @@ const Card: React.FC<CardProps> = ({ limit, category, currentPage, itemsPerPage,
       try {
         let fetchedProducts;
         
-        if (category.includes("brand's")) {
+        if (category.includes("brand")) {
           // Extract the brand name from the category
-          const brandName = category.split(" ").pop(); // Get the last word after the last space
+        const parts = category.split(" ");
+        const brandName = parts[0].replace("'s", "");
           if (brandName !== undefined) {
             fetchedProducts = await FetchProductByBrand(brandName);
           }

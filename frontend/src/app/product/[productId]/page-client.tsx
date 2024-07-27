@@ -1,12 +1,12 @@
 'use client'
 
-import React,{ useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
-import { Product, FetchProductByID } from '@/lib/product';
+import { ProductResponse, FetchProductByID } from '@/lib/product';
 import Image from 'next/image';
 import Rating from './productPageComponent/rating';
 import CommentBox from './productPageComponent/commentBox';
-var categoryID ="";
+var categoryID = "";
 
 interface DetailedProductPage {
   children1: React.ReactNode;
@@ -18,32 +18,36 @@ const DetailedProductPageCli = ({ children1 }: DetailedProductPage) => {
   const [images, setImages] = useState<string[]>([]);
   const [selectedSize, setSelectedSize] = useState<string | null>(null);
   const [quantity, setQuantity] = useState<number>(1);
-  const [products, setProducts] = useState<Product[]>([]);
+  const [productDetails, setProductDetails] = useState<ProductResponse | null>(null);
   const [sizes, setSizes] = useState<string[]>([]);
   const [stockBySize, setStockBySize] = useState<{ [key: string]: number }>({});
-
+  const [priceBySize, setPriceBySize] = useState<{ [key: string]: number }>({});
 
   useEffect(() => {
     if (productId) {
       const fetchProductDetails = async () => {
         try {
           const fetchedProducts = await FetchProductByID(productId.toString());
-          setProducts(fetchedProducts);
+          setProductDetails(fetchedProducts);
 
           const sizeSet = new Set<string>();
           const stockMap: { [key: string]: number } = {};
+          const priceMap: { [key: string]: number } = {};
 
-          fetchedProducts.forEach((product) => {
-            sizeSet.add(product.size);
-            if (stockMap[product.size]) {
-              stockMap[product.size] += product.stock;
-            } else {
-              stockMap[product.size] = product.stock;
-            }
+          fetchedProducts.sizes.forEach((size) => {
+            const sizeString = size.size.toString();
+            sizeSet.add(sizeString);
+            stockMap[sizeString] = size.stock;
+            priceMap[sizeString] = size.price;
           });
 
           setSizes(Array.from(sizeSet));
           setStockBySize(stockMap);
+          setPriceBySize(priceMap);
+
+          // Set the default selected size to the first size available
+          const firstSize = Array.from(sizeSet)[0];
+          setSelectedSize(firstSize);
 
           const basePath = `/products/${productId}`;
           const imageList = [
@@ -85,14 +89,17 @@ const DetailedProductPageCli = ({ children1 }: DetailedProductPage) => {
   };
 
   const addToCart = () => {
-    console.log(`Added ${quantity} ${product.productName} (size: ${selectedSize}) to cart`);
+    if (productDetails && selectedSize) {
+      const product = productDetails.productDetails[0];
+      console.log(`Added ${quantity} ${product.productName} (size: ${selectedSize}) to cart`);
+    }
   };
 
-  if (!productId || products.length === 0) return null;
+  if (!productId || !productDetails) return null;
 
-  const product = products[0];
+  const product = productDetails.productDetails[0];
   categoryID = product.categoryID;
-  console.log("CategoryID",categoryID)
+  console.log("CategoryID", categoryID);
 
   return (
     <div className='w-screen flex flex-col pt-20 bg-base-100'>
@@ -118,7 +125,7 @@ const DetailedProductPageCli = ({ children1 }: DetailedProductPage) => {
           {product && (
             <>
               <span className='text-5xl font-semibold lg:w-4/5 text-base-content leading-normal lg:px-0 px-10'>{product.productName}</span>
-              <span className='text-5xl py-16 mx-20 text-base-content'>${product.price}</span>
+              <span className='text-5xl py-16 mx-20 text-base-content'>${selectedSize ? priceBySize[selectedSize] : ''}</span>
               <div className='sizeDisplay grid grid-cols-4 gap-x-12 gap-y-5 lg:w-1/2 w-3/4 mx-20'>
                 {sizes.map((size, index) => (
                   <div
@@ -174,13 +181,13 @@ const DetailedProductPageCli = ({ children1 }: DetailedProductPage) => {
 
       <div className='w-11/12 mt-20 border-t-2 border-base-content self-center grid-cols-2 gap-10 pt-20 flex justify-between'>
         <div className='w-2/5'>
-          <Rating/>
+          <Rating />
         </div>
         <div className='w-3/5 flex justify-end'>
-          <CommentBox/>
+          <CommentBox />
         </div>
       </div>
-      
+
       <div className='w-11/12 mt-20 self-center grid-cols-2 gap-10 pt-20'>
         {product && (
           <>
@@ -188,16 +195,15 @@ const DetailedProductPageCli = ({ children1 }: DetailedProductPage) => {
             <div className="flex flex-row w-full justify-center mt-10">
               <div className="w-full overflow-x-auto">
                 <div className="flex gap-10 min-w-max">
-                    {React.Children.map(children1, (child) => {
-                      return React.cloneElement(child as React.ReactElement<any>, {categoryID});
-                    })}
+                  {React.Children.map(children1, (child) => {
+                    return React.cloneElement(child as React.ReactElement<any>, { categoryID });
+                  })}
                 </div>
               </div>
             </div>
           </>
-            )}
+        )}
       </div>
-
     </div>
   );
 };

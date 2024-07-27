@@ -93,9 +93,29 @@ export async function FetchProductByName(
   return data as Array<Product>;
 }
 
+export interface ProductDetails {
+  productID: string;
+  categoryID: string;
+  productName: string;
+  description: string;
+  brand: string;
+  dateAdded: string;
+}
+
+export interface Size {
+  size: number;
+  stock: number;
+  price: number;
+}
+
+export interface ProductResponse {
+  productDetails: Array<ProductDetails>;
+  sizes: Array<Size>;
+}
+
 export async function FetchProductByID(
   productID: string
-): Promise<Array<Product>> {
+): Promise<ProductResponse> {
   let url = process.env.API_ENDPOINT
     ? process.env.API_ENDPOINT
     : `${connectString}/product/${productID}`;
@@ -107,9 +127,9 @@ export async function FetchProductByID(
   });
 
   if (!response.ok) {
-    throw new Error(`Failed to fetch products with ID: ${productID}`);
+    throw new Error(`Failed to fetch product with ID: ${productID}`);
   }
 
   const data = await response.json();
-  return data as Array<Product>;
+  return data as ProductResponse;
 }
