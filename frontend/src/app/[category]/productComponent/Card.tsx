@@ -27,7 +27,7 @@ const Card: React.FC<CardProps> = ({ limit, category, currentPage, itemsPerPage,
         const parts = category.split(" ");
         const brandName = parts[0].replace("'s", "");
           if (brandName !== undefined) {
-            fetchedProducts = await FetchProductByBrand(brandName);
+            fetchedProducts = await FetchProductByBrand(brandName, sortBy, maxPrice, minPrice);
           }
         } else {
           fetchedProducts = await FetchProductByCategory(category, sortBy, maxPrice, minPrice);

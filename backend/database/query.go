@@ -124,7 +124,6 @@ func QueryProductByCategory(db *sqlitecloud.SQCloud, w http.ResponseWriter, r *h
 	default:
 		return fmt.Errorf("invalid method: %s", method)
 	}
-	fmt.Println(query)
 	var rows *sqlitecloud.Result
 	if method == "max" || method == "min" {
 		values = append(values, value, maxPriceValue, minPriceValue)
@@ -244,7 +243,6 @@ func QueryProductByBrand(db *sqlitecloud.SQCloud, w http.ResponseWriter, r *http
 		return err
 	}
 
-	fmt.Println(brand, method, maxPriceValue, minPriceValue)
 	// var query string
 	var query string
 	var values []interface{}
@@ -282,7 +280,6 @@ func QueryProductByBrand(db *sqlitecloud.SQCloud, w http.ResponseWriter, r *http
 	default:
 		return fmt.Errorf("invalid method: %s", method)
 	}
-	fmt.Println(query)
 	var rows *sqlitecloud.Result
 	if method == "max" || method == "min" {
 		values = append(values, brand, maxPriceValue, minPriceValue)

@@ -50,11 +50,12 @@ export async function FetchProductByCategory(
 }
 
 export async function FetchProductByBrand(
-  brand: string
+  brand: string, method: string, maxPrice: string, minPrice: string
 ): Promise<Array<Product>> {
   let url = process.env.API_ENDPOINT
     ? process.env.API_ENDPOINT
-    : `${connectString}/brand/${brand}`;
+    : `${connectString}/brand/${brand}/${method}/${minPrice}/${maxPrice}`;
+    console.log(url)
   const response = await fetch(url, {
     method: "GET",
     credentials: "include",
