@@ -32,7 +32,7 @@ const config: Config = {
           "base-200": "#ebebd3",
           "base-300": "#bebebe",
           "base-content": "#1e1e1e",
-          "info": "#10AD53",
+          "info": "#083d77",
           "info-content": "#fffbfa",
           "success": "#00ff00",
           "success-content": "#001600",

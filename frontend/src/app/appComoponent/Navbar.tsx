@@ -81,9 +81,9 @@ export default function Navbar() {
                 </div>
                 <div className="dropdown dropdown-hover">
                     <div tabIndex={0} role="button">
-                        <Link href={generateLink('brand')} className="btn btn-ghost text-2xl hover:bg-secondary hover:text-neutral hover:font-bold">
+                        <span className="btn btn-ghost text-2xl hover:bg-secondary hover:text-neutral hover:font-bold">
                             Brand
-                        </Link>
+                        </span>
                     </div>
                     <div className="dropdown-content z-10">
                         <ul className="menu bg-base-content rounded-box w-56 py-5 grid grid-cols-2 gap-4">
@@ -183,7 +183,7 @@ export default function Navbar() {
                                     <li><Link href={generateLink('brand', 'nike')} className="text-xl focus:text-base-100">Nike</Link></li>
                                     <li><Link href={generateLink('brand', 'adidas')} className="text-xl focus:text-base-100">Adidas</Link></li>
                                     <li><Link href={generateLink('brand', 'puma')} className="text-xl focus:text-base-100">Puma</Link></li>
-                                    <li><Link href={generateLink('brand', 'under-armour')} className="text-xl focus:text-base-100">Under Armour</Link></li>
+                                    <li><Link href={generateLink('brand', 'under%20armour')} className="text-xl focus:text-base-100">Under Armour</Link></li>
                                     <li><Link href={generateLink('brand', 'reebok')} className="text-xl focus:text-base-100">Reebok</Link></li>
                                     <li><Link href={generateLink('brand', 'spalding')} className="text-xl focus:text-base-100">Spalding</Link></li>
                                     <li><Link href={generateLink('brand', 'wilson')} className="text-xl focus:text-base-100">Wilson</Link></li>

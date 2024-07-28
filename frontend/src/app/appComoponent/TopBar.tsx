@@ -4,8 +4,9 @@ import React, { useState, useEffect, ChangeEvent } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { Search } from "@geist-ui/icons";
+import { ShoppingCart } from "@geist-ui/icons";
 import { FetchProductByName, Product } from "@/lib/product";
-import debounce from 'lodash/debounce';
+
 
 export default function TopBar() {
     const [searchValue, setSearchValue] = useState<string>('');
@@ -21,17 +22,17 @@ export default function TopBar() {
         }
     };
 
-    const debouncedFetchProducts = debounce(fetchProducts, 2000);
 
     useEffect(() => {
         if (searchValue) {
-            debouncedFetchProducts();
+            fetchProducts();
         } else {
             setSearchResults([]);
         }
     }, [searchValue]);
 
     useEffect(() => {
+        console.log("lentgh:", searchResults)
         setShowDropdown(searchResults.length > 0);
     }, [searchResults]);
 
@@ -68,7 +69,7 @@ export default function TopBar() {
                 {showDropdown && searchResults.length > 0 && (
                     <ul className="absolute top-full left-0 w-full bg-white shadow-lg border border-gray-300 z-10">
                         {searchResults.map((product) => (
-                            <li key={product.productID} className="p-2 hover:bg-gray-200 cursor-pointer" onClick={handleProductClick}>
+                            <li key={product.productID} className="p-2 hover:bg-gray-200 text-base-content cursor-pointer" onClick={handleProductClick}>
                                 <Link href={`/product/${product.productID}`}>
                                     <div className="flex items-center">
                                         <span className="ml-2">{product.productName}</span>
@@ -80,6 +81,7 @@ export default function TopBar() {
                     </ul>
                 )}
             </div>
+
             <div className="beforeLogined flex items-center pl-5 pr-8 xl:pr-20">                
                 <button className="h-[50px] text-xl font-semibold text-base-content hover:text-accent lg:w-44 xl:text-xl xl:w-40">
                     <Link href="/">Login</Link>
@@ -89,5 +91,24 @@ export default function TopBar() {
                 </button>
             </div>
         </div>
+
+        // <div className="afterLogined flex items-center">                
+        //     <div className="text-base-content px-3 sm:px-5 2xl:px-10 userInfo hidden 2xl:inline 2xl:text-2xl">
+        //         <span className="whitespace-nowrap ">Xin chào, Văn A</span>
+        //     </div>
+
+        //     <div className="avatar 2xl:hidden px-5">
+        //         <div className="w-8 sm:w-12 rounded-full bg-secondary">
+        //             <Image src="" alt="user" />
+        //         </div>
+        //     </div>
+
+        //     <button className="Cart justify-end bg-base-100 h-[40px] sm:h-[50px] flex items-center rounded-lg mr-5 sm:mr-10">
+        //         <div className="px-3 flex">
+        //             <ShoppingCart color="black" className="h-5 w-5 sm:h-8 sm:w-8"/>
+        //             <span className="text-base-content hidden sm:text-2xl sm:inline px-4">2</span>
+        //         </div>
+        //     </button>
+        // </div>
     );
 }

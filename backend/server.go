@@ -82,7 +82,7 @@ func main() {
 		}
 	})).Methods(http.MethodGet, http.MethodPost)
 
-	r.HandleFunc("/categoryProduct/{category}", corsMiddleware(func(w http.ResponseWriter, r *http.Request) {
+	r.HandleFunc("/categoryProduct/{category}/{method}/{maxPrice}/{minPrice}", corsMiddleware(func(w http.ResponseWriter, r *http.Request) {
 		if r.Method == http.MethodGet {
 			err := database.QueryProductByCategory(db, w, r)
 			if err != nil {
@@ -94,9 +94,9 @@ func main() {
 		}
 	})).Methods(http.MethodGet)
 
-	r.HandleFunc("/product/{productID}", corsMiddleware(func(w http.ResponseWriter, r *http.Request) {
+	r.HandleFunc("/brand/{brand}/{method}/{maxPrice}/{minPrice}", corsMiddleware(func(w http.ResponseWriter, r *http.Request) {
 		if r.Method == http.MethodGet {
-			err := database.QueryProductByID(db, w, r)
+			err := database.QueryProductByBrand(db, w, r)
 			if err != nil {
 				http.Error(w, "Failed to query products", http.StatusInternalServerError)
 				return
@@ -123,6 +123,54 @@ func main() {
 			err := database.QueryProductByName(db, w, r)
 			if err != nil {
 				http.Error(w, "Failed to query products", http.StatusInternalServerError)
+				return
+			}
+		} else {
+			http.Error(w, "Unsupported method", http.StatusMethodNotAllowed)
+		}
+	})).Methods(http.MethodGet)
+
+	r.HandleFunc("/brand/{brand}", corsMiddleware(func(w http.ResponseWriter, r *http.Request) {
+		if r.Method == http.MethodGet {
+			err := database.QueryProductByBrand(db, w, r)
+			if err != nil {
+				http.Error(w, "Failed to query products", http.StatusInternalServerError)
+				return
+			}
+		} else {
+			http.Error(w, "Unsupported method", http.StatusMethodNotAllowed)
+		}
+	})).Methods(http.MethodGet)
+
+	r.HandleFunc("/reviews/{productID}", corsMiddleware(func(w http.ResponseWriter, r *http.Request) {
+		if r.Method == http.MethodGet {
+			err := database.QueryAllReviews(db, w, r)
+			if err != nil {
+				http.Error(w, "Failed to query reviews", http.StatusInternalServerError)
+				return
+			}
+		} else {
+			http.Error(w, "Unsupported method", http.StatusMethodNotAllowed)
+		}
+	})).Methods(http.MethodGet)
+
+	r.HandleFunc("/averageRating/{productID}", corsMiddleware(func(w http.ResponseWriter, r *http.Request) {
+		if r.Method == http.MethodGet {
+			err := database.QueryAverageRating(db, w, r)
+			if err != nil {
+				http.Error(w, "Failed to query rating", http.StatusInternalServerError)
+				return
+			}
+		} else {
+			http.Error(w, "Unsupported method", http.StatusMethodNotAllowed)
+		}
+	})).Methods(http.MethodGet)
+
+	r.HandleFunc("/ratingCount/{productID}", corsMiddleware(func(w http.ResponseWriter, r *http.Request) {
+		if r.Method == http.MethodGet {
+			err := database.QueryRatingCount(db, w, r)
+			if err != nil {
+				http.Error(w, "Failed to query rating", http.StatusInternalServerError)
 				return
 			}
 		} else {

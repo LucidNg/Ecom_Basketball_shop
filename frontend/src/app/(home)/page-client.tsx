@@ -13,7 +13,7 @@ export default function Home({
             <span className="text-accent font-bold text-3xl sm:text-4xl">Feature products</span>
           </div>
           <div className="flex flex-row w-full justify-center">
-            <div id="most-liked" className="w-[90%] overflow-x-auto">
+            <div className="w-[90%] overflow-x-auto">
               <div className="flex gap-10 min-w-max">
                 {children1}
               </div>
@@ -24,7 +24,7 @@ export default function Home({
             <span className="text-accent font-bold text-3xl sm:text-4xl">Latest shoes</span>
           </div>
           <div className="flex flex-row w-full justify-center">
-            <div id="most-liked" className="w-[90%] overflow-x-auto">
+            <div className="w-[90%] overflow-x-auto">
               <div className="flex gap-10 min-w-max">
                 {children2}
               </div>
@@ -35,7 +35,7 @@ export default function Home({
             <span className="text-accent font-bold text-3xl sm:text-4xl">Latest clothes</span>
           </div>
           <div className="flex flex-row w-full justify-center">
-            <div id="most-liked" className="w-[90%] overflow-x-auto">
+            <div className="w-[90%] overflow-x-auto">
               <div className="flex gap-10 min-w-max">
                 {children3}
               </div>

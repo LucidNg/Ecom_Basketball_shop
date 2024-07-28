@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { FetchProductByCategory, Product } from "../../../lib/product";
+import { FetchProductByCategory, FetchProductByBrand, Product } from "../../../lib/product";
 
 interface CardProps {
   limit?: number;
@@ -9,18 +9,33 @@ interface CardProps {
   currentPage: number;
   itemsPerPage: number;
   checkHasMoreProducts: (hasMore: boolean) => void;
+  sortBy: string;
+  minPrice: string;
+  maxPrice: string;
 }
 
-const Card: React.FC<CardProps> = ({ limit, category, currentPage, itemsPerPage, checkHasMoreProducts }: CardProps) => {
+const Card: React.FC<CardProps> = ({ limit, category, currentPage, itemsPerPage, checkHasMoreProducts, sortBy, minPrice, maxPrice }: CardProps) => {
   const [products, setProducts] = useState<Product[]>([]);
 
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const fetchedProducts = await FetchProductByCategory(category);
+        let fetchedProducts;
+        
+        if (category.includes("brand")) {
+          // Extract the brand name from the category
+        const parts = category.split(" ");
+        const brandName = parts[0].replace("'s", "");
+          if (brandName !== undefined) {
+            fetchedProducts = await FetchProductByBrand(brandName, sortBy, maxPrice, minPrice);
+          }
+        } else {
+          fetchedProducts = await FetchProductByCategory(category, sortBy, maxPrice, minPrice);
+        }
+
         setProducts(fetchedProducts || []); // Ensure products is not null
         // Check if there are more products available for the next page
-        const hasMore = fetchedProducts && fetchedProducts.length > currentPage * itemsPerPage;
+        const hasMore = Boolean(fetchedProducts && fetchedProducts.length > currentPage * itemsPerPage);
         checkHasMoreProducts(hasMore);
       } catch (error) {
         console.error(`Failed to fetch products for category ${category}:`, error);
@@ -30,25 +45,32 @@ const Card: React.FC<CardProps> = ({ limit, category, currentPage, itemsPerPage,
     if (category) {
       fetchProducts();
     }
-  }, [category, currentPage, itemsPerPage, checkHasMoreProducts]);
+  }, [category, currentPage, itemsPerPage, checkHasMoreProducts, sortBy, minPrice, maxPrice]);
 
   const displayedProducts = products.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
+
+  function convertInvalidJsonStringToArray(invalidJsonString: string) {
+    const cleanedString = invalidJsonString.slice(1, -1);
+    const elements = cleanedString.split(',').map(element => element.trim());
+    const validJsonArray = elements.map(element => `"${element}"`);
+    const jsonArray = JSON.parse(`[${validJsonArray.join(',')}]`);
+    return jsonArray;
+  }
 
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat('vi-VN').format(price);
   };
-
   return (
     <>
       {displayedProducts.length > 0 ? (
         displayedProducts.map(product => (
-          <div key={product.productID} className="bg-primary flex flex-col h-64 w-40 sm:h-80 sm:w-56 lg:h-[410px] lg:w-72">
+          <div key={product.productID} className="bg-primary flex flex-col h-64 w-40 sm:h-80 sm:w-56 lg:h-[410px] lg:w-72 transition-transform transform hover:scale-95 shadow-md hover:shadow-2xl hover:drop-shadow-lg hover:shadow-zinc-400 hover:will-change-transform">
             <Image 
-              src={`/products/${product.productID}/1.png`} 
+              src={`https://drive.google.com/uc?export=view&id=${convertInvalidJsonStringToArray(product.url)[0]}`}
               alt={product.productName} 
               width={150} 
               height={150} 
-              className="p-5 w-48 sm:w-56 lg:w-72 object-cover"
+              className="p-5 w-48 sm:w-56 lg:w-72 sm:h-56 lg:h-72 object-cover"
               loading="lazy" 
             />
             <span className="text-base-content font-semibold w-40 sm:w-56 lg:w-72 h-14 px-5 text-xs sm:text-sm lg:text-lg">
