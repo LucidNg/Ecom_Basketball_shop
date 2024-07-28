@@ -192,7 +192,10 @@ func QueryProductByName(db *sqlitecloud.SQCloud, w http.ResponseWriter, r *http.
 	vars := mux.Vars(r)
 	name := vars["name"]
 	value := fmt.Sprintf("%%%s%%", name)
-	query := `SELECT * FROM product WHERE productName LIKE ? LIMIT 5`
+	query := `SELECT p.productID, p.productName, MIN(s.price) AS price
+	FROM product p 
+	LEFT JOIN size s ON p.productID = s.productID
+	WHERE p.productName LIKE ? LIMIT 5`
 
 	values := []interface{}{value}
 
