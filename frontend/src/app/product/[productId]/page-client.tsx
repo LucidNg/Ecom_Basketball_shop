@@ -6,6 +6,7 @@ import { ProductResponse, FetchProductByID } from '@/lib/productDetail';
 import Image from 'next/image';
 import Rating from './productPageComponent/rating';
 import CommentBox from './productPageComponent/commentBox';
+import { FetchProduct } from '@/lib/product';
 var categoryID = "";
 
 interface DetailedProductPage {
@@ -22,6 +23,14 @@ const DetailedProductPageCli = ({ children1 }: DetailedProductPage) => {
   const [sizes, setSizes] = useState<string[]>([]);
   const [stockBySize, setStockBySize] = useState<{ [key: string]: number }>({});
   const [priceBySize, setPriceBySize] = useState<{ [key: string]: number }>({});
+
+  function convertInvalidJsonStringToArray(invalidJsonString: string) {
+    const cleanedString = invalidJsonString.slice(1, -1);
+    const elements = cleanedString.split(',').map(element => element.trim());
+    const validJsonArray = elements.map(element => `"${element}"`);
+    const jsonArray = JSON.parse(`[${validJsonArray.join(',')}]`);
+    return jsonArray;
+  }
 
   useEffect(() => {
     if (productId) {
@@ -48,13 +57,12 @@ const DetailedProductPageCli = ({ children1 }: DetailedProductPage) => {
           // Set the default selected size to the first size available
           const firstSize = Array.from(sizeSet)[0];
           setSelectedSize(firstSize);
-
-          const basePath = `/products/${productId}`;
+          const detail = fetchedProducts.productDetails[0]
           const imageList = [
-            `${basePath}/1.png`,
-            `${basePath}/2.png`,
-            `${basePath}/3.png`,
-            `${basePath}/4.png`,
+            `https://drive.google.com/uc?export=view&id=${convertInvalidJsonStringToArray(detail.url)[0]}`,
+            `https://drive.google.com/uc?export=view&id=${convertInvalidJsonStringToArray(detail.url)[1]}`,
+            `https://drive.google.com/uc?export=view&id=${convertInvalidJsonStringToArray(detail.url)[2]}`,
+            `https://drive.google.com/uc?export=view&id=${convertInvalidJsonStringToArray(detail.url)[3]}`,
           ];
           setImages(imageList);
           setMainImage(imageList[0]);
