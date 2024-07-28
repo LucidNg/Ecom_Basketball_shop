@@ -19,18 +19,10 @@ export async function Card({ category, limit }: CardProps) {
   }
   
   function convertInvalidJsonStringToArray(invalidJsonString: string) {
-    // Remove the square brackets
     const cleanedString = invalidJsonString.slice(1, -1);
-    
-    // Split the string by commas and trim any whitespace
     const elements = cleanedString.split(',').map(element => element.trim());
-    
-    // Wrap each element in double quotes
     const validJsonArray = elements.map(element => `"${element}"`);
-    
-    // Join the elements back into a string and parse it as JSON
     const jsonArray = JSON.parse(`[${validJsonArray.join(',')}]`);
-    
     return jsonArray;
   }
 
@@ -39,14 +31,14 @@ export async function Card({ category, limit }: CardProps) {
     <>
       {displayedProducts.map(product => (
         <div key={product.productID} className="bg-primary flex flex-col h-64 w-40 sm:h-80 sm:w-56 lg:h-[410px] lg:w-72 transition-transform transform hover:scale-95 shadow-md hover:shadow-2xl hover:drop-shadow-lg hover:shadow-zinc-400 hover:will-change-transform">
-          <Image 
-            src={`https://drive.google.com/uc?export=view&id=${convertInvalidJsonStringToArray(product.url)[0]}`} 
-            alt={product.productName} 
-            width={150} 
-            height={150} 
-            className="p-5 w-48 sm:w-56 lg:w-72 object-cover"
-            loading="lazy" 
-          />
+            <Image 
+              src={`https://drive.google.com/uc?export=view&id=${convertInvalidJsonStringToArray(product.url)[0]}`}
+              alt={product.productName} 
+              width={150} 
+              height={150} 
+              className="p-5 w-48 sm:w-56 lg:w-72 sm:h-56 lg:h-72 object-cover"
+              loading="lazy" 
+            />
           <span className="text-base-content font-semibold w-40 sm:w-56 lg:w-72 h-14 px-5 text-xs sm:text-sm lg:text-lg">
             {product.productName}
           </span>
