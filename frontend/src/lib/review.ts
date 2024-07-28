@@ -1,10 +1,10 @@
+import { connectString } from "./constant";
+
 export interface Review {
     comment: string;
     rating: number;
     date: string;
   }
-
-const connectString = "https://ecom-testserver.onrender.com";
 
 export async function FetchReviewsByProductID(
   productID: string

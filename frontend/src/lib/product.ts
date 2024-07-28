@@ -1,9 +1,12 @@
+import { connectString } from "./constant";
+
 export interface Product {
   productID: string;
   productName: string;
   price: number;
 }
-const connectString = "https://ecom-testserver.onrender.com";
+
+
 export async function FetchProduct(): Promise<Array<Product>> {
   let url = process.env.API_ENDPOINT
     ? process.env.API_ENDPOINT

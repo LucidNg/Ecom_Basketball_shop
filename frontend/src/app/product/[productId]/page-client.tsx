@@ -179,14 +179,15 @@ const DetailedProductPageCli = ({ children1 }: DetailedProductPage) => {
         </div>
       </div>
 
-      <div className='w-11/12 mt-20 border-t-2 border-base-content self-center grid-cols-2 gap-10 pt-20 flex justify-between'>
-        <div className='w-2/5'>
-          <Rating />
-        </div>
-        <div className='w-3/5 flex justify-end'>
-          <CommentBox />
-        </div>
-      </div>
+      <div className='w-11/12  mt-20 border-t-2 border-base-content self-center flex flex-col lg:flex-row gap-10 pt-20'>
+  <div className='lg:w-2/5 w-full flex justify-center'>
+    <Rating />
+  </div>
+  <div className='lg:w-3/5 w-full flex  justify-center'>
+    <CommentBox />
+  </div>
+</div>
+
 
       <div className='w-11/12 mt-20 self-center grid-cols-2 gap-10 pt-20'>
         {product && (

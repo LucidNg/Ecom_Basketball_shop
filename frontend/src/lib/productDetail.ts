@@ -1,3 +1,5 @@
+import { connectString } from "./constant";
+
 export interface ProductDetails {
     productID: string;
     categoryID: string;
@@ -17,7 +19,6 @@ export interface ProductDetails {
     productDetails: Array<ProductDetails>;
     sizes: Array<Size>;
   }
-  const connectString = "https://ecom-testserver.onrender.com";
   
   export async function FetchProductByID(
     productID: string
