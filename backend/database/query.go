@@ -41,7 +41,7 @@ func QueryCategory(db *sqlitecloud.SQCloud, w http.ResponseWriter) error {
 
 func QueryProduct(db *sqlitecloud.SQCloud, w http.ResponseWriter) error {
 	rows, err := db.Select(
-		`SELECT p.productID, p.productName, p.description, p.brand, p.dateAdded, p.url,
+		`SELECT p.productID, p.productName, p.description, p.brand, p.dateAdded, COALESCE(p.url, 'null') AS url,
 			COALESCE(SUM(pu.quantity), 0) AS totalQuantity,
 			MIN(s.price) AS price
 		FROM product p
@@ -89,7 +89,7 @@ func QueryProductByCategory(db *sqlitecloud.SQCloud, w http.ResponseWriter, r *h
 	switch method {
 	case "latest":
 		query = `
-		SELECT p.productID, p.productName, p.description, p.brand, p.dateAdded, MIN(s.price) AS price, p.url
+		SELECT p.productID, p.productName, p.description, p.brand, p.dateAdded, MIN(s.price) AS price, COALESCE(p.url, 'null') AS url
 		FROM product p
 		JOIN category c ON p.categoryID = c.categoryID
 		LEFT JOIN size s ON p.productID = s.productID
@@ -98,7 +98,7 @@ func QueryProductByCategory(db *sqlitecloud.SQCloud, w http.ResponseWriter, r *h
 		ORDER BY p.dateAdded DESC`
 	case "bestselling":
 		query = `
-		SELECT p.productID, p.productName, p.description, p.brand, p.dateAdded, p.url,
+		SELECT p.productID, p.productName, p.description, p.brand, p.dateAdded, COALESCE(p.url, 'null') AS url,
 		       COALESCE(SUM(pu.quantity), 0) AS totalQuantity, MIN(s.price) AS price
 		FROM product p
 		JOIN category c ON p.categoryID = c.categoryID
@@ -109,7 +109,7 @@ func QueryProductByCategory(db *sqlitecloud.SQCloud, w http.ResponseWriter, r *h
 		ORDER BY totalQuantity DESC`
 	case "max", "min":
 		query = `
-		SELECT p.productID, p.productName, p.description, p.brand, p.dateAdded, MIN(s.price) AS price, p.url
+		SELECT p.productID, p.productName, p.description, p.brand, p.dateAdded, MIN(s.price) AS price, COALESCE(p.url, 'null') AS url
 		FROM product p
 		JOIN category c ON p.categoryID = c.categoryID
 		JOIN size s ON p.productID = s.productID
@@ -149,7 +149,7 @@ func QueryProductByCategory(db *sqlitecloud.SQCloud, w http.ResponseWriter, r *h
 func QueryProductByID(db *sqlitecloud.SQCloud, w http.ResponseWriter, r *http.Request) error {
 	vars := mux.Vars(r)
 	productID := vars["productID"]
-	query := `SELECT p.productID, p.categoryID, p.productName, p.description, p.brand, p.dateAdded, p.url
+	query := `SELECT p.productID, p.categoryID, p.productName, p.description, p.brand, p.dateAdded, COALESCE(p.url, 'null') AS url
 	FROM product p
 	WHERE p.productID = ?;`
 	values := []interface{}{productID}
@@ -236,7 +236,7 @@ func QueryProductByBrand(db *sqlitecloud.SQCloud, w http.ResponseWriter, r *http
 	switch method {
 	case "latest":
 		query = `
-		SELECT p.productID, p.productName, p.description, p.brand, p.dateAdded, MIN(s.price) AS price, p.url
+		SELECT p.productID, p.productName, p.description, p.brand, p.dateAdded, MIN(s.price) AS price, COALESCE(p.url, 'null') AS url
 		FROM product p
 		JOIN size s ON p.productID = s.productID
 		WHERE p.brand LIKE ?
@@ -244,7 +244,7 @@ func QueryProductByBrand(db *sqlitecloud.SQCloud, w http.ResponseWriter, r *http
 		ORDER BY p.dateAdded DESC`
 	case "bestselling":
 		query = `
-		SELECT p.productID, p.productName, p.description, p.brand, p.dateAdded, COALESCE(SUM(pu.quantity), 0) AS totalQuantity, MIN(s.price) AS price, p.url
+		SELECT p.productID, p.productName, p.description, p.brand, p.dateAdded, COALESCE(SUM(pu.quantity), 0) AS totalQuantity, MIN(s.price) AS price, COALESCE(p.url, 'null') AS url
 		FROM product p
 		LEFT JOIN purchase pu ON p.productID = pu.productID
 		LEFT JOIN size s ON p.productID = s.productID
@@ -253,7 +253,7 @@ func QueryProductByBrand(db *sqlitecloud.SQCloud, w http.ResponseWriter, r *http
 		ORDER BY totalQuantity DESC;`
 	case "max", "min":
 		query = `
-		SELECT p.productID, p.productName, p.description, p.brand, p.dateAdded, MIN(s.price) AS price, p.url
+		SELECT p.productID, p.productName, p.description, p.brand, p.dateAdded, MIN(s.price) AS price, COALESCE(p.url, 'null') AS url
 		FROM product p
 		JOIN size s ON p.productID = s.productID
 		WHERE p.brand LIKE ? AND s.price BETWEEN ? AND ?
