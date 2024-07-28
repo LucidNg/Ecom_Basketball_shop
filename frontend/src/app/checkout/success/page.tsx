@@ -20,11 +20,11 @@ export default function CheckoutSuccessPage() {
       <div className='btnGroup grid-cols-2 gap-28 flex pt-10'>
 
         <Link href="/">
-            <button className='btn w-56 h-16 text-2xl font-semibold text-neutral hover:bg-secondary outline-none border-none'>
+            <button className='btn w-56 h-16 text-2xl font-semibold text-neutral transition transition-duration-300 transition-property:scale,box-shadow,background-color hover:scale-105 hover:drop-shadow-xl hover:bg-secondary outline-none border-none'>
                 Shop more 
             </button>
         </Link>
-        <button className='btn w-56 h-16 text-2xl font-semibold text-neutral hover:bg-secondary outline-none border-none'>
+        <button className='btn w-56 h-16 text-2xl font-semibold text-neutraltransition transition-duration-300 transition-property:scale,box-shadow,background-color hover:scale-105 hover:drop-shadow-xl hover:bg-secondary outline-none border-none'>
             Order&#39;s detail 
         </button>
       </div>
