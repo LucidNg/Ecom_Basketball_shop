@@ -8,7 +8,7 @@ export default function CheckoutPage() {
   const [selectedPayment, setSelectedPayment] = useState('cod');
   const [deliveryPrice, setDeliveryPrice] = useState(4);
 
-  const handleCheckboxDeliChange = (event) => {
+  const handleCheckboxDeliChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSelectedDelivery(event.target.id);
     if (event.target.id === 'standard') {
       setDeliveryPrice(4);
@@ -19,7 +19,7 @@ export default function CheckoutPage() {
     }
   };
 
-  const handleCheckboxPayChange = (event) => {
+  const handleCheckboxPayChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSelectedPayment(event.target.id);
   };
 
