@@ -1,69 +1,123 @@
-import React from "react";
-import Image from "next/image";
+"use client";
 
-//Mock data
-const cartItems = [
+import React, { useState, useEffect } from "react";
+import ProductCard from "./ProductCard";
+import { IProduct } from "./ProductCard.type";
+
+const cartItems: IProduct[] = [
   {
-    id: 1,
-    name: 'Air Jordan Jumpman Globe Kids T-Shirt "White"',
+    id: "1",
+    name: "Jordan Air Globe T-Shirt Kids",
     price: 587000,
     quantity: 1,
-    imageUrl: "/path/to/air-jordan.jpg", // replace with your image path
+    image:
+      "https://i1.t4s.cz/products/95d121-001/jordan-air-globe-t-shirt-kids-749837-95d121-001.png",
   },
   {
-    id: 2,
-    name: 'Adidas Basketball Select Shirt "Cloud White"',
-    price: 1096000,
-    quantity: 1,
-    imageUrl: "/path/to/adidas-shirt.jpg", // replace with your image path
+    id: "2",
+    name: "adidas Basketball Select Tee White",
+    price: 789000,
+    quantity: 2,
+    image:
+      "https://www.cosmossport.gr/2869439-product_medium/adidas-basketball-select-tee.jpg",
   },
 ];
 
-export default function ShoppingCart({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
-  const calculateTotalBill = () => {
-    return cartItems.reduce(
+const ShoppingCart = () => {
+  const [selectItems, setSelectItems] = useState<IProduct[]>([]);
+  const [totalPrice, setTotalPrice] = useState<number>(0);
+  const [isSelectAll, setIsSelectAll] = useState<boolean>(false);
+  const [checkedItems, setCheckedItems] = useState<boolean[]>(
+    new Array(cartItems.length).fill(false)
+  );
+
+  const handleSelectAll = () => {
+    const newCheckedItems = new Array(cartItems.length).fill(!isSelectAll);
+    setCheckedItems(newCheckedItems);
+    setIsSelectAll(!isSelectAll);
+
+    if (!isSelectAll) {
+      setSelectItems(cartItems);
+    } else {
+      setSelectItems([]);
+    }
+  };
+
+  const handleCheckboxChange = (index: number) => {
+    const newCheckedItems = [...checkedItems];
+    newCheckedItems[index] = !newCheckedItems[index];
+    setCheckedItems(newCheckedItems);
+
+    const selected = cartItems.filter((_, idx) => newCheckedItems[idx]);
+    setSelectItems(selected);
+    setIsSelectAll(selected.length === cartItems.length);
+  };
+
+  const getTotalBill = (): number => {
+    return selectItems.reduce(
       (total, item) => total + item.price * item.quantity,
       0
     );
   };
 
+  useEffect(() => {
+    setTotalPrice(getTotalBill());
+  }, [selectItems]);
+
   return (
-    <div className="container mx-auto p-4">
-      {cartItems.map((item) => (
-        <div
-          key={item.id}
-          className="flex items-center justify-between p-4 border-b"
-        >
-          <input type="checkbox" className="mr-4" />
-          <Image src={item.imageUrl} alt={item.name} width={100} height={100} />
-          <div className="flex-1 ml-4">
-            <p className="font-semibold">{item.name}</p>
-            <p>{item.price.toLocaleString()} ₫</p>
-          </div>
-          <div className="flex items-center">
-            <button className="px-2">-</button>
-            <span className="px-2">{item.quantity}</span>
-            <button className="px-2">+</button>
-          </div>
-          <button className="ml-4 text-red-600">Xóa ngay</button>
+    <>
+      <div className="flex flex-col gap-12">
+        <div className="flex flex-col gap-6 h-max">
+          {cartItems.map((product, index) => (
+            <div
+              key={product.id}
+              className="flex flex-row items-center gap-20 px-16 py-6 bg-[#EBEBD5] h-full"
+            >
+              <div className="size-fit">
+                <input
+                  type="checkbox"
+                  checked={checkedItems[index]}
+                  onChange={() => handleCheckboxChange(index)}
+                  className="size-6 bg-white"
+                />
+              </div>
+              <ProductCard key={product.id} product={product} />
+              <button className="px-4 py-3 bg-white text-[#C6393F] self-end min-w-fit">
+                Delete
+              </button>
+            </div>
+          ))}
         </div>
-      ))}
-      <div className="flex items-center justify-between p-4">
-        <input type="checkbox" className="mr-4" />
-        <span>Chọn hết</span>
-        <div className="flex-1 text-right">
-          <span className="font-semibold">
-            Tổng thanh toán: {calculateTotalBill().toLocaleString()} ₫
-          </span>
+        <div className="flex px-16 py-6 bg-[#EBEBD5] w-full">
+          <div className="flex items-center justify-between w-full">
+            <div className="flex items-center gap-4">
+              <input
+                type="checkbox"
+                checked={isSelectAll}
+                onChange={handleSelectAll}
+                className="size-6 bg-white"
+              />
+              <label className="text-lg">Choose all</label>
+            </div>
+            <div>
+              <p>
+                Total bill:{" "}
+                <span className="text-xl">
+                  {getTotalBill().toLocaleString()}{" "}
+                  <span className="underline">đ</span>
+                </span>
+              </p>
+            </div>
+            <div>
+              <button className="px-6 py-3 bg-[#EFD471] text-[#1A3C73]">
+                <span>Check out</span>
+              </button>
+            </div>
+          </div>
         </div>
-        <button className="ml-4 bg-yellow-500 text-white px-4 py-2 rounded">
-          Mua hàng
-        </button>
       </div>
-    </div>
+    </>
   );
-}
+};
+
+export default ShoppingCart;
