@@ -7,6 +7,7 @@ export interface ProductDetails {
     description: string;
     brand: string;
     dateAdded: string;
+    url: string;
   }
   
   export interface Size {

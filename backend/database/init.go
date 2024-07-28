@@ -80,6 +80,8 @@ func CreateTable(db *sqlitecloud.SQCloud) error {
 		"description" TEXT NOT NULL,
 		"brand" TEXT NOT NULL,
 		"dateAdded" TEXT NOT NULL,
+		"url" TEXT,
+		"sale" INTEGER,
 		FOREIGN KEY(categoryID) REFERENCES category(categoryID)
 	);`
 
