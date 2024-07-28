@@ -54,7 +54,7 @@ const FilterBar: React.FC<FilterBarProps> = ({ sortBy, setSortBy, minPrice, setM
       <span className="font-semibold text-xl text-base-100">Filter by</span>
 
       <div
-        className={`font-semibold text-xl bg-base-100 text-base-content h-3/4 xl:w-1/12 min-w-1/12 flex items-center justify-center cursor-pointer ${
+        className={`p-1 font-semibold text-xl bg-base-100 text-base-content h-3/4 xl:w-1/12 min-w-1/12 flex items-center justify-center cursor-pointer ${
           sortBy === "latest" ? "bg-secondary" : "bg-base-100"
         }`}
         onClick={() => setSortBy("latest")}
@@ -63,7 +63,7 @@ const FilterBar: React.FC<FilterBarProps> = ({ sortBy, setSortBy, minPrice, setM
       </div>
 
       <div
-        className={`font-semibold text-xl bg-base-100 text-base-content h-3/4 xl:w-1/12 min-w-1/12 flex items-center justify-center cursor-pointer ${
+        className={`p-1 font-semibold text-xl bg-base-100 text-base-content h-3/4 xl:w-1/12 min-w-1/12 flex items-center justify-center cursor-pointer ${
           sortBy === "bestselling" ? "bg-secondary" : "bg-base-100"
         }`}
         onClick={() => setSortBy("bestselling")}
@@ -72,7 +72,7 @@ const FilterBar: React.FC<FilterBarProps> = ({ sortBy, setSortBy, minPrice, setM
       </div>
 
       <div
-        className={`font-semibold text-xl bg-base-100 text-base-content h-3/4 xl:w-1/12 min-w-1/12 flex items-center justify-center cursor-pointer ${
+        className={`p-1 font-semibold text-xl bg-base-100 text-base-content h-3/4 xl:w-1/12 min-w-1/12 flex items-center justify-center cursor-pointer ${
           sortBy === "max" ? "bg-secondary" : "bg-base-100"
         }`}
         onClick={() => setSortBy("max")}
@@ -81,7 +81,7 @@ const FilterBar: React.FC<FilterBarProps> = ({ sortBy, setSortBy, minPrice, setM
       </div>
 
       <div
-        className={`font-semibold text-xl bg-base-100 text-base-content h-3/4 xl:w-1/12 min-w-1/12 flex items-center justify-center cursor-pointer ${
+        className={` font-semibold text-xl bg-base-100 text-base-content h-3/4 xl:w-1/12 min-w-1/12 flex items-center justify-center cursor-pointer ${
           sortBy === "min" ? "bg-secondary" : "bg-base-100"
         }`}
         onClick={() => setSortBy("min")}
@@ -89,7 +89,7 @@ const FilterBar: React.FC<FilterBarProps> = ({ sortBy, setSortBy, minPrice, setM
         Low to high
       </div>
 
-      <div className="items-center xl:space-x-4 space-x-2 ustify-between w-1/2 hidden md:flex">
+      <div className="items-center xl:space-x-4 space-x-2 ustify-between w-1/2 hidden md:flex justify-end">
         <span className="font-semibold text-xl text-base-100 hidden xl:inline">From:</span>
         <input
           type="text"
@@ -106,23 +106,12 @@ const FilterBar: React.FC<FilterBarProps> = ({ sortBy, setSortBy, minPrice, setM
           onChange={handleMaxPriceChange}
           className="xl:w-28 w-20 h-14 px-3 bg-base-100 outline-none text-xl text-base-content font-semibold"
         />
-        <button
-          onClick={handleApplyFilter}
-          className="px-4 py-2 w-36 h-14 bg-green-500 shadow-md hover:bg-green-600 text-xl text-base-100 font-semibold hidden xl:inline"
-        >
-          Apply
-        </button>
+
         <button
           onClick={handleClearFilter}
           className="px-4 py-2 w-36 h-14 bg-red-500 shadow-md hover:bg-accent text-xl text-base-100 font-semibold hidden xl:inline"
         >
           Cancel
-        </button>
-        <button
-          onClick={handleApplyFilter}
-          className="px-4 py-2 w-14 h-14 bg-green-500 shadow-md hover:bg-green-600 text-xl text-base-100 font-semibold xl:hidden"
-        >
-          V
         </button>
         <button
           onClick={handleClearFilter}
