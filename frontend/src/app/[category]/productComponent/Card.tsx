@@ -56,7 +56,7 @@ const Card: React.FC<CardProps> = ({ limit, category, currentPage, itemsPerPage,
     <>
       {displayedProducts.length > 0 ? (
         displayedProducts.map(product => (
-          <div key={product.productID} className="bg-primary flex flex-col h-64 w-40 sm:h-80 sm:w-56 lg:h-[410px] lg:w-72">
+          <div key={product.productID} className="bg-primary flex flex-col h-64 w-40 sm:h-80 sm:w-56 lg:h-[410px] lg:w-72 transition-transform transform hover:scale-95 shadow-md hover:shadow-2xl hover:drop-shadow-lg hover:shadow-zinc-400 hover:will-change-transform">
             <Image 
               src={`/products/${product.productID}/1.png`}
               alt={product.productName} 
