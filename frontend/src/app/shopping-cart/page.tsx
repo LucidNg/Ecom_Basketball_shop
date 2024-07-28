@@ -3,5 +3,9 @@ import Link from "next/link";
 import ShoppingCart from "../appComoponent/ShoppingCart";
 
 export default function ShoppingCartPage() {
-  return <ShoppingCart />;
+  return (
+    <div className="p-10">
+      <ShoppingCart />
+    </div>
+);
 }
