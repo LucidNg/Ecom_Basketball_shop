@@ -1,2 +1,2 @@
 
-export const connectString = "https://boroshop.onrender.com";
+export const connectString = "https://ecom-basketball-shop-xdjc.onrender.com";
