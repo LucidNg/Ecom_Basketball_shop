@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from "react";
 import ProductCard from "./ProductCard";
 import { IProduct } from "./ProductCard.type";
+import Link from "next/link";
 
 const cartItems: IProduct[] = [
   {
@@ -109,9 +110,11 @@ const ShoppingCart = () => {
               </p>
             </div>
             <div>
-              <button className="px-6 py-3 bg-[#EFD471] text-[#1A3C73]">
-                <span>Check out</span>
-              </button>
+              <Link href="/checkout">
+                <button className="px-6 py-3 bg-[#EFD471] text-[#1A3C73]">
+                  <span>Check out</span>
+                </button>
+              </Link>
             </div>
           </div>
         </div>
