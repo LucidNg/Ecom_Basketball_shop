@@ -79,9 +79,9 @@ export default function TopBar() {
                 onClick={handleProductClick}
               >
                 <Link href={`/product/${product.productID}`}>
-                  <div className="flex items-center">
+                  <div className="flex items-center justify-between">
                     <span className="ml-2">{product.productName}</span>
-                    <span className="ml-2">{product.price}</span>
+                    <span className="ml-2">${product.price}</span>
                   </div>
                 </Link>
               </li>
