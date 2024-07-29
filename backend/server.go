@@ -7,40 +7,15 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/gorilla/mux"
 	sqlitecloud "github.com/sqlitecloud/sqlitecloud-go"
-	"golang.org/x/time/rate"
+
+	"github.com/gorilla/mux"
 )
 
 const connectionURL = "sqlitecloud://cjczta0lik.sqlite.cloud:8860?apikey=KavmXdlHtwvK5SMaaLxcCxLBviJ4RAbaJK5t7lSNWx4"
 
-// Initialize a rate limiter with 1 request per second and a burst capacity of 5
-var limiter = rate.NewLimiter(3, 5)
-
-func corsMiddleware(next http.HandlerFunc) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		// Set allowed origins dynamically based on incoming request origin
-		origin := r.Header.Get("Origin")
-		if origin == "" {
-			origin = "*"
-		}
-		w.Header().Set("Access-Control-Allow-Origin", origin)
-		w.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
-		w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
-
-		// Set Access-Control-Allow-Credentials header
-		w.Header().Set("Access-Control-Allow-Credentials", "true")
-
-		if r.Method == "OPTIONS" {
-			w.WriteHeader(http.StatusOK)
-			return
-		}
-
-		next(w, r)
-	}
-}
-
 func main() {
+
 	// Initialize the database
 	db, err := sqlitecloud.Connect(connectionURL)
 	if err != nil {
@@ -60,23 +35,12 @@ func main() {
 	// Set up the router
 	r := mux.NewRouter()
 
-	// Define rate limiting middleware
-	rateLimitMiddleware := func(next http.HandlerFunc) http.HandlerFunc {
-		return func(w http.ResponseWriter, r *http.Request) {
-			if !limiter.Allow() {
-				http.Error(w, "Rate limit exceeded", http.StatusTooManyRequests)
-				return
-			}
-			next(w, r)
-		}
-	}
-
-	// Define routes with middleware
-	r.HandleFunc("/", corsMiddleware(func(w http.ResponseWriter, r *http.Request) {
+	// Define routes
+	r.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte("Welcome to the server!"))
-	})).Methods(http.MethodGet)
+	})
 
-	r.HandleFunc("/users", corsMiddleware(rateLimitMiddleware(func(w http.ResponseWriter, r *http.Request) {
+	r.HandleFunc("/users", corsMiddleware(func(w http.ResponseWriter, r *http.Request) {
 		if r.Method == http.MethodGet {
 			err := database.QueryUsers(db, w)
 			if err != nil {
@@ -95,9 +59,9 @@ func main() {
 		} else {
 			http.Error(w, "Unsupported method", http.StatusMethodNotAllowed)
 		}
-	}))).Methods(http.MethodGet, http.MethodPost)
+	})).Methods(http.MethodGet, http.MethodPost)
 
-	r.HandleFunc("/category", corsMiddleware(rateLimitMiddleware(func(w http.ResponseWriter, r *http.Request) {
+	r.HandleFunc("/category", corsMiddleware(func(w http.ResponseWriter, r *http.Request) {
 		if r.Method == http.MethodGet {
 			err := database.QueryCategory(db, w)
 			if err != nil {
@@ -116,9 +80,9 @@ func main() {
 		} else {
 			http.Error(w, "Unsupported method", http.StatusMethodNotAllowed)
 		}
-	}))).Methods(http.MethodGet, http.MethodPost)
+	})).Methods(http.MethodGet, http.MethodPost)
 
-	r.HandleFunc("/categoryProduct/{category}/{method}/{maxPrice}/{minPrice}", corsMiddleware(rateLimitMiddleware(func(w http.ResponseWriter, r *http.Request) {
+	r.HandleFunc("/categoryProduct/{category}/{method}/{maxPrice}/{minPrice}", corsMiddleware(func(w http.ResponseWriter, r *http.Request) {
 		if r.Method == http.MethodGet {
 			err := database.QueryProductByCategory(db, w, r)
 			if err != nil {
@@ -128,9 +92,9 @@ func main() {
 		} else {
 			http.Error(w, "Unsupported method", http.StatusMethodNotAllowed)
 		}
-	}))).Methods(http.MethodGet)
+	})).Methods(http.MethodGet)
 
-	r.HandleFunc("/brand/{brand}/{method}/{maxPrice}/{minPrice}", corsMiddleware(rateLimitMiddleware(func(w http.ResponseWriter, r *http.Request) {
+	r.HandleFunc("/brand/{brand}/{method}/{maxPrice}/{minPrice}", corsMiddleware(func(w http.ResponseWriter, r *http.Request) {
 		if r.Method == http.MethodGet {
 			err := database.QueryProductByBrand(db, w, r)
 			if err != nil {
@@ -140,9 +104,9 @@ func main() {
 		} else {
 			http.Error(w, "Unsupported method", http.StatusMethodNotAllowed)
 		}
-	}))).Methods(http.MethodGet)
+	})).Methods(http.MethodGet)
 
-	r.HandleFunc("/product/{productID}", corsMiddleware(rateLimitMiddleware(func(w http.ResponseWriter, r *http.Request) {
+	r.HandleFunc("/product/{productID}", corsMiddleware(func(w http.ResponseWriter, r *http.Request) {
 		if r.Method == http.MethodGet {
 			err := database.QueryProductByID(db, w, r)
 			if err != nil {
@@ -152,9 +116,9 @@ func main() {
 		} else {
 			http.Error(w, "Unsupported method", http.StatusMethodNotAllowed)
 		}
-	}))).Methods(http.MethodGet)
+	})).Methods(http.MethodGet)
 
-	r.HandleFunc("/search/{name}", corsMiddleware(rateLimitMiddleware(func(w http.ResponseWriter, r *http.Request) {
+	r.HandleFunc("/search/{name}", corsMiddleware(func(w http.ResponseWriter, r *http.Request) {
 		if r.Method == http.MethodGet {
 			err := database.QueryProductByName(db, w, r)
 			if err != nil {
@@ -164,9 +128,9 @@ func main() {
 		} else {
 			http.Error(w, "Unsupported method", http.StatusMethodNotAllowed)
 		}
-	}))).Methods(http.MethodGet)
+	})).Methods(http.MethodGet)
 
-	r.HandleFunc("/brand/{brand}", corsMiddleware(rateLimitMiddleware(func(w http.ResponseWriter, r *http.Request) {
+	r.HandleFunc("/brand/{brand}", corsMiddleware(func(w http.ResponseWriter, r *http.Request) {
 		if r.Method == http.MethodGet {
 			err := database.QueryProductByBrand(db, w, r)
 			if err != nil {
@@ -176,9 +140,9 @@ func main() {
 		} else {
 			http.Error(w, "Unsupported method", http.StatusMethodNotAllowed)
 		}
-	}))).Methods(http.MethodGet)
+	})).Methods(http.MethodGet)
 
-	r.HandleFunc("/reviews/{productID}", corsMiddleware(rateLimitMiddleware(func(w http.ResponseWriter, r *http.Request) {
+	r.HandleFunc("/reviews/{productID}", corsMiddleware(func(w http.ResponseWriter, r *http.Request) {
 		if r.Method == http.MethodGet {
 			err := database.QueryAllReviews(db, w, r)
 			if err != nil {
@@ -188,9 +152,9 @@ func main() {
 		} else {
 			http.Error(w, "Unsupported method", http.StatusMethodNotAllowed)
 		}
-	}))).Methods(http.MethodGet)
+	})).Methods(http.MethodGet)
 
-	r.HandleFunc("/averageRating/{productID}", corsMiddleware(rateLimitMiddleware(func(w http.ResponseWriter, r *http.Request) {
+	r.HandleFunc("/averageRating/{productID}", corsMiddleware(func(w http.ResponseWriter, r *http.Request) {
 		if r.Method == http.MethodGet {
 			err := database.QueryAverageRating(db, w, r)
 			if err != nil {
@@ -200,9 +164,9 @@ func main() {
 		} else {
 			http.Error(w, "Unsupported method", http.StatusMethodNotAllowed)
 		}
-	}))).Methods(http.MethodGet)
+	})).Methods(http.MethodGet)
 
-	r.HandleFunc("/ratingCount/{productID}", corsMiddleware(rateLimitMiddleware(func(w http.ResponseWriter, r *http.Request) {
+	r.HandleFunc("/ratingCount/{productID}", corsMiddleware(func(w http.ResponseWriter, r *http.Request) {
 		if r.Method == http.MethodGet {
 			err := database.QueryRatingCount(db, w, r)
 			if err != nil {
@@ -212,9 +176,9 @@ func main() {
 		} else {
 			http.Error(w, "Unsupported method", http.StatusMethodNotAllowed)
 		}
-	}))).Methods(http.MethodGet)
+	})).Methods(http.MethodGet)
 
-	r.HandleFunc("/product", corsMiddleware(rateLimitMiddleware(func(w http.ResponseWriter, r *http.Request) {
+	r.HandleFunc("/product", corsMiddleware(func(w http.ResponseWriter, r *http.Request) {
 		if r.Method == http.MethodGet {
 			err := database.QueryProduct(db, w)
 			if err != nil {
@@ -240,7 +204,7 @@ func main() {
 		} else {
 			http.Error(w, "Unsupported method", http.StatusMethodNotAllowed)
 		}
-	}))).Methods(http.MethodGet, http.MethodPost)
+	})).Methods(http.MethodGet, http.MethodPost)
 
 	port := getPort()
 	fmt.Printf("Server is listening on port %s\n", port)
@@ -253,4 +217,27 @@ func getPort() string {
 		port = "8080"
 	}
 	return ":" + port
+}
+
+func corsMiddleware(next http.HandlerFunc) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		// Set allowed origins dynamically based on incoming request origin
+		origin := r.Header.Get("Origin")
+		if origin == "" {
+			origin = "*"
+		}
+		w.Header().Set("Access-Control-Allow-Origin", origin)
+		w.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
+		w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
+
+		// Set Access-Control-Allow-Credentials header
+		w.Header().Set("Access-Control-Allow-Credentials", "true")
+
+		if r.Method == "OPTIONS" {
+			w.WriteHeader(http.StatusOK)
+			return
+		}
+
+		next(w, r)
+	}
 }
