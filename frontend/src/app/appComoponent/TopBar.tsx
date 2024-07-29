@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, ChangeEvent } from "react";
+import React, { useState, useEffect, ChangeEvent, useCallback } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { Search } from "@geist-ui/icons";
@@ -12,14 +12,14 @@ export default function TopBar() {
   const [searchResults, setSearchResults] = useState<Product[]>([]);
   const [showDropdown, setShowDropdown] = useState<boolean>(false);
 
-  const fetchProducts = async () => {
+  const fetchProducts = useCallback(async () => {
     try {
       const fetchedProducts = await FetchProductByName(searchValue);
       setSearchResults(fetchedProducts);
     } catch (error) {
       console.error(`Failed to fetch products for name ${searchValue}:`, error);
     }
-  };
+  }, [searchValue]);
 
   useEffect(() => {
     if (searchValue) {
@@ -27,8 +27,8 @@ export default function TopBar() {
     } else {
       setSearchResults([]);
     }
-  }, [searchValue]);
-
+  }, [searchValue, fetchProducts]);
+  
   useEffect(() => {
     console.log("lentgh:", searchResults);
     setShowDropdown(searchResults.length > 0);
