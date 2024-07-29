@@ -15,7 +15,7 @@ import (
 const connectionURL = "sqlitecloud://cjczta0lik.sqlite.cloud:8860?apikey=KavmXdlHtwvK5SMaaLxcCxLBviJ4RAbaJK5t7lSNWx4"
 
 // Initialize a rate limiter with 1 request per second and a burst capacity of 5
-var limiter = rate.NewLimiter(1, 5)
+var limiter = rate.NewLimiter(3, 5)
 
 func corsMiddleware(next http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {

@@ -12,7 +12,7 @@ interface CardProps {
 export async function Card({ category, limit }: CardProps) {
   let products: Array<Product> = [];
   if (category) {
-    products = await FetchProductByCategory(category, "latest", "0", "0");
+    products = await FetchProductByCategory(category, "latest", "0", "1000");
     
   } else {
     products = await FetchProduct();

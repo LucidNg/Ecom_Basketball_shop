@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import ProductCard from "./ProductCard";
 import { IProduct } from "./ProductCard.type";
 import Link from "next/link";
@@ -54,16 +54,16 @@ const ShoppingCart = () => {
     setIsSelectAll(selected.length === cartItems.length);
   };
 
-  const getTotalBill = (): number => {
+  const getTotalBill = useCallback((): number => {
     return selectItems.reduce(
       (total, item) => total + item.price * item.quantity,
       0
     );
-  };
+  }, [selectItems]);
 
   useEffect(() => {
     setTotalPrice(getTotalBill());
-  }, [selectItems]);
+  }, [selectItems, getTotalBill]);
 
   return (
     <>
@@ -104,7 +104,7 @@ const ShoppingCart = () => {
               <p>
                 Total bill:{" "}
                 <span className="text-xl">
-                  {getTotalBill().toLocaleString()}{" "}
+                  {totalPrice.toLocaleString()}{" "}
                   <span className="underline">đ</span>
                 </span>
               </p>
