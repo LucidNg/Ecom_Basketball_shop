@@ -135,7 +135,7 @@ func CreateTable(db *sqlitecloud.SQCloud) error {
 
 	sizeTable := `CREATE TABLE IF NOT EXISTS size (
 		"productID" TEXT NOT NULL,
-		"size" INTEGER NOT NULL,
+		"size" TEXT NOT NULL,
 		"stock" INTEGER NOT NULL,
 		"price" REAL NOT NULL,
 		PRIMARY KEY(productID, size),
