@@ -115,7 +115,7 @@ const DetailedProductPageCli = ({ children1 }: DetailedProductPage) => {
         <div className='leftColumn flex flex-col items-center lg:w-2/5 w-full'>
           <div className={`w-[550px] h-[550px] flex items-center justify-center ${!mainImage ? 'bg-gray-300' : ''}`}>
             {mainImage ? (
-              <Image src={mainImage} alt='Main Product' className='object-cover w-[500px] h-[500px] text-base-content border-2' height={100} width={100} />
+              <Image src={mainImage} alt='Main Product' className='object-cover w-[500px] h-[500px] text-base-content border-2' height={500} width={500} />
             ) : (
               <span className='text-lg text-gray-500'>No Image Available</span>
             )}
@@ -138,7 +138,7 @@ const DetailedProductPageCli = ({ children1 }: DetailedProductPage) => {
                 {sizes.map((size, index) => (
                   <div
                     key={index}
-                    className={`flex flex-col items-center justify-center w-24 h-10 text-xl cursor-pointer hover:bg-secondary hover:font-semibold ${selectedSize === size ? 'bg-secondary font-semibold' : 'bg-primary text-base-content'}`}
+                    className={`flex flex-col items-center justify-center w-24 h-10 text-xl cursor-pointer hover:bg-secondary hover:font-semibold ${selectedSize === size ? 'bg-secondary font-semibold text-base-content' : 'bg-primary text-base-content'}`}
                     onClick={() => handleSizeClick(size)}
                   >
                     <span>{size}</span>

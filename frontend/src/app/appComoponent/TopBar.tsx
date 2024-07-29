@@ -70,9 +70,9 @@ export default function TopBar() {
                         {searchResults.map((product) => (
                             <li key={product.productID} className="p-2 hover:bg-gray-200 text-base-content cursor-pointer" onClick={handleProductClick}>
                                 <Link href={`/product/${product.productID}`}>
-                                    <div className="flex items-center">
+                                    <div className="flex items-center justify-between">
                                         <span className="ml-2">{product.productName}</span>
-                                        <span className="ml-2">{product.price}</span>
+                                        <span className="ml-2 justify-end">$ {product.price}</span>
                                     </div>
                                 </Link>
                             </li>
