@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { FetchProductByCategory, FetchProductByBrand, Product } from "../../../lib/product";
+import Loading from "@/app/appComoponent/Loading";
 
 interface CardProps {
   limit?: number;
@@ -16,29 +17,31 @@ interface CardProps {
 
 const Card: React.FC<CardProps> = ({ limit, category, currentPage, itemsPerPage, checkHasMoreProducts, sortBy, minPrice, maxPrice }: CardProps) => {
   const [products, setProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState<boolean>(true); 
 
   useEffect(() => {
     const fetchProducts = async () => {
+      setLoading(true); 
       try {
         let fetchedProducts;
-        
+
         if (category.includes("brand")) {
-          // Extract the brand name from the category
-        const parts = category.split(" ");
-        const brandName = parts[0].replace("'s", "");
-          if (brandName !== undefined) {
+          const parts = category.split(" ");
+          const brandName = parts[0].replace("'s", "");
+          if (brandName) {
             fetchedProducts = await FetchProductByBrand(brandName, sortBy, maxPrice, minPrice);
           }
         } else {
           fetchedProducts = await FetchProductByCategory(category, sortBy, maxPrice, minPrice);
         }
 
-        setProducts(fetchedProducts || []); // Ensure products is not null
-        // Check if there are more products available for the next page
+        setProducts(fetchedProducts || []); // Update state with fetched products
         const hasMore = Boolean(fetchedProducts && fetchedProducts.length > currentPage * itemsPerPage);
         checkHasMoreProducts(hasMore);
       } catch (error) {
         console.error(`Failed to fetch products for category ${category}:`, error);
+      } finally {
+        setLoading(false); 
       }
     };
 
@@ -60,6 +63,11 @@ const Card: React.FC<CardProps> = ({ limit, category, currentPage, itemsPerPage,
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat('vi-VN').format(price);
   };
+
+  if (loading) {
+    return <Loading />; 
+  }
+
   return (
     <>
       {displayedProducts.length > 0 ? (
