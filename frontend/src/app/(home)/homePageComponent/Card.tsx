@@ -1,46 +1,23 @@
-"use client";
 
-import React, { useState, useEffect } from "react";
+import React, {useState, useEffect} from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { FetchProduct, FetchProductByCategory, Product } from "../../../lib/product";
-import Loading from "@/app/appComoponent/Loading";
 
 interface CardProps {
   category?: string;
   limit?: number;
 }
 
-const Card: React.FC<CardProps> = ({ category, limit }: CardProps) => {
-  const [products, setProducts] = useState<Product[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
-
-  useEffect(() => {
-    const fetchProducts = async () => {
-      setLoading(true);
-      try {
-        // Fetch products with a simulated delay
-        await new Promise(resolve => setTimeout(resolve, 1000));
-
-        let fetchedProducts: Product[] = [];
-
-        if (category) {
-          fetchedProducts = await FetchProductByCategory(category, "latest", "0", "1000");
-        } else {
-          fetchedProducts = await FetchProduct();
-        }
-
-        setProducts(fetchedProducts);
-      } catch (error) {
-        console.error('Failed to fetch products:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchProducts();
-  }, [category]);
-
+export async function Card({ category, limit }: CardProps) {
+  let products: Array<Product> = [];
+  if (category) {
+    products = await FetchProductByCategory(category, "latest", "0", "1000");
+    
+  } else {
+    products = await FetchProduct();
+  }
+  
   function convertInvalidJsonStringToArray(invalidJsonString: string) {
     const cleanedString = invalidJsonString.slice(1, -1);
     const elements = cleanedString.split(',').map(element => element.trim());
@@ -50,23 +27,18 @@ const Card: React.FC<CardProps> = ({ category, limit }: CardProps) => {
   }
 
   const displayedProducts = limit ? products.slice(0, limit) : products;
-
-  if (loading) {
-    return <Loading />;
-  }
-
   return (
     <>
       {displayedProducts.map(product => (
         <div key={product.productID} className="bg-primary flex flex-col h-64 w-40 sm:h-80 sm:w-56 lg:h-[410px] lg:w-72 transition-transform transform hover:scale-95 shadow-md hover:shadow-2xl hover:drop-shadow-lg hover:shadow-zinc-400 hover:will-change-transform">
-          <Image 
-            src={`https://drive.google.com/uc?export=view&id=${convertInvalidJsonStringToArray(product.url)[0]}`}
-            alt={product.productName} 
-            width={150} 
-            height={150} 
-            className="p-5 w-48 sm:w-56 lg:w-72 sm:h-56 lg:h-72 object-cover"
-            loading="lazy" 
-          />
+            <Image 
+              src={`https://drive.google.com/uc?export=view&id=${convertInvalidJsonStringToArray(product.url)[0]}`}
+              alt={product.productName} 
+              width={150} 
+              height={150} 
+              className="p-5 w-48 sm:w-56 lg:w-72 sm:h-56 lg:h-72 object-cover"
+              loading="lazy" 
+            />
           <span className="text-base-content font-semibold w-40 sm:w-56 lg:w-72 h-14 px-5 text-xs sm:text-sm lg:text-lg">
             {product.productName}
           </span>
@@ -84,6 +56,4 @@ const Card: React.FC<CardProps> = ({ category, limit }: CardProps) => {
       ))}
     </>
   );
-};
-
-export default Card;
+}
