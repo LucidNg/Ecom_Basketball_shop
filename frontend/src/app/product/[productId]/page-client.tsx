@@ -9,6 +9,7 @@ import CommentBox from "./productPageComponent/commentBox";
 import { FetchProduct } from "@/lib/product";
 import { IProduct } from "@/app/appComoponent/ProductCard.type";
 import { useCart } from "@/app/appComoponent/CartContext";
+import { add } from "lodash";
 
 var categoryID = "";
 
@@ -18,6 +19,7 @@ interface DetailedProductPage {
 
 const DetailedProductPageCli = ({ children1 }: DetailedProductPage) => {
   const { productId } = useParams();
+  const { addToCart } = useCart();
   const [mainImage, setMainImage] = useState<string>("");
   const [images, setImages] = useState<string[]>([]);
   const [selectedSize, setSelectedSize] = useState<string | null>(null);
@@ -109,16 +111,24 @@ const DetailedProductPageCli = ({ children1 }: DetailedProductPage) => {
     }
   };
 
-  const addToCart = () => {
+  const addToCartHandler = () => {
     if (productDetails && selectedSize) {
       const product = productDetails.productDetails[0];
       console.log(
         `Added ${quantity} ${
           product.productName
-        } (size: ${selectedSize}) to cart. Price: ${
+        } (size: ${selectedSize}) to cart. Total: ${
           quantity * priceBySize[selectedSize]
         }`
       );
+      addToCart({
+        id: product.productID,
+        name: product.productName,
+        image: mainImage,
+        size: selectedSize,
+        quantity: quantity,
+        price: quantity * priceBySize[selectedSize],
+      });
     }
   };
 
@@ -226,7 +236,7 @@ const DetailedProductPageCli = ({ children1 }: DetailedProductPage) => {
                     : "bg-primary text-base-content cursor-not-allowed"
                 }`}
                 disabled={!selectedSize || quantity > stockBySize[selectedSize]}
-                onClick={addToCart}
+                onClick={addToCartHandler}
               >
                 Add to cart
               </button>
