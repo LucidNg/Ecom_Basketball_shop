@@ -102,7 +102,14 @@ const ShoppingCart = () => {
               <ProductCard key={product.id} product={product} />
               <button
                 className="px-4 py-3 bg-white text-[#C6393F] self-end min-w-fit"
-                onClick={() => removeFromCart(product.id)}
+                onClick={() => {
+                  removeFromCart(product.id);
+                  // Do this to ensure the total price is updated after deleting a product
+                  const updatedSelectItems = selectItems.filter(
+                    (item) => item.id !== product.id
+                  );
+                  setSelectItems(updatedSelectItems);
+                }}
               >
                 <span>Delete</span>
               </button>

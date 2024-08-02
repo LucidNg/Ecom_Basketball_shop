@@ -7,7 +7,7 @@ import { remove, update } from "lodash";
 interface CartContextType {
   cart: IProduct[];
   addToCart: (product: IProduct) => void;
-  removeFromCart: (productId: string | undefined) => void;
+  removeFromCart: (productId: string) => void;
   increaseQuantity: (productId: string) => void;
   decreaseQuantity: (productId: string) => void;
 }
@@ -112,10 +112,10 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
     });
   };
 
-  const removeFromCart = (productId: string | undefined) => {
+  const removeFromCart = (productId: string) => {
     if (productId) {
+      alert(`You sure you want to remove product: ${productId} ?`);
       setCart((prevCart) => prevCart.filter((item) => item.id !== productId));
-      return cart;
     } else throw new Error("Product id does not exist.");
   };
 
