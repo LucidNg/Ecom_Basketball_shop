@@ -1,3 +1,4 @@
+"use client";
 import React, { createContext, useState, useContext, ReactNode } from "react";
 import { IProduct } from "./ProductCard.type";
 import ProductCard from "./ProductCard";

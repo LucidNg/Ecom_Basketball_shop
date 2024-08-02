@@ -6,12 +6,13 @@ import Link from "next/link";
 import { Search } from "@geist-ui/icons";
 import { ShoppingCart } from "@geist-ui/icons";
 import { FetchProductByName, Product } from "@/lib/product";
+import { useCart } from "./CartContext";
 
 export default function TopBar() {
   const [searchValue, setSearchValue] = useState<string>("");
   const [searchResults, setSearchResults] = useState<Product[]>([]);
   const [showDropdown, setShowDropdown] = useState<boolean>(false);
-
+  const { cart } = useCart();
   const fetchProducts = useCallback(async () => {
     try {
       const fetchedProducts = await FetchProductByName(searchValue);
@@ -28,7 +29,7 @@ export default function TopBar() {
       setSearchResults([]);
     }
   }, [searchValue, fetchProducts]);
-  
+
   useEffect(() => {
     console.log("lentgh:", searchResults);
     setShowDropdown(searchResults.length > 0);
@@ -113,7 +114,7 @@ export default function TopBar() {
             <div className="px-3 flex">
               <ShoppingCart color="black" className="h-5 w-5 sm:h-8 sm:w-8" />
               <span className="text-base-content hidden sm:text-2xl sm:inline px-4">
-                2
+                cart.length
               </span>
             </div>
           </button>
