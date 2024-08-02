@@ -42,6 +42,60 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
         "https://www.cosmossport.gr/2869439-product_medium/adidas-basketball-select-tee.jpg",
       size: "L",
     },
+    {
+      id: "3",
+      name: "adidas Basketball Select Tee White",
+      price: 789000,
+      quantity: 2,
+      image:
+        "https://www.cosmossport.gr/2869439-product_medium/adidas-basketball-select-tee.jpg",
+      size: "L",
+    },
+    {
+      id: "4",
+      name: "adidas Basketball Select Tee White",
+      price: 789000,
+      quantity: 2,
+      image:
+        "https://www.cosmossport.gr/2869439-product_medium/adidas-basketball-select-tee.jpg",
+      size: "L",
+    },
+    {
+      id: "5",
+      name: "adidas Basketball Select Tee White",
+      price: 789000,
+      quantity: 2,
+      image:
+        "https://www.cosmossport.gr/2869439-product_medium/adidas-basketball-select-tee.jpg",
+      size: "L",
+    },
+    {
+      id: "6",
+      name: "adidas Basketball Select Tee White",
+      price: 789000,
+      quantity: 2,
+      image:
+        "https://www.cosmossport.gr/2869439-product_medium/adidas-basketball-select-tee.jpg",
+      size: "L",
+    },
+    {
+      id: "7",
+      name: "adidas Basketball Select Tee White",
+      price: 789000,
+      quantity: 2,
+      image:
+        "https://www.cosmossport.gr/2869439-product_medium/adidas-basketball-select-tee.jpg",
+      size: "L",
+    },
+    {
+      id: "8",
+      name: "adidas Basketball Select Tee White",
+      price: 789000,
+      quantity: 2,
+      image:
+        "https://www.cosmossport.gr/2869439-product_medium/adidas-basketball-select-tee.jpg",
+      size: "L",
+    },
   ]);
   const addToCart = (product: IProduct) => {
     setCart((prevCart) => {
