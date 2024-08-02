@@ -23,8 +23,26 @@ export const useCart = () => {
 };
 
 export const CartProvider = ({ children }: { children: ReactNode }) => {
-  const [cart, setCart] = useState<IProduct[] | []>([]);
-
+  const [cart, setCart] = useState<IProduct[] | []>([
+    {
+      id: "1",
+      name: "Jordan Air Globe T-Shirt Kids",
+      price: 587000,
+      quantity: 1,
+      image:
+        "https://i1.t4s.cz/products/95d121-001/jordan-air-globe-t-shirt-kids-749837-95d121-001.png",
+      size: "XS",
+    },
+    {
+      id: "2",
+      name: "adidas Basketball Select Tee White",
+      price: 789000,
+      quantity: 2,
+      image:
+        "https://www.cosmossport.gr/2869439-product_medium/adidas-basketball-select-tee.jpg",
+      size: "L",
+    },
+  ]);
   const addToCart = (product: IProduct) => {
     setCart((prevCart) => {
       const existingProductIndex = prevCart.findIndex(
@@ -69,10 +87,10 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
           (item) => item.id === productId
         );
         if (existingProductIndex !== -1) {
-          let updatedCart = [...prevCart];
-          if (updatedCart[existingProductIndex].quantity > 0) {
+          const updatedCart = [...prevCart];
+          if (updatedCart[existingProductIndex].quantity > 1) {
             updatedCart[existingProductIndex].quantity -= 1;
-          } else updatedCart = removeFromCart(productId);
+          }
           return updatedCart;
         } else return prevCart;
       });
