@@ -74,31 +74,39 @@ const ShoppingCart = () => {
     <>
       <div className="flex flex-col gap-12">
         <div className="flex flex-col gap-6 h-max">
-          {cart.map((product, index) => (
-            <div
-              key={product.id}
-              className="flex flex-row items-center gap-20 px-16 py-6 bg-[#EBEBD5] h-full"
-            >
-              <div className="size-fit">
-                <input
-                  type="checkbox"
-                  checked={checkedItems[index]}
-                  onChange={() => handleCheckboxChange(index)}
-                  className="size-6 bg-white"
-                />
-              </div>
-              <ProductCard key={product.id} product={product} />
-              <button
-                className="px-4 py-3 bg-white text-[#C6393F] self-end min-w-fit"
-                onClick={
-                  () => {}
-                  //() => removeFromCart(product.id)
-                }
-              >
-                <span>Delete</span>
-              </button>
+          {cart.length === 0 ? (
+            <div className="flex justify-center">
+              <span className="text-2xl">Shopping cart is empty. </span>
+              <Link href="/">
+                <span className="text-2xl text-blue-400 underline cursor-pointer">
+                  Go shopping now!
+                </span>
+              </Link>
             </div>
-          ))}
+          ) : (
+            cart.map((product, index) => (
+              <div
+                key={product.id}
+                className="flex flex-row items-center gap-20 px-16 py-6 bg-[#EBEBD5] h-full"
+              >
+                <div className="size-fit">
+                  <input
+                    type="checkbox"
+                    checked={checkedItems[index]}
+                    onChange={() => handleCheckboxChange(index)}
+                    className="size-6 bg-white"
+                  />
+                </div>
+                <ProductCard key={product.id} product={product} />
+                <button
+                  className="px-4 py-3 bg-white text-[#C6393F] self-end min-w-fit"
+                  onClick={() => removeFromCart(product.id)}
+                >
+                  <span>Delete</span>
+                </button>
+              </div>
+            ))
+          )}
         </div>
         <div className="flex px-16 py-6 bg-[#EBEBD5] w-full">
           <div className="flex items-center justify-between w-full">
