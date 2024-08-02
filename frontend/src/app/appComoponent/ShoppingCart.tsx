@@ -104,7 +104,7 @@ const ShoppingCart = () => {
               <p>
                 Total bill:{" "}
                 <span className="text-xl">
-                  {totalPrice.toLocaleString()}{" "}
+                  {Intl.NumberFormat("vi-VN").format(totalPrice)}{" "}
                   <span className="underline">đ</span>
                 </span>
               </p>
