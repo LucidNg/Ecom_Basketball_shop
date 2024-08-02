@@ -2,6 +2,7 @@
 import React, { createContext, useState, useContext, ReactNode } from "react";
 import { IProduct } from "./ProductCard.type";
 import ProductCard from "./ProductCard";
+import { remove } from "lodash";
 
 interface CartContextType {
   cart: IProduct[];
@@ -37,8 +38,10 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
     });
   };
 
-  const removeFromCart = (productId: string) => {
-    setCart((prevCart) => prevCart.filter((item) => item.id !== productId));
+  const removeFromCart = (productId: string | undefined) => {
+    if (productId) {
+      setCart((prevCart) => prevCart.filter((item) => item.id !== productId));
+    } else throw new Error("Product id does not exist.");
   };
 
   return (

@@ -1,25 +1,29 @@
-"use client"
+"use client";
 
-import Link from 'next/link';
-import { useState } from 'react';
+import Link from "next/link";
+import { useState } from "react";
 
 export default function CheckoutPage() {
-  const [selectedDelivery, setSelectedDelivery] = useState('standard');
-  const [selectedPayment, setSelectedPayment] = useState('cod');
+  const [selectedDelivery, setSelectedDelivery] = useState("standard");
+  const [selectedPayment, setSelectedPayment] = useState("cod");
   const [deliveryPrice, setDeliveryPrice] = useState(4);
 
-  const handleCheckboxDeliChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleCheckboxDeliChange = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
     setSelectedDelivery(event.target.id);
-    if (event.target.id === 'standard') {
+    if (event.target.id === "standard") {
       setDeliveryPrice(4);
-    } else if (event.target.id === 'fast') {
+    } else if (event.target.id === "fast") {
       setDeliveryPrice(10);
     } else {
       // Handle other potential delivery options (optional)
     }
   };
 
-  const handleCheckboxPayChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleCheckboxPayChange = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
     setSelectedPayment(event.target.id);
   };
 
@@ -49,13 +53,17 @@ export default function CheckoutPage() {
           </div>
 
           <h2 className="text-4xl font-bold text-base-content">Coupon</h2>
-          <h2 className="text-lg font-extralight text-base-content py-5 pl-10">Sorry, coupon is not available right now.</h2>
+          <h2 className="text-lg font-extralight text-base-content py-5 pl-10">
+            Sorry, coupon is not available right now.
+          </h2>
 
-          <h2 className="text-4xl font-bold text-base-content py-5">Delivery Options</h2>
+          <h2 className="text-4xl font-bold text-base-content py-5">
+            Delivery Options
+          </h2>
           <div className="DevMethod py-5 pl-10">
             <div
               className={`items-center flex p-3 border-2 w-96 mb-5 ${
-                selectedDelivery === 'standard' ? 'border-black' : ''
+                selectedDelivery === "standard" ? "border-black" : ""
               }`}
             >
               <input
@@ -63,16 +71,19 @@ export default function CheckoutPage() {
                 className="checkbox h-7 w-7 focus:fill-base-content stroke-2 stroke-black"
                 name="standard"
                 id="standard"
-                checked={selectedDelivery === 'standard'}
+                checked={selectedDelivery === "standard"}
                 onChange={handleCheckboxDeliChange}
               />
-              <label htmlFor="standard" className="text-base-content text-xl px-5">
+              <label
+                htmlFor="standard"
+                className="text-base-content text-xl px-5"
+              >
                 Standard delivery ($4)
               </label>
             </div>
             <div
               className={`items-center flex p-3 border-2 w-96 ${
-                selectedDelivery === 'fast' ? 'border-black' : ''
+                selectedDelivery === "fast" ? "border-black" : ""
               }`}
             >
               <input
@@ -80,7 +91,7 @@ export default function CheckoutPage() {
                 className="checkbox h-7 w-7 focus:fill-base-content stroke-2 stroke-black"
                 name="fast"
                 id="fast"
-                checked={selectedDelivery === 'fast'}
+                checked={selectedDelivery === "fast"}
                 onChange={handleCheckboxDeliChange}
               />
               <label htmlFor="fast" className="text-base-content text-xl px-5">
@@ -93,7 +104,7 @@ export default function CheckoutPage() {
           <div className="PayMethod py-5 pl-10">
             <div
               className={`items-center flex p-3 border-2 w-96 mb-5 ${
-                selectedPayment === 'cod' ? 'border-black' : ''
+                selectedPayment === "cod" ? "border-black" : ""
               }`}
             >
               <input
@@ -101,7 +112,7 @@ export default function CheckoutPage() {
                 className="checkbox h-7 w-7 focus:fill-base-content stroke-2 stroke-black"
                 name="cod"
                 id="cod"
-                checked={selectedPayment === 'cod'}
+                checked={selectedPayment === "cod"}
                 onChange={handleCheckboxPayChange}
               />
               <label htmlFor="cod" className="text-base-content text-xl px-5">
@@ -110,7 +121,7 @@ export default function CheckoutPage() {
             </div>
             <div
               className={`items-center flex p-3 border-2 w-96 ${
-                selectedPayment === 'paypal' ? 'border-black' : ''
+                selectedPayment === "paypal" ? "border-black" : ""
               }`}
             >
               <input
@@ -118,10 +129,13 @@ export default function CheckoutPage() {
                 className="checkbox h-7 w-7 focus:fill-base-content stroke-2 stroke-black"
                 name="paypal"
                 id="paypal"
-                checked={selectedPayment === 'paypal'}
+                checked={selectedPayment === "paypal"}
                 onChange={handleCheckboxPayChange}
               />
-              <label htmlFor="paypal" className="text-base-content text-xl px-5">
+              <label
+                htmlFor="paypal"
+                className="text-base-content text-xl px-5"
+              >
                 Paypal
               </label>
             </div>
@@ -129,31 +143,37 @@ export default function CheckoutPage() {
         </div>
 
         <div className="rightSide w-1/2 pl-20 flex flex-col">
-          <h2 className='text-4xl font-bold text-base-content'>Cart info</h2>
+          <h2 className="text-4xl font-bold text-base-content">Cart info</h2>
 
-          <div className='itemsBox border-b-2 border-black py-10 w-[90%]'></div>
+          <div className="itemsBox border-b-2 border-black py-10 w-[90%]"></div>
 
-          <h3 className='text-3xl font-semibold text-base-content py-10 pl-5'>Summary</h3>
+          <h3 className="text-3xl font-semibold text-base-content py-10 pl-5">
+            Summary
+          </h3>
 
-          <div className='w-[90%] flex justify-between py-1'>
-            <h4 className='text-2xl text-base-content pl-20'>Total</h4>
-            <h4 className='text-2xl text-base-content'>$20.12</h4>
+          <div className="w-[90%] flex justify-between py-1">
+            <h4 className="text-2xl text-base-content pl-20">Total</h4>
+            <h4 className="text-2xl text-base-content">$20.12</h4>
           </div>
-          <div className='w-[90%] flex justify-between py-1'>
-            <h4 className='text-2xl text-base-content pl-20'>Coupon</h4>
-            <h4 className='text-2xl text-base-content'>none</h4>
+          <div className="w-[90%] flex justify-between py-1">
+            <h4 className="text-2xl text-base-content pl-20">Coupon</h4>
+            <h4 className="text-2xl text-base-content">none</h4>
           </div>
-          <div className='w-[90%] flex justify-between py-1'>
-            <h4 className='text-2xl text-base-content pl-20'>Delivery price</h4>
-            <h4 className='text-2xl text-base-content'>${deliveryPrice}</h4>
+          <div className="w-[90%] flex justify-between py-1">
+            <h4 className="text-2xl text-base-content pl-20">Delivery price</h4>
+            <h4 className="text-2xl text-base-content">${deliveryPrice}</h4>
           </div>
-          <div className='w-[90%] flex justify-between py-1'>
-            <h4 className='text-2xl text-base-content pl-20 font-semibold'>Total</h4>
-            <h4 className='text-2xl text-base-content font-semibold'>$24.12</h4>
+          <div className="w-[90%] flex justify-between py-1">
+            <h4 className="text-2xl text-base-content pl-20 font-semibold">
+              Total
+            </h4>
+            <h4 className="text-2xl text-base-content font-semibold">$24.12</h4>
           </div>
-          
-          <Link href="/checkout/success" className='self-center'>
-            <button className='btn font-semibold text-4xl h-20 w-96 self-center my-20 transition transition-duration-300 transition-property:scale,box-shadow,background-color hover:scale-105 hover:drop-shadow-xl hover:bg-secondary outline-none border-none'>Check out</button>
+
+          <Link href="/checkout/success" className="self-center">
+            <button className="btn font-semibold text-4xl h-20 w-96 self-center my-20 transition transition-duration-300 transition-property:scale,box-shadow,background-color hover:scale-105 hover:drop-shadow-xl hover:bg-secondary outline-none border-none">
+              Check out
+            </button>
           </Link>
         </div>
       </div>
