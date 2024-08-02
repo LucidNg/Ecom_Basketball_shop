@@ -28,6 +28,9 @@ const ProductCard = ({ product }: ProductCardProps) => {
       </div>
       <div className="flex flex-col justify-between h-52 w-full">
         <p className="text-[#1E1E1E] font-semibold text-2xl">{product.name}</p>
+        <p className="text-[#1E1E1E] font-normal text-lg">
+          Size: {product.size}
+        </p>
         <p className="text-xl">
           {product.price.toLocaleString()} <span className="underline">đ</span>
         </p>

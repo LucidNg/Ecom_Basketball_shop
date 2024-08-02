@@ -13,6 +13,7 @@ const cartItems: IProduct[] = [
     quantity: 1,
     image:
       "https://i1.t4s.cz/products/95d121-001/jordan-air-globe-t-shirt-kids-749837-95d121-001.png",
+    size: "XS",
   },
   {
     id: "2",
@@ -21,6 +22,7 @@ const cartItems: IProduct[] = [
     quantity: 2,
     image:
       "https://www.cosmossport.gr/2869439-product_medium/adidas-basketball-select-tee.jpg",
+    size: "L",
   },
 ];
 

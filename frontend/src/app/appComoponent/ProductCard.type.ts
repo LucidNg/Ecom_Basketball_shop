@@ -4,6 +4,7 @@ export interface IProduct {
   price: number;
   quantity: number;
   image: string;
+  size: string;
 }
 
 export type ProductCardProps = {
