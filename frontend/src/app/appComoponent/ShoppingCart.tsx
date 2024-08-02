@@ -76,7 +76,7 @@ const ShoppingCart = () => {
         <div className="flex flex-col gap-6 h-max">
           {cart.length === 0 ? (
             <div className="flex justify-center">
-              <span className="text-2xl">Shopping cart is empty. </span>
+              <span className="text-2xl">Shopping cart is empty.&nbsp;</span>
               <Link href="/">
                 <span className="text-2xl text-blue-400 underline cursor-pointer">
                   Go shopping now!
