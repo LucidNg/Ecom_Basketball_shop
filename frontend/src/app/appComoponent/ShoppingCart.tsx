@@ -92,7 +92,7 @@ const ShoppingCart = () => {
                 className="px-4 py-3 bg-white text-[#C6393F] self-end min-w-fit"
                 onClick={
                   () => {}
-                  //() => removeFromCart(product.id ? product.id : "")
+                  //() => removeFromCart(product.id)
                 }
               >
                 <span>Delete</span>

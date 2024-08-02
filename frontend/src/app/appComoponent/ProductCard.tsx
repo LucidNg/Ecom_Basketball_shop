@@ -32,7 +32,8 @@ const ProductCard = ({ product }: ProductCardProps) => {
           Size: {product.size}
         </p>
         <p className="text-xl">
-          {product.price.toLocaleString()} <span className="underline">đ</span>
+          {Intl.NumberFormat("vi-VN").format(product.price)}{" "}
+          <span className="underline">đ</span>
         </p>
         <div className="flex justify-between">
           <div className="flex items-center gap-4">

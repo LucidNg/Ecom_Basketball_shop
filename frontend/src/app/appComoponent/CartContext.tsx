@@ -7,7 +7,9 @@ import { remove } from "lodash";
 interface CartContextType {
   cart: IProduct[];
   addToCart: (product: IProduct) => void;
-  removeFromCart: (productId: string) => void;
+  removeFromCart: (productId: string | undefined) => void;
+  increseQuantity: (productId: string) => void;
+  decreaseQuantity: (productId: string) => void;
 }
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
