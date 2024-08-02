@@ -114,7 +114,7 @@ export default function TopBar() {
             <div className="px-3 flex">
               <ShoppingCart color="black" className="h-5 w-5 sm:h-8 sm:w-8" />
               <span className="text-base-content hidden sm:text-2xl sm:inline px-4">
-                cart.length
+                {cart.length}
               </span>
             </div>
           </button>

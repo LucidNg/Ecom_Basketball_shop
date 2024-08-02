@@ -117,7 +117,7 @@ const ShoppingCart = () => {
             <div>
               <Link href="/checkout">
                 <button className="px-6 py-3 bg-[#EFD471] text-[#1A3C73]">
-                  <span>Check out</span>
+                  <span>Checkout</span>
                 </button>
               </Link>
             </div>
