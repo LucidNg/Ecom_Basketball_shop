@@ -7,6 +7,9 @@ import Image from "next/image";
 import Rating from "./productPageComponent/rating";
 import CommentBox from "./productPageComponent/commentBox";
 import { FetchProduct } from "@/lib/product";
+import { IProduct } from "@/app/appComoponent/ProductCard.type";
+import { useCart } from "@/app/appComoponent/CartContext";
+
 var categoryID = "";
 
 interface DetailedProductPage {
