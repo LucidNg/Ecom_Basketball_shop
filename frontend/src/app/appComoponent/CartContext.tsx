@@ -114,8 +114,17 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
 
   const removeFromCart = (productId: string) => {
     if (productId) {
-      alert(`You sure you want to remove product: ${productId} ?`);
-      setCart((prevCart) => prevCart.filter((item) => item.id !== productId));
+      setCart((prevCart) => {
+        const productToRemove = prevCart.find((item) => item.id === productId);
+        if (productToRemove) {
+          alert(
+            `Are you sure you want to remove product: ${productToRemove.name}?`
+          );
+          return prevCart.filter((item) => item.id !== productId);
+        } else {
+          throw new Error("Product id does not exist.");
+        }
+      });
     } else throw new Error("Product id does not exist.");
   };
 
