@@ -36,8 +36,7 @@ const ProductCard = ({ product }: ProductCardProps) => {
           Size: {product.size}
         </p>
         <p className="text-xl">
-          {Intl.NumberFormat("vi-VN").format(product.price)}{" "}
-          <span className="underline">đ</span>
+          ${Intl.NumberFormat("vi-VN").format(product.price)}
         </p>
         <div className="flex justify-between">
           <div className="flex items-center gap-4">
