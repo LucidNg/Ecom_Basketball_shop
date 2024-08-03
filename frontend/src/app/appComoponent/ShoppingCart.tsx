@@ -67,7 +67,7 @@ const ShoppingCart = () => {
     setIsSelectAll(selected.length === cart.length);
   };
 
-  const getTotalBill = useCallback((): number => {
+  const getTotalPrice = useCallback((): number => {
     return selectItems.reduce(
       (total, item) => total + item.price * item.quantity,
       0
@@ -84,8 +84,8 @@ const ShoppingCart = () => {
   }, [selectCart, cart]);
 
   useEffect(() => {
-    setTotalPrice(getTotalBill());
-  }, [selectItems, getTotalBill, cart]);
+    setTotalPrice(getTotalPrice());
+  }, [selectItems, getTotalPrice, cart]);
 
   return (
     <div className="flex flex-col h-full gap-12">
@@ -163,8 +163,7 @@ const ShoppingCart = () => {
             <p>
               Total bill:{" "}
               <span className="text-xl">
-                {Intl.NumberFormat("vi-VN").format(totalPrice)}{" "}
-                <span className="underline">đ</span>
+                ${Intl.NumberFormat("vi-VN").format(totalPrice)}
               </span>
             </p>
           </div>

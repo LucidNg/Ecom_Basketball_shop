@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { useCart } from "../appComoponent/CartContext";
 import ProductCard from "../appComoponent/ProductCard";
 
@@ -9,6 +9,8 @@ export default function CheckoutPage() {
   const [selectedDelivery, setSelectedDelivery] = useState("standard");
   const [selectedPayment, setSelectedPayment] = useState("cod");
   const [deliveryPrice, setDeliveryPrice] = useState(4);
+  const [totalPrice, setTotalPrice] = useState(0);
+  const [couponPrice, setCouponPrice] = useState(0);
   const { selectCart } = useCart();
 
   const handleCheckboxDeliChange = (
@@ -29,6 +31,17 @@ export default function CheckoutPage() {
   ) => {
     setSelectedPayment(event.target.id);
   };
+
+  const getTotalPrice = useCallback((): number => {
+    return selectCart.reduce(
+      (total, item) => total + item.price * item.quantity,
+      0
+    );
+  }, [selectCart]);
+
+  useEffect(() => {
+    setTotalPrice(getTotalPrice());
+  }, [selectCart, getTotalPrice]);
 
   return (
     <main>
@@ -168,8 +181,10 @@ export default function CheckoutPage() {
           </h3>
 
           <div className="w-[90%] flex justify-between py-1">
-            <h4 className="text-2xl text-base-content pl-20">Total</h4>
-            <h4 className="text-2xl text-base-content">$20.12</h4>
+            <h4 className="text-2xl text-base-content pl-20">Total price</h4>
+            <h4 className="text-2xl text-base-content">
+              ${Intl.NumberFormat("vi-VN").format(totalPrice)}
+            </h4>
           </div>
           <div className="w-[90%] flex justify-between py-1">
             <h4 className="text-2xl text-base-content pl-20">Coupon</h4>
@@ -181,9 +196,14 @@ export default function CheckoutPage() {
           </div>
           <div className="w-[90%] flex justify-between py-1">
             <h4 className="text-2xl text-base-content pl-20 font-semibold">
-              Total
+              Total bill
             </h4>
-            <h4 className="text-2xl text-base-content font-semibold">$24.12</h4>
+            <h4 className="text-2xl text-base-content font-semibold">
+              $
+              {Intl.NumberFormat("vi-VN").format(
+                totalPrice + deliveryPrice - couponPrice
+              )}
+            </h4>
           </div>
 
           <Link href="/checkout/success" className="self-center">

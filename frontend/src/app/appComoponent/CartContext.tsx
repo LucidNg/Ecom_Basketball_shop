@@ -31,8 +31,8 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
     [
       {
         id: "1",
-        name: "Jordan Air Globe T-Shirt Kids",
-        price: 587000,
+        name: "Jordan Globe Tee Kids XS",
+        price: 25.99,
         quantity: 1,
         image:
           "https://i1.t4s.cz/products/95d121-001/jordan-air-globe-t-shirt-kids-749837-95d121-001.png",
@@ -40,8 +40,8 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
       },
       {
         id: "2",
-        name: "adidas Basketball Select Tee White",
-        price: 789000,
+        name: "adidas Hoops Tee L",
+        price: 34.99,
         quantity: 2,
         image:
           "https://www.cosmossport.gr/2869439-product_medium/adidas-basketball-select-tee.jpg",
@@ -49,8 +49,8 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
       },
       {
         id: "3",
-        name: "adidas Basketball Select Tee White",
-        price: 789000,
+        name: "adidas Court Tee L",
+        price: 32.5,
         quantity: 2,
         image:
           "https://www.cosmossport.gr/2869439-product_medium/adidas-basketball-select-tee.jpg",
@@ -58,8 +58,8 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
       },
       {
         id: "4",
-        name: "adidas Basketball Select Tee White",
-        price: 789000,
+        name: "adidas Slam Tee L",
+        price: 33.75,
         quantity: 2,
         image:
           "https://www.cosmossport.gr/2869439-product_medium/adidas-basketball-select-tee.jpg",
@@ -67,8 +67,8 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
       },
       {
         id: "5",
-        name: "adidas Basketball Select Tee White",
-        price: 789000,
+        name: "adidas Dunk Tee L",
+        price: 35.0,
         quantity: 2,
         image:
           "https://www.cosmossport.gr/2869439-product_medium/adidas-basketball-select-tee.jpg",
@@ -76,8 +76,8 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
       },
       {
         id: "6",
-        name: "adidas Basketball Select Tee White",
-        price: 789000,
+        name: "adidas Dribble Tee L",
+        price: 30.99,
         quantity: 2,
         image:
           "https://www.cosmossport.gr/2869439-product_medium/adidas-basketball-select-tee.jpg",
@@ -85,8 +85,8 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
       },
       {
         id: "7",
-        name: "adidas Basketball Select Tee White",
-        price: 789000,
+        name: "adidas Fastbreak Tee L",
+        price: 31.5,
         quantity: 2,
         image:
           "https://www.cosmossport.gr/2869439-product_medium/adidas-basketball-select-tee.jpg",
@@ -94,8 +94,8 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
       },
       {
         id: "8",
-        name: "adidas Basketball Select Tee White",
-        price: 789000,
+        name: "adidas Crossover Tee L",
+        price: 34.25,
         quantity: 2,
         image:
           "https://www.cosmossport.gr/2869439-product_medium/adidas-basketball-select-tee.jpg",
