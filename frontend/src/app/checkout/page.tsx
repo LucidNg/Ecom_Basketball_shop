@@ -3,11 +3,13 @@
 import Link from "next/link";
 import { useState } from "react";
 import { useCart } from "../appComoponent/CartContext";
+import ProductCard from "../appComoponent/ProductCard";
 
 export default function CheckoutPage() {
   const [selectedDelivery, setSelectedDelivery] = useState("standard");
   const [selectedPayment, setSelectedPayment] = useState("cod");
   const [deliveryPrice, setDeliveryPrice] = useState(4);
+  const { selectCart } = useCart();
 
   const handleCheckboxDeliChange = (
     event: React.ChangeEvent<HTMLInputElement>

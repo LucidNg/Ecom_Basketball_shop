@@ -29,7 +29,13 @@ import { useCart } from "./CartContext";
 // ];
 
 const ShoppingCart = () => {
-  const { cart, selectCart, removeFromCart } = useCart();
+  const {
+    cart,
+    selectCart,
+    addToSelectCart,
+    removeFromSelectCart,
+    removeFromCart,
+  } = useCart();
   const [selectItems, setSelectItems] = useState<IProduct[]>([]);
   const [totalPrice, setTotalPrice] = useState<number>(0);
   const [isSelectAll, setIsSelectAll] = useState<boolean>(false);
@@ -95,7 +101,12 @@ const ShoppingCart = () => {
                 <input
                   type="checkbox"
                   checked={checkedItems[index]}
-                  onChange={() => handleCheckboxChange(index)}
+                  onChange={() => {
+                    handleCheckboxChange(index);
+                    if (checkedItems[index] === true)
+                      addToSelectCart([product]);
+                    else removeFromCart(product.id);
+                  }}
                   className="size-6 bg-white"
                 />
               </div>
