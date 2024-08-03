@@ -85,7 +85,11 @@ const ShoppingCart = () => {
 
   useEffect(() => {
     setTotalPrice(getTotalPrice());
-  }, [selectItems, getTotalPrice, cart]);
+  }, [selectItems, cart, getTotalPrice]);
+
+  useEffect(() => {
+    setTotalPrice(getTotalPrice());
+  }, [cart]);
 
   return (
     <div className="flex flex-col h-full gap-12">

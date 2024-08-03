@@ -1,5 +1,11 @@
 "use client";
-import React, { createContext, useState, useContext, ReactNode } from "react";
+import React, {
+  createContext,
+  useState,
+  useContext,
+  useCallback,
+  ReactNode,
+} from "react";
 import { IProduct } from "./ProductCard.type";
 import ProductCard from "./ProductCard";
 import { remove, update } from "lodash";
@@ -132,6 +138,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
     } else throw new Error("Product id does not exist.");
   };
 
+  // 1
   const increaseQuantity = (productId: string) => {
     if (productId) {
       setCart((prevCart) => {
@@ -163,6 +170,64 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
       });
     } else throw new Error("Product id does not exist.");
   };
+
+  // 2
+  // const increaseQuantity = useCallback(
+  //   (productId: string) => {
+  //     if (productId) {
+  //       setCart((prevCart) => {
+  //         const existingProductIndex = prevCart.findIndex(
+  //           (item) => item.id === productId
+  //         );
+  //         if (existingProductIndex !== -1) {
+  //           const updatedCart = [...prevCart];
+  //           updatedCart[existingProductIndex].quantity += 1;
+  //           return updatedCart;
+  //         } else return prevCart;
+  //       });
+  //     } else throw new Error("Product id does not exist.");
+  //   },
+  //   [setCart]
+  // ); // Dependency on setCart
+
+  // const decreaseQuantity = useCallback(
+  //   (productId: string) => {
+  //     if (productId) {
+  //       setCart((prevCart) => {
+  //         const existingProductIndex = prevCart.findIndex(
+  //           (item) => item.id === productId
+  //         );
+  //         if (existingProductIndex !== -1) {
+  //           const updatedCart = [...prevCart];
+  //           if (updatedCart[existingProductIndex].quantity > 1) {
+  //             updatedCart[existingProductIndex].quantity -= 1;
+  //           }
+  //           return updatedCart;
+  //         } else return prevCart;
+  //       });
+  //     } else throw new Error("Product id does not exist.");
+  //   },
+  //   [setCart]
+  // ); // Dependency on setCart
+
+  // 3
+  // const increaseQuantity = (productId: string) => {
+  //   setCart((prevCart) =>
+  //     prevCart.map((item) =>
+  //       item.id === productId ? { ...item, quantity: item.quantity + 1 } : item
+  //     )
+  //   );
+  // };
+
+  // const decreaseQuantity = (productId: string) => {
+  //   setCart((prevCart) =>
+  //     prevCart.map((item) =>
+  //       item.id === productId && item.quantity > 1
+  //         ? { ...item, quantity: item.quantity - 1 }
+  //         : item
+  //     )
+  //   );
+  // };
 
   const addToSelectCart = (products: IProduct[]) => {
     setSelectCart((prevSelectCart) => {

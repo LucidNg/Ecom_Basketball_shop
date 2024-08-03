@@ -11,7 +11,7 @@ export default function CheckoutPage() {
   const [deliveryPrice, setDeliveryPrice] = useState(4);
   const [totalPrice, setTotalPrice] = useState(0);
   const [couponPrice, setCouponPrice] = useState(0);
-  const { selectCart } = useCart();
+  const { cart, selectCart } = useCart();
 
   const handleCheckboxDeliChange = (
     event: React.ChangeEvent<HTMLInputElement>
@@ -33,15 +33,16 @@ export default function CheckoutPage() {
   };
 
   const getTotalPrice = useCallback((): number => {
-    return selectCart.reduce(
-      (total, item) => total + item.price * item.quantity,
-      0
-    );
+    let total = 0;
+    selectCart.forEach((item) => {
+      total += item.price * item.quantity;
+    });
+    return total;
   }, [selectCart]);
 
   useEffect(() => {
     setTotalPrice(getTotalPrice());
-  }, [selectCart, getTotalPrice]);
+  }, [selectCart, getTotalPrice, cart]);
 
   return (
     <main>

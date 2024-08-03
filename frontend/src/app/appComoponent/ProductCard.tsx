@@ -6,16 +6,16 @@ import { ProductCardProps } from "./ProductCard.type";
 import { useCart } from "./CartContext";
 
 const ProductCard = ({ product }: ProductCardProps) => {
-  const [quantity, setQuantity] = useState<number>(product.quantity);
+  //const [quantity, setQuantity] = useState<number>(product.quantity);
   const { increaseQuantity, decreaseQuantity } = useCart();
 
   const _decreaseQuantity = (productId: string) => {
-    if (quantity > 1) setQuantity(quantity - 1);
+    //if (quantity > 1) setQuantity(quantity - 1);
     decreaseQuantity(productId);
   };
 
   const _increaseQuantity = (productId: string) => {
-    setQuantity(quantity + 1);
+    //setQuantity(quantity + 1);
     increaseQuantity(productId);
   };
 
@@ -46,7 +46,7 @@ const ProductCard = ({ product }: ProductCardProps) => {
             >
               <span className="leading-none">-</span>
             </button>
-            <p className="w-6 text-center">{quantity}</p>
+            <p className="w-6 text-center">{product.quantity}</p>
             <button
               className="py-2 px-3 bg-white"
               onClick={() => _increaseQuantity(product.id)}
