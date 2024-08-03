@@ -29,7 +29,7 @@ import { useCart } from "./CartContext";
 // ];
 
 const ShoppingCart = () => {
-  const { cart, removeFromCart } = useCart();
+  const { cart, selectCart, removeFromCart } = useCart();
   const [selectItems, setSelectItems] = useState<IProduct[]>([]);
   const [totalPrice, setTotalPrice] = useState<number>(0);
   const [isSelectAll, setIsSelectAll] = useState<boolean>(false);

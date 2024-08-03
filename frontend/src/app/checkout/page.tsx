@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useState } from "react";
+import { useCart } from "../appComoponent/CartContext";
 
 export default function CheckoutPage() {
   const [selectedDelivery, setSelectedDelivery] = useState("standard");

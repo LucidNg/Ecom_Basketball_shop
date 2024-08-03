@@ -6,8 +6,11 @@ import { remove, update } from "lodash";
 
 interface CartContextType {
   cart: IProduct[];
+  selectCart: IProduct[];
   addToCart: (product: IProduct) => void;
   removeFromCart: (productId: string) => void;
+  addToSelectCart: (product: IProduct[]) => void;
+  removeFromSelectCart: (productId: string[]) => void;
   increaseQuantity: (productId: string) => void;
   decreaseQuantity: (productId: string) => void;
 }
@@ -23,6 +26,7 @@ export const useCart = () => {
 };
 
 export const CartProvider = ({ children }: { children: ReactNode }) => {
+  const [selectCart, setSelectCart] = useState<IProduct[] | []>([]);
   const [cart, setCart] = useState<IProduct[] | []>(
     [
       {
@@ -160,12 +164,45 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
     } else throw new Error("Product id does not exist.");
   };
 
+  const addToSelectCart = (product: IProduct) => {
+    setSelectCart((prevSelectCart) => {
+      const existingProductIndex = prevSelectCart.findIndex(
+        (item) => item.id === product.id
+      );
+      if (existingProductIndex !== -1) {
+        const updatedSelectCart = [...prevSelectCart];
+        updatedSelectCart[existingProductIndex].quantity += product.quantity;
+        return updatedSelectCart;
+      } else {
+        return [...prevSelectCart, product];
+      }
+    });
+  };
+
+  const removeFromSelectCart = (productId: string) => {
+    if (productId) {
+      setSelectCart((prevSelectCart) => {
+        const productToRemove = prevSelectCart.find(
+          (item) => item.id === productId
+        );
+        if (productToRemove) {
+          return prevSelectCart.filter((item) => item.id !== productId);
+        } else {
+          throw new Error("Product id does not exist.");
+        }
+      });
+    } else throw new Error("Product id does not exist.");
+  };
+
   return (
     <CartContext.Provider
       value={{
         cart,
+        selectCart,
         addToCart,
         removeFromCart,
+        addToSelectCart,
+        removeFromSelectCart,
         increaseQuantity,
         decreaseQuantity,
       }}
