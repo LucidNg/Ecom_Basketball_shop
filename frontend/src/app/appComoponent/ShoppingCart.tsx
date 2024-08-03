@@ -95,11 +95,11 @@ const ShoppingCart = () => {
     <div className="flex flex-col h-full gap-12">
       <div
         className="flex flex-col gap-6 flex-grow overflow-auto"
-        style={{ maxHeight: "75vh" }}
+        style={{ maxHeight: "70vh" }}
       >
         {cart.length === 0 ? (
           <div className="flex justify-center">
-            <span className="text-2xl">Shopping cart is empty.&nbsp;</span>
+            <span className="text-2xl text-base-content">Shopping cart is empty.&nbsp;</span>
             <Link href="/">
               <span className="text-2xl text-blue-500 underline cursor-pointer">
                 Go shopping now!
@@ -110,7 +110,7 @@ const ShoppingCart = () => {
           cart.map((product, index) => (
             <div
               key={product.id}
-              className="flex flex-row items-center gap-20 px-16 py-6 bg-[#EBEBD5] text-base-content h-full"
+              className="flex flex-row items-center gap-20 px-16 py-6 bg-[#EBEBD5] h-full"
             >
               <div className="size-fit">
                 <input
@@ -131,7 +131,7 @@ const ShoppingCart = () => {
               </div>
               <ProductCard key={product.id} product={product} />
               <button
-                className="px-4 py-3 bg-white text-[#C6393F] self-end min-w-fit"
+                className="px-4 py-3 bg-white text-[#C6393F] self-end min-w-fit hover:bg-secondary hover:font-semibold"
                 onClick={() => {
                   const userConfirmed = window.confirm(
                     `Are you sure you want to remove product: ${product.name}?`
@@ -161,12 +161,12 @@ const ShoppingCart = () => {
               onChange={handleSelectAll}
               className="size-6 bg-white"
             />
-            <label className="text-lg">Choose all</label>
+            <label className="text-lg text-base-content">Choose all</label>
           </div>
           <div>
-            <p className="text-xl text-base-content">
+            <p className="text-xl text-base-content font-semibold">
               Total bill:{" "}
-              <span className="text-xl text-base-content">
+              <span>
                 ${Intl.NumberFormat("vi-VN").format(totalPrice)}
               </span>
             </p>
@@ -177,7 +177,7 @@ const ShoppingCart = () => {
                 className={`px-6 py-3 ${
                   selectItems.length === 0
                     ? "bg-gray-400 cursor-not-allowed"
-                    : "bg-[#EFD471] text-[#1A3C73]"
+                    : "bg-[#EFD471] text-[#1A3C73] font-semibold"
                 }`}
                 disabled={selectItems.length === 0}
               >
