@@ -50,9 +50,11 @@ const ShoppingCart = () => {
 
     if (!isSelectAll) {
       setSelectItems(cart);
+      addToSelectCart(cart);
     } else {
       setSelectItems([]);
     }
+    console.log(`${isSelectAll}`);
   };
 
   const handleCheckboxChange = (index: number) => {
@@ -71,6 +73,15 @@ const ShoppingCart = () => {
       0
     );
   }, [selectItems]);
+
+  useEffect(() => {
+    setSelectItems(selectCart);
+    const newCheckedItems = cart.map((item) =>
+      selectCart.some((selectedItem) => selectedItem.id === item.id)
+    );
+    setCheckedItems(newCheckedItems);
+    setIsSelectAll(newCheckedItems.every(Boolean));
+  }, [selectCart, cart]);
 
   useEffect(() => {
     setTotalPrice(getTotalBill());
