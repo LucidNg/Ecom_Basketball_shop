@@ -24,81 +24,81 @@ export const useCart = () => {
 
 export const CartProvider = ({ children }: { children: ReactNode }) => {
   const [cart, setCart] = useState<IProduct[] | []>(
-    // [
-    //     {
-    //     id: "1",
-    //     name: "Jordan Air Globe T-Shirt Kids",
-    //     price: 587000,
-    //     quantity: 1,
-    //     image:
-    //         "https://i1.t4s.cz/products/95d121-001/jordan-air-globe-t-shirt-kids-749837-95d121-001.png",
-    //     size: "XS",
-    //     },
-    //     {
-    //     id: "2",
-    //     name: "adidas Basketball Select Tee White",
-    //     price: 789000,
-    //     quantity: 2,
-    //     image:
-    //         "https://www.cosmossport.gr/2869439-product_medium/adidas-basketball-select-tee.jpg",
-    //     size: "L",
-    //     },
-    //     {
-    //     id: "3",
-    //     name: "adidas Basketball Select Tee White",
-    //     price: 789000,
-    //     quantity: 2,
-    //     image:
-    //         "https://www.cosmossport.gr/2869439-product_medium/adidas-basketball-select-tee.jpg",
-    //     size: "L",
-    //     },
-    //     {
-    //     id: "4",
-    //     name: "adidas Basketball Select Tee White",
-    //     price: 789000,
-    //     quantity: 2,
-    //     image:
-    //         "https://www.cosmossport.gr/2869439-product_medium/adidas-basketball-select-tee.jpg",
-    //     size: "L",
-    //     },
-    //     {
-    //     id: "5",
-    //     name: "adidas Basketball Select Tee White",
-    //     price: 789000,
-    //     quantity: 2,
-    //     image:
-    //         "https://www.cosmossport.gr/2869439-product_medium/adidas-basketball-select-tee.jpg",
-    //     size: "L",
-    //     },
-    //     {
-    //     id: "6",
-    //     name: "adidas Basketball Select Tee White",
-    //     price: 789000,
-    //     quantity: 2,
-    //     image:
-    //         "https://www.cosmossport.gr/2869439-product_medium/adidas-basketball-select-tee.jpg",
-    //     size: "L",
-    //     },
-    //     {
-    //     id: "7",
-    //     name: "adidas Basketball Select Tee White",
-    //     price: 789000,
-    //     quantity: 2,
-    //     image:
-    //         "https://www.cosmossport.gr/2869439-product_medium/adidas-basketball-select-tee.jpg",
-    //     size: "L",
-    //     },
-    //     {
-    //     id: "8",
-    //     name: "adidas Basketball Select Tee White",
-    //     price: 789000,
-    //     quantity: 2,
-    //     image:
-    //         "https://www.cosmossport.gr/2869439-product_medium/adidas-basketball-select-tee.jpg",
-    //     size: "L",
-    //     },
-    // ]
-    []
+    [
+      {
+        id: "1",
+        name: "Jordan Air Globe T-Shirt Kids",
+        price: 587000,
+        quantity: 1,
+        image:
+          "https://i1.t4s.cz/products/95d121-001/jordan-air-globe-t-shirt-kids-749837-95d121-001.png",
+        size: "XS",
+      },
+      {
+        id: "2",
+        name: "adidas Basketball Select Tee White",
+        price: 789000,
+        quantity: 2,
+        image:
+          "https://www.cosmossport.gr/2869439-product_medium/adidas-basketball-select-tee.jpg",
+        size: "L",
+      },
+      {
+        id: "3",
+        name: "adidas Basketball Select Tee White",
+        price: 789000,
+        quantity: 2,
+        image:
+          "https://www.cosmossport.gr/2869439-product_medium/adidas-basketball-select-tee.jpg",
+        size: "L",
+      },
+      {
+        id: "4",
+        name: "adidas Basketball Select Tee White",
+        price: 789000,
+        quantity: 2,
+        image:
+          "https://www.cosmossport.gr/2869439-product_medium/adidas-basketball-select-tee.jpg",
+        size: "L",
+      },
+      {
+        id: "5",
+        name: "adidas Basketball Select Tee White",
+        price: 789000,
+        quantity: 2,
+        image:
+          "https://www.cosmossport.gr/2869439-product_medium/adidas-basketball-select-tee.jpg",
+        size: "L",
+      },
+      {
+        id: "6",
+        name: "adidas Basketball Select Tee White",
+        price: 789000,
+        quantity: 2,
+        image:
+          "https://www.cosmossport.gr/2869439-product_medium/adidas-basketball-select-tee.jpg",
+        size: "L",
+      },
+      {
+        id: "7",
+        name: "adidas Basketball Select Tee White",
+        price: 789000,
+        quantity: 2,
+        image:
+          "https://www.cosmossport.gr/2869439-product_medium/adidas-basketball-select-tee.jpg",
+        size: "L",
+      },
+      {
+        id: "8",
+        name: "adidas Basketball Select Tee White",
+        price: 789000,
+        quantity: 2,
+        image:
+          "https://www.cosmossport.gr/2869439-product_medium/adidas-basketball-select-tee.jpg",
+        size: "L",
+      },
+    ]
+    //[]
   );
   const addToCart = (product: IProduct) => {
     setCart((prevCart) => {
@@ -120,9 +120,6 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
       setCart((prevCart) => {
         const productToRemove = prevCart.find((item) => item.id === productId);
         if (productToRemove) {
-          alert(
-            `Are you sure you want to remove product: ${productToRemove.name}?`
-          );
           return prevCart.filter((item) => item.id !== productId);
         } else {
           throw new Error("Product id does not exist.");

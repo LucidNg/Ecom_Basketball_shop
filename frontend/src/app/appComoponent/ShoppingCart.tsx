@@ -103,12 +103,17 @@ const ShoppingCart = () => {
               <button
                 className="px-4 py-3 bg-white text-[#C6393F] self-end min-w-fit"
                 onClick={() => {
-                  removeFromCart(product.id);
-                  // Do this to ensure the total price is updated after deleting a product
-                  const updatedSelectItems = selectItems.filter(
-                    (item) => item.id !== product.id
+                  const userConfirmed = window.confirm(
+                    `Are you sure you want to remove product: ${product.name}?`
                   );
-                  setSelectItems(updatedSelectItems);
+                  if (userConfirmed) {
+                    removeFromCart(product.id);
+                    // Do this to ensure the total price is updated after deleting a product
+                    const updatedSelectItems = selectItems.filter(
+                      (item) => item.id !== product.id
+                    );
+                    setSelectItems(updatedSelectItems);
+                  }
                 }}
               >
                 <span>Delete</span>
