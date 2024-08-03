@@ -35,20 +35,20 @@ const ProductCard = ({ product }: ProductCardProps) => {
         <p className="text-[#1E1E1E] font-normal text-lg">
           Size: {product.size}
         </p>
-        <p className="text-xl">
+        <p className="text-xl text-base-content">
           ${Intl.NumberFormat("vi-VN").format(product.price)}
         </p>
         <div className="flex justify-between">
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-4 text-base-content">
             <button
-              className="py-2 px-3 bg-white"
+              className="py-2 px-3 bg-base-100"
               onClick={() => _decreaseQuantity(product.id)}
             >
               <span className="leading-none">-</span>
             </button>
             <p className="w-6 text-center">{product.quantity}</p>
             <button
-              className="py-2 px-3 bg-white"
+              className="py-2 px-3 bg-base-100"
               onClick={() => _increaseQuantity(product.id)}
             >
               <span className="leading-none">+</span>
