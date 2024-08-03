@@ -9,8 +9,8 @@ interface CartContextType {
   selectCart: IProduct[];
   addToCart: (product: IProduct) => void;
   removeFromCart: (productId: string) => void;
-  addToSelectCart: (product: IProduct[]) => void;
-  removeFromSelectCart: (removeAll: boolean, productId: string) => void;
+  addToSelectCart: (products: IProduct[]) => void;
+  removeFromSelectCart: (productId: string) => void;
   increaseQuantity: (productId: string) => void;
   decreaseQuantity: (productId: string) => void;
 }
@@ -164,9 +164,15 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
     } else throw new Error("Product id does not exist.");
   };
 
-  const addToSelectCart = (product: IProduct[]) => {
+  const addToSelectCart = (products: IProduct[]) => {
     setSelectCart((prevSelectCart) => {
-      return [...prevSelectCart, ...product];
+      // Filter out the products that already exist in the selectCart
+      const newProducts = products.filter(
+        (product) => !prevSelectCart.some((item) => item.id === product.id)
+      );
+
+      // Add only the new products to the selectCart
+      return [...prevSelectCart, ...newProducts];
     });
   };
 

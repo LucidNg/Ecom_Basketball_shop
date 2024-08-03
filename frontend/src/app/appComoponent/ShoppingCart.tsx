@@ -36,7 +36,7 @@ const ShoppingCart = () => {
     removeFromSelectCart,
     removeFromCart,
   } = useCart();
-  const [selectItems, setSelectItems] = useState<IProduct[]>([]);
+  const [selectItems, setSelectItems] = useState<IProduct[]>(selectCart);
   const [totalPrice, setTotalPrice] = useState<number>(0);
   const [isSelectAll, setIsSelectAll] = useState<boolean>(false);
   const [checkedItems, setCheckedItems] = useState<boolean[]>(
@@ -103,9 +103,13 @@ const ShoppingCart = () => {
                   checked={checkedItems[index]}
                   onChange={() => {
                     handleCheckboxChange(index);
-                    if (checkedItems[index] === true)
+                    if (checkedItems[index] === false) {
                       addToSelectCart([product]);
-                    else removeFromCart(product.id);
+                      console.log(
+                        `number of selected items: ${selectCart.length}`
+                      );
+                    } else removeFromSelectCart(product.id);
+                    //console.log(`item is checked: ${checkedItems[index]}`);
                   }}
                   className="size-6 bg-white"
                 />
@@ -155,7 +159,14 @@ const ShoppingCart = () => {
           </div>
           <div>
             <Link href="/checkout">
-              <button className="px-6 py-3 bg-[#EFD471] text-[#1A3C73]">
+              <button
+                className={`px-6 py-3 ${
+                  selectItems.length === 0
+                    ? "bg-gray-400 cursor-not-allowed"
+                    : "bg-[#EFD471] text-[#1A3C73]"
+                }`}
+                disabled={selectItems.length === 0}
+              >
                 <span>Checkout</span>
               </button>
             </Link>

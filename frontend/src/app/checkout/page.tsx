@@ -147,6 +147,19 @@ export default function CheckoutPage() {
 
         <div className="rightSide w-1/2 pl-20 flex flex-col">
           <h2 className="text-4xl font-bold text-base-content">Cart info</h2>
+          <div
+            className="flex flex-col gap-6 flex-grow overflow-auto"
+            style={{ maxHeight: "75vh" }}
+          >
+            {selectCart.map((product, index) => (
+              <div
+                key={product.id}
+                className="flex flex-row items-center gap-20 px-16 py-6 bg-[#EBEBD5] h-full"
+              >
+                <ProductCard key={product.id} product={product} />
+              </div>
+            ))}
+          </div>
 
           <div className="itemsBox border-b-2 border-black py-10 w-[90%]"></div>
 
