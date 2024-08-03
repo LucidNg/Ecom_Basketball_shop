@@ -110,7 +110,7 @@ const ShoppingCart = () => {
           cart.map((product, index) => (
             <div
               key={product.id}
-              className="flex flex-row items-center gap-20 px-16 py-6 bg-[#EBEBD5] h-full"
+              className="flex flex-row items-center gap-20 px-16 py-6 bg-[#EBEBD5] text-base-content h-full"
             >
               <div className="size-fit">
                 <input
@@ -164,9 +164,9 @@ const ShoppingCart = () => {
             <label className="text-lg">Choose all</label>
           </div>
           <div>
-            <p>
+            <p className="text-xl text-base-content">
               Total bill:{" "}
-              <span className="text-xl">
+              <span className="text-xl text-base-content">
                 ${Intl.NumberFormat("vi-VN").format(totalPrice)}
               </span>
             </p>
