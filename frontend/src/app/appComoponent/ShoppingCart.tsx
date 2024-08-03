@@ -99,7 +99,7 @@ const ShoppingCart = () => {
       >
         {cart.length === 0 ? (
           <div className="flex justify-center">
-            <span className="text-2xl">Shopping cart is empty.&nbsp;</span>
+            <span className="text-2xl text-base-content">Shopping cart is empty.&nbsp;</span>
             <Link href="/">
               <span className="text-2xl text-blue-500 underline cursor-pointer">
                 Go shopping now!
