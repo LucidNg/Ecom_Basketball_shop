@@ -63,21 +63,6 @@ const ShoppingCart = () => {
     );
   }, [selectCart]);
 
-  // const handleRemoveFromCart = (product: IProduct) => {
-  //   removeFromCart(product);
-  //   // const updatedSelectItems = selectItems.filter(
-  //   //   (item) => !(item.id === product.id && item.size === product.size)
-  //   // );
-  //   // setSelectItems(updatedSelectItems);
-
-  //   // const updatedCheckedItems = cart
-  //   //   .filter((item) => item.id !== product.id || item.size !== product.size)
-  //   //   .map((item) =>
-  //   //     updatedSelectItems.some((selectedItem) => selectedItem.id === item.id)
-  //   //   );
-  //   // setCheckedItems(updatedCheckedItems);
-  // };
-
   // This is for remembering the previous selection state everytime you comeback
   useEffect(() => {
     setSelectItems(selectCart);
@@ -122,10 +107,6 @@ const ShoppingCart = () => {
                   checked={checkedItems[index]}
                   onChange={() => {
                     handleCheckboxChange(index);
-                    // if (checkedItems[index] === false) {
-                    //   addToSelectCart([product]);
-                    // } else removeFromSelectCart(product);
-                    //console.log(`item is checked: ${checkedItems[index]}`);
                   }}
                   className="size-6 custom-checkbox"
                 />
@@ -143,12 +124,6 @@ const ShoppingCart = () => {
                   );
                   if (userConfirmed) {
                     removeFromCart(product);
-                    //Do this to ensure the total price is updated after deleting a product
-                    const updatedSelectItems = selectItems.filter(
-                      (item) =>
-                        !(item.id === product.id && item.size === product.size)
-                    );
-                    setSelectItems(updatedSelectItems);
                   }
                 }}
               >
