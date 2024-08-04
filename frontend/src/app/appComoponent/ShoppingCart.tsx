@@ -12,6 +12,7 @@ const ShoppingCart = () => {
     selectCart,
     addToSelectCart,
     removeFromSelectCart,
+    removeAllFromSelectCart,
     removeFromCart,
   } = useCart();
   const [selectItems, setSelectItems] = useState<IProduct[]>(selectCart);
@@ -31,6 +32,7 @@ const ShoppingCart = () => {
       addToSelectCart(cart);
     } else {
       setSelectItems([]);
+      removeAllFromSelectCart();
     }
     console.log(`${isSelectAll}`);
   };
@@ -46,28 +48,24 @@ const ShoppingCart = () => {
   };
 
   const getTotalPrice = useCallback((): number => {
-    return selectItems.reduce(
+    return selectCart.reduce(
       (total, item) => total + item.price * item.quantity,
       0
     );
-  }, [selectItems]);
+  }, [selectCart]);
 
-  useEffect(() => {
-    setSelectItems(selectCart);
-    const newCheckedItems = cart.map((item) =>
-      selectCart.some((selectedItem) => selectedItem.id === item.id)
-    );
-    setCheckedItems(newCheckedItems);
-    setIsSelectAll(newCheckedItems.every(Boolean));
-  }, [selectCart, cart]);
-
-  useEffect(() => {
-    setTotalPrice(getTotalPrice());
-  }, [selectItems, cart, getTotalPrice]);
+  // useEffect(() => {
+  //   setSelectItems(selectCart);
+  //   const newCheckedItems = cart.map((item) =>
+  //     selectCart.some((selectedItem) => selectedItem.id === item.id)
+  //   );
+  //   setCheckedItems(newCheckedItems);
+  //   setIsSelectAll(newCheckedItems.every(Boolean));
+  // }, [selectCart, cart]);
 
   useEffect(() => {
     setTotalPrice(getTotalPrice());
-  }, [cart]);
+  }, [selectCart, cart, getTotalPrice]);
 
   return (
     <div className="flex flex-col h-full gap-12">
@@ -100,10 +98,7 @@ const ShoppingCart = () => {
                     handleCheckboxChange(index);
                     if (checkedItems[index] === false) {
                       addToSelectCart([product]);
-                      console.log(
-                        `number of selected items: ${selectCart.length}`
-                      );
-                    } else removeFromSelectCart(product.id);
+                    } else removeFromSelectCart(product);
                     //console.log(`item is checked: ${checkedItems[index]}`);
                   }}
                   className="size-6 custom-checkbox"
@@ -121,10 +116,11 @@ const ShoppingCart = () => {
                     `Are you sure you want to remove product: ${product.name}?`
                   );
                   if (userConfirmed) {
-                    removeFromCart(product.id);
+                    removeFromCart(product);
                     // Do this to ensure the total price is updated after deleting a product
                     const updatedSelectItems = selectItems.filter(
-                      (item) => item.id !== product.id
+                      (item) =>
+                        item.id !== product.id && item.size === product.size
                     );
                     setSelectItems(updatedSelectItems);
                   }
@@ -143,7 +139,7 @@ const ShoppingCart = () => {
               type="checkbox"
               checked={isSelectAll}
               onChange={handleSelectAll}
-              className="size-6 bg-base-100"
+              className="size-6 bg-base-100 custom-checkbox"
             />
             <label className="text-lg text-base-content">Choose all</label>
           </div>

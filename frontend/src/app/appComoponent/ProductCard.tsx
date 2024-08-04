@@ -6,17 +6,20 @@ import { ProductCardProps } from "./ProductCard.type";
 import { useCart } from "./CartContext";
 
 const ProductCard = ({ product, isEditable }: ProductCardProps) => {
+  console.log(`Rendering ProductCard for product ID: ${product.id}`);
   //const [quantity, setQuantity] = useState<number>(product.quantity);
   const { increaseQuantity, decreaseQuantity } = useCart();
 
-  const _decreaseQuantity = (productId: string) => {
+  const _decreaseQuantity = () => {
     //if (quantity > 1) setQuantity(quantity - 1);
-    decreaseQuantity(productId);
+    console.log(`decrease quantity button clicked!`);
+    decreaseQuantity(product);
   };
 
-  const _increaseQuantity = (productId: string) => {
+  const _increaseQuantity = () => {
     //setQuantity(quantity + 1);
-    increaseQuantity(productId);
+    console.log(`increase quantity button clicked!`);
+    increaseQuantity(product);
   };
 
   return (
@@ -46,7 +49,7 @@ const ProductCard = ({ product, isEditable }: ProductCardProps) => {
               <>
                 <button
                   className="py-2 px-3 bg-base-100"
-                  onClick={() => _decreaseQuantity(product.id)}
+                  onClick={() => _decreaseQuantity()}
                 >
                   <span className="leading-none">-</span>
                 </button>
@@ -58,7 +61,7 @@ const ProductCard = ({ product, isEditable }: ProductCardProps) => {
               <>
                 <button
                   className="py-2 px-3 bg-base-100"
-                  onClick={() => _increaseQuantity(product.id)}
+                  onClick={() => _increaseQuantity()}
                 >
                   <span className="leading-none">+</span>
                 </button>
