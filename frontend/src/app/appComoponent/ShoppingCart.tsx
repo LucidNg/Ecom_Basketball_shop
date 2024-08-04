@@ -90,7 +90,7 @@ const ShoppingCart = () => {
           cart.map((product, index) => (
             <div
               key={product.id}
-              className="flex flex-row items-center gap-20 px-16 py-6 bg-[#EBEBD5] h-full"
+              className="flex flex-row items-center gap-20 px-16 py-6 bg-primary h-full"
             >
               <div className="size-fit">
                 <input
@@ -106,7 +106,7 @@ const ShoppingCart = () => {
                     } else removeFromSelectCart(product.id);
                     //console.log(`item is checked: ${checkedItems[index]}`);
                   }}
-                  className="size-6 bg-white"
+                  className="size-6 custom-checkbox"
                 />
               </div>
               <ProductCard
@@ -115,7 +115,7 @@ const ShoppingCart = () => {
                 isEditable={true}
               />
               <button
-                className="px-4 py-3 bg-white text-[#C6393F] self-end min-w-fit hover:bg-secondary hover:font-semibold"
+                className="px-4 py-3 bg-base-100 text-accent self-end min-w-fit hover:bg-accent hover:font-semibold hover:text-accent-content"
                 onClick={() => {
                   const userConfirmed = window.confirm(
                     `Are you sure you want to remove product: ${product.name}?`
@@ -136,14 +136,14 @@ const ShoppingCart = () => {
           ))
         )}
       </div>
-      <div className="flex-none px-16 py-6 bg-[#EBEBD5] w-full">
+      <div className="flex-none px-16 py-6 bg-primary w-full">
         <div className="flex items-center justify-between w-full">
           <div className="flex items-center gap-4">
             <input
               type="checkbox"
               checked={isSelectAll}
               onChange={handleSelectAll}
-              className="size-6 bg-white"
+              className="size-6 bg-base-100"
             />
             <label className="text-lg text-base-content">Choose all</label>
           </div>
@@ -159,7 +159,7 @@ const ShoppingCart = () => {
                 className={`px-6 py-3 ${
                   selectItems.length === 0
                     ? "bg-gray-400 cursor-not-allowed"
-                    : "bg-[#EFD471] text-[#1A3C73] font-semibold"
+                    : "bg-secondary text-secondary-content font-semibold hover:bg-secondary-content hover:text-secondary hover:font-semibold}"
                 }`}
                 disabled={selectItems.length === 0}
               >
