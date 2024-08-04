@@ -15,13 +15,14 @@ const ShoppingCart = () => {
     removeAllFromSelectCart,
     removeFromCart,
   } = useCart();
-  const [selectItems, setSelectItems] = useState<IProduct[]>(selectCart);
   const [totalPrice, setTotalPrice] = useState<number>(0);
   const [isSelectAll, setIsSelectAll] = useState<boolean>(false);
+  const [selectItems, setSelectItems] = useState<IProduct[]>(selectCart);
   const [checkedItems, setCheckedItems] = useState<boolean[]>(
     new Array(cart.length).fill(false)
   );
 
+  // handle the select all button changing states
   const handleSelectAll = () => {
     const newCheckedItems = new Array(cart.length).fill(!isSelectAll);
     setCheckedItems(newCheckedItems);
@@ -37,6 +38,7 @@ const ShoppingCart = () => {
     console.log(`${isSelectAll}`);
   };
 
+  // handle the checkboxes' changes
   const handleCheckboxChange = (index: number) => {
     const newCheckedItems = [...checkedItems];
     newCheckedItems[index] = !newCheckedItems[index];
@@ -53,6 +55,7 @@ const ShoppingCart = () => {
     }
   };
 
+  // a function to calculate total price of the selected products
   const getTotalPrice = useCallback((): number => {
     return selectCart.reduce(
       (total, item) => total + item.price * item.quantity,
@@ -60,7 +63,22 @@ const ShoppingCart = () => {
     );
   }, [selectCart]);
 
-  // This is for remembering the previous selection state everytim you comeback
+  // const handleRemoveFromCart = (product: IProduct) => {
+  //   removeFromCart(product);
+  //   // const updatedSelectItems = selectItems.filter(
+  //   //   (item) => !(item.id === product.id && item.size === product.size)
+  //   // );
+  //   // setSelectItems(updatedSelectItems);
+
+  //   // const updatedCheckedItems = cart
+  //   //   .filter((item) => item.id !== product.id || item.size !== product.size)
+  //   //   .map((item) =>
+  //   //     updatedSelectItems.some((selectedItem) => selectedItem.id === item.id)
+  //   //   );
+  //   // setCheckedItems(updatedCheckedItems);
+  // };
+
+  // This is for remembering the previous selection state everytime you comeback
   useEffect(() => {
     setSelectItems(selectCart);
     const newCheckedItems = cart.map((item) =>
@@ -70,9 +88,10 @@ const ShoppingCart = () => {
     setIsSelectAll(newCheckedItems.every(Boolean));
   }, [selectCart, cart]);
 
+  // This is to make sure the total price is recalculated if there are any changes made to the selected lists, the quantity, deletion
   useEffect(() => {
     setTotalPrice(getTotalPrice());
-  }, [selectCart, cart, getTotalPrice]);
+  }, [selectCart, cart, selectItems, getTotalPrice]);
 
   return (
     <div className="flex flex-col h-full gap-12">
@@ -124,10 +143,10 @@ const ShoppingCart = () => {
                   );
                   if (userConfirmed) {
                     removeFromCart(product);
-                    // Do this to ensure the total price is updated after deleting a product
+                    //Do this to ensure the total price is updated after deleting a product
                     const updatedSelectItems = selectItems.filter(
                       (item) =>
-                        item.id !== product.id && item.size === product.size
+                        !(item.id === product.id && item.size === product.size)
                     );
                     setSelectItems(updatedSelectItems);
                   }

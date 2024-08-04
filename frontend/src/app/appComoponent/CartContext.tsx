@@ -131,55 +131,18 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
         const productToRemove = prevCart.find(
           (item) => item.id === product.id && item.size === product.size
         );
+        console.log(!productToRemove ? true : false);
         if (productToRemove) {
           return prevCart.filter(
-            (item) => item.id !== product.id && item.size !== product.size
+            (item) => !(item.id === product.id && item.size === product.size)
           );
         } else {
           throw new Error("Product id does not exist.");
         }
       });
+      removeFromSelectCart(product);
     } else throw new Error("Product id does not exist.");
   };
-
-  // 1
-  // const increaseQuantity = (product: IProduct) => {
-  //   if (product) {
-  //     setCart((prevCart) => {
-  //       const existingProductIndex = prevCart.findIndex(
-  //         (item) => item.id === product.id && item.size === product.size
-  //       );
-  //       if (existingProductIndex !== -1) {
-  //         console.log(
-  //           `the quantity of ${product.name} before was: ${prevCart[existingProductIndex].quantity}`
-  //         );
-  //         const updatedCart = [...prevCart];
-  //         updatedCart[existingProductIndex].quantity += 1;
-  //         console.log(
-  //           `the quantity of ${product.name} after was: ${prevCart[existingProductIndex].quantity}`
-  //         );
-  //         return updatedCart;
-  //       } else return prevCart;
-  //     });
-  //   } else throw new Error("Product id does not exist.");
-  // };
-
-  // const decreaseQuantity = (product: IProduct) => {
-  //   if (product) {
-  //     setCart((prevCart) => {
-  //       const existingProductIndex = prevCart.findIndex(
-  //         (item) => item.id === product.id && item.size === product.size
-  //       );
-  //       if (existingProductIndex !== -1) {
-  //         const updatedCart = [...prevCart];
-  //         if (updatedCart[existingProductIndex].quantity > 1) {
-  //           updatedCart[existingProductIndex].quantity -= 1;
-  //         }
-  //         return updatedCart;
-  //       } else return prevCart;
-  //     });
-  //   } else throw new Error("Product id does not exist.");
-  // };
 
   const increaseQuantity = useCallback((product: IProduct) => {
     console.log(`Increasing quantity for product ID: ${product.id}`);
@@ -243,7 +206,9 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
   useEffect(() => {
     setSelectCart((prevSelectCart) =>
       prevSelectCart.map((selectItem) => {
-        const cartItem = cart.find((item) => item.id === selectItem.id);
+        const cartItem = cart.find(
+          (item) => item.id === selectItem.id && item.size === selectItem.size
+        );
         return cartItem
           ? { ...selectItem, quantity: cartItem.quantity }
           : selectItem;
