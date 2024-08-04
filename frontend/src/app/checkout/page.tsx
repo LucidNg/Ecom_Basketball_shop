@@ -170,7 +170,11 @@ export default function CheckoutPage() {
                 key={product.id}
                 className="flex flex-row items-center gap-20 px-16 py-6 bg-[#EBEBD5] h-full"
               >
-                <ProductCard key={product.id} product={product} />
+                <ProductCard
+                  key={product.id}
+                  product={product}
+                  isEditable={false}
+                />
               </div>
             ))}
           </div>

@@ -5,7 +5,7 @@ import Image from "next/image";
 import { ProductCardProps } from "./ProductCard.type";
 import { useCart } from "./CartContext";
 
-const ProductCard = ({ product }: ProductCardProps) => {
+const ProductCard = ({ product, isEditable }: ProductCardProps) => {
   //const [quantity, setQuantity] = useState<number>(product.quantity);
   const { increaseQuantity, decreaseQuantity } = useCart();
 
@@ -31,7 +31,7 @@ const ProductCard = ({ product }: ProductCardProps) => {
         />
       </div>
       <div className="flex flex-col justify-between h-52 w-full">
-        <p className="text-[#1E1E1E] font-semibold text-2xl">{product.name}</p>
+        <p className="primary-content font-semibold text-2xl">{product.name}</p>
         <p className="text-[#1E1E1E] font-normal text-lg">
           Size: {product.size}
         </p>
@@ -40,19 +40,28 @@ const ProductCard = ({ product }: ProductCardProps) => {
         </p>
         <div className="flex justify-between">
           <div className="flex items-center gap-4 text-base-content">
-            <button
-              className="py-2 px-3 bg-base-100"
-              onClick={() => _decreaseQuantity(product.id)}
-            >
-              <span className="leading-none">-</span>
-            </button>
-            <p className="w-6 text-center">{product.quantity}</p>
-            <button
-              className="py-2 px-3 bg-base-100"
-              onClick={() => _increaseQuantity(product.id)}
-            >
-              <span className="leading-none">+</span>
-            </button>
+            {isEditable && (
+              <>
+                <button
+                  className="py-2 px-3 bg-base-100"
+                  onClick={() => _decreaseQuantity(product.id)}
+                >
+                  <span className="leading-none">-</span>
+                </button>
+              </>
+            )}
+            {!isEditable && "Quantity:"}
+            <p className="w-6 text-center">x{product.quantity}</p>
+            {isEditable && (
+              <>
+                <button
+                  className="py-2 px-3 bg-base-100"
+                  onClick={() => _increaseQuantity(product.id)}
+                >
+                  <span className="leading-none">+</span>
+                </button>
+              </>
+            )}
           </div>
         </div>
       </div>
