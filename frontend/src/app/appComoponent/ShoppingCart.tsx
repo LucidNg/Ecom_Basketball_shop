@@ -99,7 +99,9 @@ const ShoppingCart = () => {
       >
         {cart.length === 0 ? (
           <div className="flex justify-center">
-            <span className="text-2xl text-base-content">Shopping cart is empty.&nbsp;</span>
+            <span className="text-2xl text-base-content">
+              Shopping cart is empty.&nbsp;
+            </span>
             <Link href="/">
               <span className="text-2xl text-blue-500 underline cursor-pointer">
                 Go shopping now!
@@ -129,7 +131,11 @@ const ShoppingCart = () => {
                   className="size-6 bg-white"
                 />
               </div>
-              <ProductCard key={product.id} product={product} />
+              <ProductCard
+                key={product.id}
+                product={product}
+                isEditable={true}
+              />
               <button
                 className="px-4 py-3 bg-white text-[#C6393F] self-end min-w-fit hover:bg-secondary hover:font-semibold"
                 onClick={() => {
@@ -166,9 +172,7 @@ const ShoppingCart = () => {
           <div>
             <p className="text-xl text-base-content font-semibold">
               Total bill:{" "}
-              <span>
-                ${Intl.NumberFormat("vi-VN").format(totalPrice)}
-              </span>
+              <span>${Intl.NumberFormat("vi-VN").format(totalPrice)}</span>
             </p>
           </div>
           <div>

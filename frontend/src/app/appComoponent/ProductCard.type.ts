@@ -9,4 +9,5 @@ export interface IProduct {
 
 export type ProductCardProps = {
   product: IProduct;
+  isEditable: boolean;
 };
