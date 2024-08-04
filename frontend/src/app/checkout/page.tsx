@@ -163,7 +163,7 @@ export default function CheckoutPage() {
           <h2 className="text-4xl font-bold text-base-content">Cart info</h2>
           <div
             className="flex flex-col gap-6 flex-grow overflow-auto"
-            style={{ maxHeight: "75vh" }}
+            style={{ maxHeight: "45vh" }}
           >
             {selectCart.map((product, index) => (
               <div
