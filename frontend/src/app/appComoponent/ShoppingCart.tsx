@@ -45,6 +45,12 @@ const ShoppingCart = () => {
     const selected = cart.filter((_, idx) => newCheckedItems[idx]);
     setSelectItems(selected);
     setIsSelectAll(selected.length === cart.length);
+
+    if (newCheckedItems[index]) {
+      addToSelectCart([cart[index]]);
+    } else {
+      removeFromSelectCart(cart[index]);
+    }
   };
 
   const getTotalPrice = useCallback((): number => {
@@ -54,14 +60,15 @@ const ShoppingCart = () => {
     );
   }, [selectCart]);
 
-  // useEffect(() => {
-  //   setSelectItems(selectCart);
-  //   const newCheckedItems = cart.map((item) =>
-  //     selectCart.some((selectedItem) => selectedItem.id === item.id)
-  //   );
-  //   setCheckedItems(newCheckedItems);
-  //   setIsSelectAll(newCheckedItems.every(Boolean));
-  // }, [selectCart, cart]);
+  // This is for remembering the previous selection state everytim you comeback
+  useEffect(() => {
+    setSelectItems(selectCart);
+    const newCheckedItems = cart.map((item) =>
+      selectCart.some((selectedItem) => selectedItem.id === item.id)
+    );
+    setCheckedItems(newCheckedItems);
+    setIsSelectAll(newCheckedItems.every(Boolean));
+  }, [selectCart, cart]);
 
   useEffect(() => {
     setTotalPrice(getTotalPrice());
@@ -96,9 +103,9 @@ const ShoppingCart = () => {
                   checked={checkedItems[index]}
                   onChange={() => {
                     handleCheckboxChange(index);
-                    if (checkedItems[index] === false) {
-                      addToSelectCart([product]);
-                    } else removeFromSelectCart(product);
+                    // if (checkedItems[index] === false) {
+                    //   addToSelectCart([product]);
+                    // } else removeFromSelectCart(product);
                     //console.log(`item is checked: ${checkedItems[index]}`);
                   }}
                   className="size-6 custom-checkbox"

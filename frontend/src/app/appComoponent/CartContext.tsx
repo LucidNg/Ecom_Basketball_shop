@@ -228,7 +228,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
         console.log(!productToRemove ? true : false);
         if (productToRemove) {
           return prevSelectCart.filter(
-            (item) => item.id !== product.id && item.size !== product.size
+            (item) => !(item.id === product.id && item.size === product.size)
           );
         } else {
           throw new Error("Product id does not exist.");
