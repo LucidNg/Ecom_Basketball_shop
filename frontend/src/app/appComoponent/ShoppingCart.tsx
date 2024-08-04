@@ -35,7 +35,7 @@ const ShoppingCart = () => {
       setSelectItems([]);
       removeAllFromSelectCart();
     }
-    console.log(`${isSelectAll}`);
+    //console.log(`${isSelectAll}`);
   };
 
   // handle the checkboxes' changes

@@ -6,19 +6,19 @@ import { ProductCardProps } from "./ProductCard.type";
 import { useCart } from "./CartContext";
 
 const ProductCard = ({ product, isEditable }: ProductCardProps) => {
-  console.log(`Rendering ProductCard for product ID: ${product.id}`);
+  //console.log(`Rendering ProductCard for product ID: ${product.id}`);
   //const [quantity, setQuantity] = useState<number>(product.quantity);
   const { increaseQuantity, decreaseQuantity } = useCart();
 
   const _decreaseQuantity = () => {
     //if (quantity > 1) setQuantity(quantity - 1);
-    console.log(`decrease quantity button clicked!`);
+    //console.log(`decrease quantity button clicked!`);
     decreaseQuantity(product);
   };
 
   const _increaseQuantity = () => {
     //setQuantity(quantity + 1);
-    console.log(`increase quantity button clicked!`);
+    //console.log(`increase quantity button clicked!`);
     increaseQuantity(product);
   };
 

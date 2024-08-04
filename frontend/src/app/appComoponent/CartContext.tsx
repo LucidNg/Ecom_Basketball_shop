@@ -131,7 +131,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
         const productToRemove = prevCart.find(
           (item) => item.id === product.id && item.size === product.size
         );
-        console.log(!productToRemove ? true : false);
+        //console.log(!productToRemove ? true : false);
         if (productToRemove) {
           return prevCart.filter(
             (item) => !(item.id === product.id && item.size === product.size)
@@ -145,7 +145,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const increaseQuantity = useCallback((product: IProduct) => {
-    console.log(`Increasing quantity for product ID: ${product.id}`);
+    //console.log(`Increasing quantity for product ID: ${product.id}`);
     setCart((prevCart) =>
       prevCart.map((item) =>
         item.id === product.id && item.size === product.size
@@ -156,7 +156,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
   }, []);
 
   const decreaseQuantity = useCallback((product: IProduct) => {
-    console.log(`Decreasing quantity for product ID: ${product.id}`);
+    //console.log(`Decreasing quantity for product ID: ${product.id}`);
     setCart((prevCart) =>
       prevCart.map((item) =>
         item.id === product.id &&
@@ -188,7 +188,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
         const productToRemove = prevSelectCart.find(
           (item) => item.id === product.id && item.size === product.size
         );
-        console.log(!productToRemove ? true : false);
+        //console.log(!productToRemove ? true : false);
         if (productToRemove) {
           return prevSelectCart.filter(
             (item) => !(item.id === product.id && item.size === product.size)
