@@ -31,8 +31,10 @@ const ProductCard = ({ product, isEditable }: ProductCardProps) => {
         />
       </div>
       <div className="flex flex-col justify-between h-52 w-full">
-        <p className="primary-content font-semibold text-2xl">{product.name}</p>
-        <p className="text-[#1E1E1E] font-normal text-lg">
+        <p className="text-primary-content font-semibold text-2xl">
+          {product.name}
+        </p>
+        <p className="text-primary-content font-normal text-lg">
           Size: {product.size}
         </p>
         <p className="text-xl text-base-content">
