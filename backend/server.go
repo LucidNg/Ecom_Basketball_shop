@@ -295,6 +295,30 @@ func main() {
 		}
 	}))).Methods(http.MethodPost)
 
+	r.HandleFunc("/createOrderItem", rateLimiter(limiter, corsMiddleware(func(w http.ResponseWriter, r *http.Request) {
+		if r.Method == http.MethodPost {
+			database.CreateOrderItems(db, w, r)
+		} else {
+			http.Error(w, "Unsupported method", http.StatusMethodNotAllowed)
+		}
+	}))).Methods(http.MethodPost)
+
+	r.HandleFunc("/updateStock", rateLimiter(limiter, corsMiddleware(func(w http.ResponseWriter, r *http.Request) {
+		if r.Method == http.MethodPut {
+			database.UpdateStock(db, w, r)
+		} else {
+			http.Error(w, "Unsupported method", http.StatusMethodNotAllowed)
+		}
+	}))).Methods(http.MethodPut)
+
+	r.HandleFunc("/deleteCartItem", rateLimiter(limiter, corsMiddleware(func(w http.ResponseWriter, r *http.Request) {
+		if r.Method == http.MethodDelete {
+			database.RemoveCartItemsFromOrder(db, w, r)
+		} else {
+			http.Error(w, "Unsupported method", http.StatusMethodNotAllowed)
+		}
+	}))).Methods(http.MethodDelete)
+
 	port := getPort()
 	fmt.Printf("Server is listening on port %s\n", port)
 	log.Fatal(http.ListenAndServe(port, r))

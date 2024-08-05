@@ -1,7 +1,9 @@
 package database
 
 import (
+	"encoding/json"
 	"fmt"
+	"net/http"
 	"strconv"
 
 	"github.com/google/uuid"
@@ -160,4 +162,45 @@ func CreateOrder(db *sqlitecloud.SQCloud, userID string, date string, shippingAd
 
 	err = db.ExecuteArray(createOrderSQL, values)
 	return err
+}
+
+type OrderProduct struct {
+	ProductID string  `json:"productID"`
+	Size      string  `json:"size"`
+	Quantity  int     `json:"quantity"`
+	Price     float64 `json:"price"`
+}
+
+// OrderRequest represents the request payload for creating order items
+type OrderRequest struct {
+	OrderID  string         `json:"orderID"`
+	Products []OrderProduct `json:"products"`
+}
+
+// CreateOrderItems handles the creation of order items in the database
+func CreateOrderItems(db *sqlitecloud.SQCloud, w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		http.Error(w, "Unsupported method", http.StatusMethodNotAllowed)
+		return
+	}
+
+	var req OrderRequest
+	err := json.NewDecoder(r.Body).Decode(&req)
+	if err != nil {
+		http.Error(w, "Invalid request payload", http.StatusBadRequest)
+		return
+	}
+
+	CreateOrderItemsSQL := "INSERT INTO orderItem (orderID, productID, size, quantity, price) VALUES (?, ?, ?, ?, ?)"
+
+	for _, product := range req.Products {
+		values := []interface{}{req.OrderID, product.ProductID, product.Size, product.Quantity, product.Price}
+		err = db.ExecuteArray(CreateOrderItemsSQL, values)
+		if err != nil {
+			fmt.Println("Error:", err)
+		}
+	}
+
+	w.WriteHeader(http.StatusCreated)
+	w.Write([]byte("Order items created successfully"))
 }
