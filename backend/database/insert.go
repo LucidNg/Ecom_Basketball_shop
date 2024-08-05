@@ -2,9 +2,11 @@ package database
 
 import (
 	"fmt"
+	"net/http"
 	"strconv"
 
 	"github.com/google/uuid"
+	"github.com/gorilla/mux"
 	sqlitecloud "github.com/sqlitecloud/sqlitecloud-go"
 )
 
@@ -92,5 +94,54 @@ func InsertProduct(db *sqlitecloud.SQCloud, categoryID string, name string, desc
 	insertSizeSQL := "INSERT INTO size (productID, size, stock, price) VALUES (?, ?, ?, ?)"
 	values2 := []interface{}{id, size, stockInt, priceValue}
 	err = db.ExecuteArray(insertSizeSQL, values2)
+	return err
+}
+
+func CreateCart(db *sqlitecloud.SQCloud, w http.ResponseWriter, r *http.Request) error {
+	vars := mux.Vars(r)
+	userID := vars["userID"]
+	var id string
+	for {
+		id = uuid.New().String()
+		exists, err := recordExists(db, "cart", "cartID", id)
+		if err != nil {
+			return err
+		}
+		if !exists {
+			break
+		}
+	}
+
+	createCartSQL := "INSERT INTO cart (cartID, userID) VALUES (?, ?)"
+	values := []interface{}{id, userID}
+
+	err := db.ExecuteArray(createCartSQL, values)
+	return err
+}
+
+func CreateCartItem(db *sqlitecloud.SQCloud, w http.ResponseWriter, r *http.Request) error {
+	vars := mux.Vars(r)
+	cartID := vars["cartID"]
+	productID := vars["productID"]
+	size := vars["size"]
+	quantity := vars["quantity"]
+	price := vars["price"]
+
+	priceValue, err := strconv.ParseFloat(price, 64)
+	if err != nil {
+		fmt.Println("Error:", err)
+		return err
+	}
+
+	quantityValue, err := strconv.Atoi(quantity)
+	if err != nil {
+		fmt.Println("Error:", err)
+		return err
+	}
+
+	createCartItemSQL := "INSERT INTO cartItem (cartID, productID, size, quantity, price) VALUES (?, ?, ?, ?, ?)"
+	values := []interface{}{cartID, productID, size, quantityValue, priceValue}
+
+	err = db.ExecuteArray(createCartItemSQL, values)
 	return err
 }

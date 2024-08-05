@@ -48,6 +48,7 @@ func CreateTable(db *sqlitecloud.SQCloud) error {
 		"billingAddress" TEXT NOT NULL,
 		"price" INTEGER NOT NULL,
 		"status" TEXT NOT NULL,
+		"payStatus" TEXT NOT NULL,
 		FOREIGN KEY(userID) REFERENCES users(userID)
 	);`
 
