@@ -246,6 +246,30 @@ func main() {
 		}
 	}))).Methods(http.MethodGet, http.MethodPost)
 
+	r.HandleFunc("/createCart/{userID}", rateLimiter(limiter, corsMiddleware(func(w http.ResponseWriter, r *http.Request) {
+		if r.Method == http.MethodPost {
+			err := database.CreateCart(db, w, r)
+			if err != nil {
+				http.Error(w, "Failed to create cart", http.StatusInternalServerError)
+				return
+			}
+		} else {
+			http.Error(w, "Unsupported method", http.StatusMethodNotAllowed)
+		}
+	}))).Methods(http.MethodPost)
+
+	r.HandleFunc("/createCartItem/{cartID}/{productID}/{size}/{quantity}/{price}", rateLimiter(limiter, corsMiddleware(func(w http.ResponseWriter, r *http.Request) {
+		if r.Method == http.MethodPost {
+			err := database.CreateCartItem(db, w, r)
+			if err != nil {
+				http.Error(w, "Failed to create cart item", http.StatusInternalServerError)
+				return
+			}
+		} else {
+			http.Error(w, "Unsupported method", http.StatusMethodNotAllowed)
+		}
+	}))).Methods(http.MethodPost)
+
 	port := getPort()
 	fmt.Printf("Server is listening on port %s\n", port)
 	log.Fatal(http.ListenAndServe(port, r))
