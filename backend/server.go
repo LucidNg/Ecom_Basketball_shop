@@ -246,9 +246,10 @@ func main() {
 		}
 	}))).Methods(http.MethodGet, http.MethodPost)
 
-	r.HandleFunc("/createCart/{userID}", rateLimiter(limiter, corsMiddleware(func(w http.ResponseWriter, r *http.Request) {
+	r.HandleFunc("/createCart", rateLimiter(limiter, corsMiddleware(func(w http.ResponseWriter, r *http.Request) {
 		if r.Method == http.MethodPost {
-			err := database.CreateCart(db, w, r)
+			userID := r.FormValue("userID")
+			err := database.CreateCart(db, userID)
 			if err != nil {
 				http.Error(w, "Failed to create cart", http.StatusInternalServerError)
 				return
@@ -258,9 +259,33 @@ func main() {
 		}
 	}))).Methods(http.MethodPost)
 
-	r.HandleFunc("/createCartItem/{cartID}/{productID}/{size}/{quantity}/{price}", rateLimiter(limiter, corsMiddleware(func(w http.ResponseWriter, r *http.Request) {
+	r.HandleFunc("/createCartItem", rateLimiter(limiter, corsMiddleware(func(w http.ResponseWriter, r *http.Request) {
 		if r.Method == http.MethodPost {
-			err := database.CreateCartItem(db, w, r)
+			cartID := r.FormValue("cartID")
+			productID := r.FormValue("productID")
+			size := r.FormValue("size")
+			quantity := r.FormValue("quantity")
+			price := r.FormValue("price")
+			err := database.CreateCartItem(db, cartID, productID, size, quantity, price)
+			if err != nil {
+				http.Error(w, "Failed to create cart item", http.StatusInternalServerError)
+				return
+			}
+		} else {
+			http.Error(w, "Unsupported method", http.StatusMethodNotAllowed)
+		}
+	}))).Methods(http.MethodPost)
+
+	r.HandleFunc("/createOrder", rateLimiter(limiter, corsMiddleware(func(w http.ResponseWriter, r *http.Request) {
+		if r.Method == http.MethodPost {
+			userID := r.FormValue("userID")
+			date := r.FormValue("date")
+			shippingAdress := r.FormValue("shippingAdress")
+			billingAddress := r.FormValue("billingAddress")
+			price := r.FormValue("price")
+			status := r.FormValue("status")
+			payStatus := r.FormValue("payStatus")
+			err := database.CreateOrder(db, userID, date, shippingAdress, billingAddress, price, status, payStatus)
 			if err != nil {
 				http.Error(w, "Failed to create cart item", http.StatusInternalServerError)
 				return

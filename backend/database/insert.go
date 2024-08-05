@@ -2,11 +2,9 @@ package database
 
 import (
 	"fmt"
-	"net/http"
 	"strconv"
 
 	"github.com/google/uuid"
-	"github.com/gorilla/mux"
 	sqlitecloud "github.com/sqlitecloud/sqlitecloud-go"
 )
 
@@ -97,9 +95,7 @@ func InsertProduct(db *sqlitecloud.SQCloud, categoryID string, name string, desc
 	return err
 }
 
-func CreateCart(db *sqlitecloud.SQCloud, w http.ResponseWriter, r *http.Request) error {
-	vars := mux.Vars(r)
-	userID := vars["userID"]
+func CreateCart(db *sqlitecloud.SQCloud, userID string) error {
 	var id string
 	for {
 		id = uuid.New().String()
@@ -119,13 +115,7 @@ func CreateCart(db *sqlitecloud.SQCloud, w http.ResponseWriter, r *http.Request)
 	return err
 }
 
-func CreateCartItem(db *sqlitecloud.SQCloud, w http.ResponseWriter, r *http.Request) error {
-	vars := mux.Vars(r)
-	cartID := vars["cartID"]
-	productID := vars["productID"]
-	size := vars["size"]
-	quantity := vars["quantity"]
-	price := vars["price"]
+func CreateCartItem(db *sqlitecloud.SQCloud, cartID string, productID string, size string, quantity string, price string) error {
 
 	priceValue, err := strconv.ParseFloat(price, 64)
 	if err != nil {
@@ -143,5 +133,31 @@ func CreateCartItem(db *sqlitecloud.SQCloud, w http.ResponseWriter, r *http.Requ
 	values := []interface{}{cartID, productID, size, quantityValue, priceValue}
 
 	err = db.ExecuteArray(createCartItemSQL, values)
+	return err
+}
+
+func CreateOrder(db *sqlitecloud.SQCloud, userID string, date string, shippingAdress string, billingAddress string, price string, status string, payStatus string) error {
+	var id string
+	for {
+		id = uuid.New().String()
+		exists, err := recordExists(db, "orders", "orderID", id)
+		if err != nil {
+			return err
+		}
+		if !exists {
+			break
+		}
+	}
+
+	priceValue, err := strconv.ParseFloat(price, 64)
+	if err != nil {
+		fmt.Println("Error:", err)
+		return err
+	}
+
+	createOrderSQL := "INSERT INTO orders (orderID, userID, date, shippingAdress, billingAddress, price, status, payStatus) VALUES (?, ?, ?, ?, ?, ?, ?, ?)"
+	values := []interface{}{id, userID, date, shippingAdress, billingAddress, priceValue, status, payStatus}
+
+	err = db.ExecuteArray(createOrderSQL, values)
 	return err
 }
