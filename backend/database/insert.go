@@ -204,3 +204,29 @@ func CreateOrderItems(db *sqlitecloud.SQCloud, w http.ResponseWriter, r *http.Re
 	w.WriteHeader(http.StatusCreated)
 	w.Write([]byte("Order items created successfully"))
 }
+
+func CreateShipping(db *sqlitecloud.SQCloud, orderID string, shippingMethod string, cost string, startTime string, estimatedDeliveryTime string) error {
+	var id string
+	for {
+		id = uuid.New().String()
+		exists, err := recordExists(db, "shipping", "shippingID", id)
+		if err != nil {
+			return err
+		}
+		if !exists {
+			break
+		}
+	}
+
+	costValue, err := strconv.ParseFloat(cost, 64)
+	if err != nil {
+		fmt.Println("Error:", err)
+		return err
+	}
+
+	createShippingSQL := "INSERT INTO shipping (shippingID, orderID, shippingMethod, cost, startTime, estimatedDeliveryTime) VALUES (?, ?, ?, ?, ?, ?)"
+	values := []interface{}{id, orderID, shippingMethod, costValue, startTime, estimatedDeliveryTime}
+
+	err = db.ExecuteArray(createShippingSQL, values)
+	return err
+}

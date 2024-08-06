@@ -370,3 +370,33 @@ func QueryRatingCount(db *sqlitecloud.SQCloud, w http.ResponseWriter, r *http.Re
 	return nil
 
 }
+
+func QueryCartItem(db *sqlitecloud.SQCloud, w http.ResponseWriter, r *http.Request) error {
+	vars := mux.Vars(r)
+	userID := vars["userID"]
+
+	query := `SELECT co.cartID, co.productID, co.size, co.quantity, co.price, p.productName, p.url
+			FROM cartItem co
+			JOIN cart c ON co.cartID = c.cartID
+			JOIN users u ON c.userID = u.userID
+			JOIN product p ON co.productID = p.productID
+			WHERE u.userID = ?;
+			`
+
+	values := []interface{}{userID}
+
+	rows, err := db.SelectArray(query, values)
+	if err != nil {
+		return err
+	}
+
+	defer rows.Dump()
+
+	_, err = w.Write([]byte(rows.ToJSON()))
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return err
+	}
+	return nil
+
+}

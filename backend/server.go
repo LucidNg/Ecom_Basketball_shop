@@ -218,6 +218,18 @@ func main() {
 		}
 	}))).Methods(http.MethodGet)
 
+	r.HandleFunc("/cartItem/{userID}", rateLimiter(limiter, corsMiddleware(func(w http.ResponseWriter, r *http.Request) {
+		if r.Method == http.MethodGet {
+			err := database.QueryCartItem(db, w, r)
+			if err != nil {
+				http.Error(w, "Failed to query cart items", http.StatusInternalServerError)
+				return
+			}
+		} else {
+			http.Error(w, "Unsupported method", http.StatusMethodNotAllowed)
+		}
+	}))).Methods(http.MethodGet)
+
 	r.HandleFunc("/product", rateLimiter(limiter, corsMiddleware(func(w http.ResponseWriter, r *http.Request) {
 		if r.Method == http.MethodGet {
 			err := database.QueryProduct(db, w)
@@ -318,6 +330,23 @@ func main() {
 			http.Error(w, "Unsupported method", http.StatusMethodNotAllowed)
 		}
 	}))).Methods(http.MethodDelete)
+
+	r.HandleFunc("/createShipping", rateLimiter(limiter, corsMiddleware(func(w http.ResponseWriter, r *http.Request) {
+		if r.Method == http.MethodPost {
+			orderID := r.FormValue("orderID")
+			shippingMethod := r.FormValue("shippingMethod")
+			cost := r.FormValue("cost")
+			startTime := r.FormValue("startTime")
+			estimatedDeliveryTime := r.FormValue("estimatedDeliveryTime")
+			err := database.CreateShipping(db, orderID, shippingMethod, cost, startTime, estimatedDeliveryTime)
+			if err != nil {
+				http.Error(w, "Failed to create shipping", http.StatusInternalServerError)
+				return
+			}
+		} else {
+			http.Error(w, "Unsupported method", http.StatusMethodNotAllowed)
+		}
+	}))).Methods(http.MethodPost)
 
 	port := getPort()
 	fmt.Printf("Server is listening on port %s\n", port)
