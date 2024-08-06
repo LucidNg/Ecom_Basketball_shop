@@ -110,7 +110,7 @@ func CreateTable(db *sqlitecloud.SQCloud) error {
 		"size" TEXT NOT NULL,
 		"quantity" INTEGER NOT NULL,
 		"price" REAL NOT NULL,
-		PRIMARY KEY(cartID, productID),
+		PRIMARY KEY(cartID, productID, size),
 		FOREIGN KEY(cartID) REFERENCES cart(cartID),
 		FOREIGN KEY(productID) REFERENCES product(productID)
 	);`

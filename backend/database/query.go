@@ -380,8 +380,7 @@ func QueryCartItem(db *sqlitecloud.SQCloud, w http.ResponseWriter, r *http.Reque
 			JOIN cart c ON co.cartID = c.cartID
 			JOIN users u ON c.userID = u.userID
 			JOIN product p ON co.productID = p.productID
-			WHERE u.userID = ?;
-			`
+			WHERE u.userID = ?;`
 
 	values := []interface{}{userID}
 
