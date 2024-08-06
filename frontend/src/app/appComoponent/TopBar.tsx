@@ -96,7 +96,7 @@ export default function TopBar() {
                     <Link href="/auth/login">Login</Link>
                 </button>
                 <button className="h-[50px] font-semibold text-accent-content bg-accent hover:bg-red-500 hidden lg:inline lg:text-xl lg:w-44 xl:w-40">
-                    <Link href="/">Sign up</Link>
+                    <Link href="/auth/register">Sign up</Link>
                 </button>
             </div>
       {/* <div className="afterLogined flex items-center">
