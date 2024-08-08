@@ -8,6 +8,7 @@ import (
 
 	"github.com/google/uuid"
 	sqlitecloud "github.com/sqlitecloud/sqlitecloud-go"
+	"golang.org/x/crypto/bcrypt"
 )
 
 func recordExists(db *sqlitecloud.SQCloud, tableName string, attribute string, id string) (bool, error) {
@@ -31,10 +32,16 @@ func InsertUser(db *sqlitecloud.SQCloud, email string, password string) error {
 			break
 		}
 	}
-	insertUserSQL := "INSERT INTO users (userID, email, password) VALUES (?, ?, ?)"
-	values := []interface{}{id, email, password}
 
-	err := db.ExecuteArray(insertUserSQL, values)
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
+	if err != nil {
+		return err
+	}
+
+	insertUserSQL := "INSERT INTO users (userID, email, password) VALUES (?, ?, ?)"
+	values := []interface{}{id, email, string(hashedPassword)}
+
+	err = db.ExecuteArray(insertUserSQL, values)
 	return err
 }
 

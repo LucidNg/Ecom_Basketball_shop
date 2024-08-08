@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import ProductCard from "./ProductCard";
-import { IProduct } from "./ProductCard.type";
+import { CartItem } from "../../lib/cartItem";
 import { useCart } from "./CartContext";
 
 const ShoppingCart = () => {
@@ -17,7 +17,7 @@ const ShoppingCart = () => {
   } = useCart();
   const [totalPrice, setTotalPrice] = useState<number>(0);
   const [isSelectAll, setIsSelectAll] = useState<boolean>(false);
-  const [selectItems, setSelectItems] = useState<IProduct[]>(selectCart);
+  const [selectItems, setSelectItems] = useState<CartItem[]>(selectCart);
   const [checkedItems, setCheckedItems] = useState<boolean[]>(
     new Array(cart.length).fill(false)
   );
@@ -67,7 +67,7 @@ const ShoppingCart = () => {
   useEffect(() => {
     setSelectItems(selectCart);
     const newCheckedItems = cart.map((item) =>
-      selectCart.some((selectedItem) => selectedItem.id === item.id)
+      selectCart.some((selectedItem) => selectedItem.productID === item.productID)
     );
     setCheckedItems(newCheckedItems);
     setIsSelectAll(newCheckedItems.every(Boolean));
@@ -98,7 +98,7 @@ const ShoppingCart = () => {
         ) : (
           cart.map((product, index) => (
             <div
-              key={product.id}
+              key={product.productID}
               className="flex flex-row items-center gap-20 px-16 py-6 bg-primary h-full"
             >
               <div className="size-fit">
@@ -112,7 +112,7 @@ const ShoppingCart = () => {
                 />
               </div>
               <ProductCard
-                key={product.id}
+                key={product.productID}
                 product={product}
                 isEditable={true}
               />
@@ -120,7 +120,7 @@ const ShoppingCart = () => {
                 className="px-4 py-3 bg-base-100 text-accent self-end min-w-fit hover:bg-accent hover:font-semibold hover:text-accent-content"
                 onClick={() => {
                   const userConfirmed = window.confirm(
-                    `Are you sure you want to remove product: ${product.name}?`
+                    `Are you sure you want to remove product: ${product.productName}?`
                   );
                   if (userConfirmed) {
                     removeFromCart(product);

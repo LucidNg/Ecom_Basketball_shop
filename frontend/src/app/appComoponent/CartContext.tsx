@@ -7,20 +7,19 @@ import React, {
   ReactNode,
   useEffect,
 } from "react";
-import { IProduct } from "./ProductCard.type";
-import ProductCard from "./ProductCard";
+import { CartItem, FetchCartItemsByUserID } from "../../lib/cartItem";
 import { remove, update } from "lodash";
 
 interface CartContextType {
-  cart: IProduct[];
-  selectCart: IProduct[];
-  addToCart: (product: IProduct) => void;
-  removeFromCart: (product: IProduct) => void;
-  addToSelectCart: (products: IProduct[]) => void;
-  removeFromSelectCart: (product: IProduct) => void;
+  cart: CartItem[];
+  selectCart: CartItem[];
+  addToCart: (product: CartItem) => void;
+  removeFromCart: (product: CartItem) => void;
+  addToSelectCart: (products: CartItem[]) => void;
+  removeFromSelectCart: (product: CartItem) => void;
   removeAllFromSelectCart: () => void;
-  increaseQuantity: (product: IProduct) => void;
-  decreaseQuantity: (product: IProduct) => void;
+  increaseQuantity: (product: CartItem) => void;
+  decreaseQuantity: (product: CartItem) => void;
 }
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
@@ -34,86 +33,28 @@ export const useCart = () => {
 };
 
 export const CartProvider = ({ children }: { children: ReactNode }) => {
-  const [selectCart, setSelectCart] = useState<IProduct[] | []>([]);
-  const [cart, setCart] = useState<IProduct[] | []>([
-    {
-      id: "1",
-      name: "Jordan Globe Tee Kids XS",
-      price: 25.99,
-      quantity: 1,
-      image:
-        "https://i1.t4s.cz/products/95d121-001/jordan-air-globe-t-shirt-kids-749837-95d121-001.png",
-      size: "XS",
-    },
-    {
-      id: "2",
-      name: "adidas Hoops Tee L",
-      price: 34.99,
-      quantity: 2,
-      image:
-        "https://www.cosmossport.gr/2869439-product_medium/adidas-basketball-select-tee.jpg",
-      size: "L",
-    },
-    {
-      id: "3",
-      name: "adidas Court Tee L",
-      price: 32.5,
-      quantity: 2,
-      image:
-        "https://www.cosmossport.gr/2869439-product_medium/adidas-basketball-select-tee.jpg",
-      size: "L",
-    },
-    {
-      id: "4",
-      name: "adidas Slam Tee L",
-      price: 33.75,
-      quantity: 2,
-      image:
-        "https://www.cosmossport.gr/2869439-product_medium/adidas-basketball-select-tee.jpg",
-      size: "L",
-    },
-    {
-      id: "5",
-      name: "adidas Dunk Tee L",
-      price: 35.0,
-      quantity: 2,
-      image:
-        "https://www.cosmossport.gr/2869439-product_medium/adidas-basketball-select-tee.jpg",
-      size: "L",
-    },
-    {
-      id: "6",
-      name: "adidas Dribble Tee L",
-      price: 30.99,
-      quantity: 2,
-      image:
-        "https://www.cosmossport.gr/2869439-product_medium/adidas-basketball-select-tee.jpg",
-      size: "L",
-    },
-    {
-      id: "7",
-      name: "adidas Fastbreak Tee L",
-      price: 31.5,
-      quantity: 2,
-      image:
-        "https://www.cosmossport.gr/2869439-product_medium/adidas-basketball-select-tee.jpg",
-      size: "L",
-    },
-    {
-      id: "8",
-      name: "adidas Crossover Tee L",
-      price: 34.25,
-      quantity: 2,
-      image:
-        "https://www.cosmossport.gr/2869439-product_medium/adidas-basketball-select-tee.jpg",
-      size: "L",
-    },
-  ]);
+  const [selectCart, setSelectCart] = useState<CartItem[]>([]);
+  const [cart, setCart] = useState<CartItem[]>([]);
 
-  const addToCart = (product: IProduct) => {
+  const userID = "60629436-da35-401c-9bf8-6e8e3aed90ed"; // Replace with the actual user ID
+
+  useEffect(() => {
+    const fetchCartItems = async () => {
+      try {
+        const cartItems = await FetchCartItemsByUserID(userID);
+        setCart(cartItems);
+      } catch (error) {
+        console.error("Failed to fetch cart items:", error);
+      }
+    };
+
+    fetchCartItems();
+  }, [userID]);
+
+  const addToCart = (product: CartItem) => {
     setCart((prevCart) => {
       const existingProductIndex = prevCart.findIndex(
-        (item) => item.id === product.id && item.size === product.size
+        (item) => item.productID === product.productID && item.size === product.size
       );
       if (existingProductIndex !== -1) {
         const updatedCart = [...prevCart];
@@ -125,16 +66,15 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
     });
   };
 
-  const removeFromCart = (product: IProduct) => {
+  const removeFromCart = (product: CartItem) => {
     if (product) {
       setCart((prevCart) => {
         const productToRemove = prevCart.find(
-          (item) => item.id === product.id && item.size === product.size
+          (item) => item.productID === product.productID && item.size === product.size
         );
-        //console.log(!productToRemove ? true : false);
         if (productToRemove) {
           return prevCart.filter(
-            (item) => !(item.id === product.id && item.size === product.size)
+            (item) => !(item.productID === product.productID && item.size === product.size)
           );
         } else {
           throw new Error("Product id does not exist.");
@@ -144,22 +84,20 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
     } else throw new Error("Product id does not exist.");
   };
 
-  const increaseQuantity = useCallback((product: IProduct) => {
-    //console.log(`Increasing quantity for product ID: ${product.id}`);
+  const increaseQuantity = useCallback((product: CartItem) => {
     setCart((prevCart) =>
       prevCart.map((item) =>
-        item.id === product.id && item.size === product.size
+        item.productID === product.productID && item.size === product.size
           ? { ...item, quantity: item.quantity + 1 }
           : item
       )
     );
   }, []);
 
-  const decreaseQuantity = useCallback((product: IProduct) => {
-    //console.log(`Decreasing quantity for product ID: ${product.id}`);
+  const decreaseQuantity = useCallback((product: CartItem) => {
     setCart((prevCart) =>
       prevCart.map((item) =>
-        item.id === product.id &&
+        item.productID === product.productID &&
         item.size === product.size &&
         item.quantity > 1
           ? { ...item, quantity: item.quantity - 1 }
@@ -168,30 +106,27 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
     );
   }, []);
 
-  const addToSelectCart = (products: IProduct[]) => {
+  const addToSelectCart = (products: CartItem[]) => {
     setSelectCart((prevSelectCart) => {
-      // Filter out the products that already exist in the selectCart
       const newProducts = products.filter(
         (product) =>
           !prevSelectCart.some(
-            (item) => item.id === product.id && item.size === product.size
+            (item) => item.productID === product.productID && item.size === product.size
           )
       );
-      // Add only the new products to the selectCart
       return [...prevSelectCart, ...newProducts];
     });
   };
 
-  const removeFromSelectCart = (product: IProduct) => {
+  const removeFromSelectCart = (product: CartItem) => {
     if (product) {
       setSelectCart((prevSelectCart) => {
         const productToRemove = prevSelectCart.find(
-          (item) => item.id === product.id && item.size === product.size
+          (item) => item.productID === product.productID && item.size === product.size
         );
-        //console.log(!productToRemove ? true : false);
         if (productToRemove) {
           return prevSelectCart.filter(
-            (item) => !(item.id === product.id && item.size === product.size)
+            (item) => !(item.productID === product.productID && item.size === product.size)
           );
         } else {
           throw new Error("Product id does not exist.");
@@ -203,11 +138,12 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
   const removeAllFromSelectCart = () => {
     setSelectCart([]);
   };
+
   useEffect(() => {
     setSelectCart((prevSelectCart) =>
       prevSelectCart.map((selectItem) => {
         const cartItem = cart.find(
-          (item) => item.id === selectItem.id && item.size === selectItem.size
+          (item) => item.productID === selectItem.productID && item.size === selectItem.size
         );
         return cartItem
           ? { ...selectItem, quantity: cartItem.quantity }
@@ -230,7 +166,6 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
         decreaseQuantity,
       }}
     >
-      {" "}
       {children}
     </CartContext.Provider>
   );

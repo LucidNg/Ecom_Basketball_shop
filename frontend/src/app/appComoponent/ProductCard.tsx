@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import Image from "next/image";
-import { ProductCardProps } from "./ProductCard.type";
+import { ProductCardProps } from "../../lib/cartItem";
 import { useCart } from "./CartContext";
 
 const ProductCard = ({ product, isEditable }: ProductCardProps) => {
@@ -26,7 +26,7 @@ const ProductCard = ({ product, isEditable }: ProductCardProps) => {
     <div className="flex items-center gap-12 w-full ">
       <div className="min-w-52 size-52">
         <Image
-          src={product.image}
+          src={product.url}
           width={206}
           height={206}
           alt="product image"
@@ -35,7 +35,7 @@ const ProductCard = ({ product, isEditable }: ProductCardProps) => {
       </div>
       <div className="flex flex-col justify-between h-52 w-full">
         <p className="text-primary-content font-semibold text-2xl">
-          {product.name}
+          {product.productName}
         </p>
         <p className="text-primary-content font-normal text-lg">
           Size: {product.size}

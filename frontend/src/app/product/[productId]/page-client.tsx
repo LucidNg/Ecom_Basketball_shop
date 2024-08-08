@@ -122,10 +122,11 @@ const DetailedProductPageCli = ({ children1 }: DetailedProductPage) => {
         }`
       );
       addToCart({
-        id: product.productID,
-        name: product.productName,
-        image: images[0],
+        cartID: "",
+        productID: product.productID,
+        productName: product.productName,
         size: selectedSize,
+        url: images[0],
         quantity: quantity,
         price: quantity * priceBySize[selectedSize],
       });

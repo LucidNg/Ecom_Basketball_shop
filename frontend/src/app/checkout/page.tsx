@@ -167,11 +167,11 @@ export default function CheckoutPage() {
           >
             {selectCart.map((product, index) => (
               <div
-                key={product.id}
+                key={product.productID}
                 className="flex flex-row items-center gap-20 px-16 py-6 bg-[#EBEBD5] h-full"
               >
                 <ProductCard
-                  key={product.id}
+                  key={product.productID}
                   product={product}
                   isEditable={false}
                 />
