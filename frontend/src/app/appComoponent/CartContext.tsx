@@ -18,6 +18,7 @@ interface CartContextType {
   addToSelectCart: (products: CartItem[]) => void;
   removeFromSelectCart: (product: CartItem) => void;
   removeAllFromSelectCart: () => void;
+  removeCheckedOutItems: () => void;
   increaseQuantity: (product: CartItem) => void;
   decreaseQuantity: (product: CartItem) => void;
 }
@@ -54,7 +55,8 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
   const addToCart = (product: CartItem) => {
     setCart((prevCart) => {
       const existingProductIndex = prevCart.findIndex(
-        (item) => item.productID === product.productID && item.size === product.size
+        (item) =>
+          item.productID === product.productID && item.size === product.size
       );
       if (existingProductIndex !== -1) {
         const updatedCart = [...prevCart];
@@ -70,11 +72,16 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
     if (product) {
       setCart((prevCart) => {
         const productToRemove = prevCart.find(
-          (item) => item.productID === product.productID && item.size === product.size
+          (item) =>
+            item.productID === product.productID && item.size === product.size
         );
         if (productToRemove) {
           return prevCart.filter(
-            (item) => !(item.productID === product.productID && item.size === product.size)
+            (item) =>
+              !(
+                item.productID === product.productID &&
+                item.size === product.size
+              )
           );
         } else {
           throw new Error("Product id does not exist.");
@@ -111,7 +118,8 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
       const newProducts = products.filter(
         (product) =>
           !prevSelectCart.some(
-            (item) => item.productID === product.productID && item.size === product.size
+            (item) =>
+              item.productID === product.productID && item.size === product.size
           )
       );
       return [...prevSelectCart, ...newProducts];
@@ -122,11 +130,16 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
     if (product) {
       setSelectCart((prevSelectCart) => {
         const productToRemove = prevSelectCart.find(
-          (item) => item.productID === product.productID && item.size === product.size
+          (item) =>
+            item.productID === product.productID && item.size === product.size
         );
         if (productToRemove) {
           return prevSelectCart.filter(
-            (item) => !(item.productID === product.productID && item.size === product.size)
+            (item) =>
+              !(
+                item.productID === product.productID &&
+                item.size === product.size
+              )
           );
         } else {
           throw new Error("Product id does not exist.");
@@ -143,7 +156,9 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
     setSelectCart((prevSelectCart) =>
       prevSelectCart.map((selectItem) => {
         const cartItem = cart.find(
-          (item) => item.productID === selectItem.productID && item.size === selectItem.size
+          (item) =>
+            item.productID === selectItem.productID &&
+            item.size === selectItem.size
         );
         return cartItem
           ? { ...selectItem, quantity: cartItem.quantity }
@@ -151,6 +166,19 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
       })
     );
   }, [cart]);
+
+  const removeCheckedOutItems = () => {
+    setCart((prevCart) =>
+      prevCart.filter(
+        (item) =>
+          !selectCart.some(
+            (selectItem) =>
+              selectItem.productID === item.productID &&
+              selectItem.size === item.size
+          )
+      )
+    );
+  };
 
   return (
     <CartContext.Provider
@@ -162,6 +190,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
         addToSelectCart,
         removeFromSelectCart,
         removeAllFromSelectCart,
+        removeCheckedOutItems,
         increaseQuantity,
         decreaseQuantity,
       }}

@@ -11,7 +11,7 @@ export default function CheckoutPage() {
   const [deliveryPrice, setDeliveryPrice] = useState(4);
   const [totalPrice, setTotalPrice] = useState(0);
   const [couponPrice, setCouponPrice] = useState(0);
-  const { cart, selectCart } = useCart();
+  const { cart, selectCart, removeCheckedOutItems } = useCart();
 
   const handleCheckboxDeliChange = (
     event: React.ChangeEvent<HTMLInputElement>
@@ -212,7 +212,10 @@ export default function CheckoutPage() {
           </div>
 
           <Link href="/checkout/success" className="self-center">
-            <button className="btn font-semibold text-4xl h-20 w-96 self-center my-20 transition transition-duration-300 transition-property:scale,box-shadow,background-color hover:scale-105 hover:drop-shadow-xl hover:bg-secondary outline-none border-none">
+            <button
+              className="btn font-semibold text-4xl h-20 w-96 self-center my-20 transition transition-duration-300 transition-property:scale,box-shadow,background-color hover:scale-105 hover:drop-shadow-xl hover:bg-secondary outline-none border-none"
+              onClick={removeCheckedOutItems}
+            >
               Check out
             </button>
           </Link>
