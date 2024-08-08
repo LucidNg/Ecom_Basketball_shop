@@ -19,8 +19,6 @@ const Card: React.FC<CardProps> = ({ category, limit }: CardProps) => {
     const fetchProducts = async () => {
       setLoading(true);
       try {
-        // Fetch products with a simulated delay
-        await new Promise(resolve => setTimeout(resolve, 1000));
 
         let fetchedProducts: Product[] = [];
 

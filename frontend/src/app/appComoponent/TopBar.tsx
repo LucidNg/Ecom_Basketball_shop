@@ -91,14 +91,14 @@ export default function TopBar() {
         )}
       </div>
 
-      <div className="beforeLogined flex items-center pl-5 pr-8 xl:pr-20">                
-                <button className="h-[50px] text-xl font-semibold text-base-content hover:text-accent lg:w-44 xl:text-xl xl:w-40">
-                    <Link href="/auth/login">Login</Link>
-                </button>
-                <button className="h-[50px] font-semibold text-accent-content bg-accent hover:bg-red-500 hidden lg:inline lg:text-xl lg:w-44 xl:w-40">
-                    <Link href="/auth/register">Sign up</Link>
-                </button>
-            </div>
+      <div className="beforeLogined flex items-center pl-5 pr-4 lg:pr-8">                
+          <button className="h-[50px] text-xl font-semibold text-base-content hover:text-accent hidden lg:inline lg:w-44 xl:text-xl xl:w-40">
+              <Link href="/auth/login">Login</Link>
+          </button>
+          <button className="h-[50px] font-semibold text-accent-content bg-accent hover:bg-red-500 w-24 lg:text-xl lg:w-44 xl:w-40">
+              <Link href="/auth/register">Sign up</Link>
+          </button>
+      </div>
       {/* <div className="afterLogined flex items-center">
         <div className="text-base-content px-3 sm:px-5 2xl:px-10 userInfo hidden 2xl:inline 2xl:text-2xl">
           <span className="whitespace-nowrap ">Xin chào, Văn A</span>
@@ -120,6 +120,16 @@ export default function TopBar() {
           </button>
         </Link>
       </div> */}
+      <Link href="/shopping-cart">
+        <button className="Cart justify-end bg-base-100 h-[40px] sm:h-[50px] flex items-center rounded-lg mr-7">
+          <div className="px-3 flex">
+            <ShoppingCart color="black" className="h-5 w-5 sm:h-8 sm:w-8" />
+            <span className="text-base-content hidden sm:text-2xl sm:inline px-4">
+              {cart.length}
+            </span>
+          </div>
+        </button>
+      </Link>
     </div>
   );
 }
