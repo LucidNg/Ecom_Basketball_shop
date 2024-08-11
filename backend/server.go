@@ -90,7 +90,8 @@ func main() {
 		} else if r.Method == http.MethodPost {
 			email := r.FormValue("email")
 			password := r.FormValue("password")
-			err := database.InsertUser(db, email, password)
+			fullname := r.FormValue("fullname")
+			err := database.InsertUser(db, fullname, email, password)
 			if err != nil {
 				http.Error(w, "Failed to create user: "+err.Error(), http.StatusInternalServerError)
 				return

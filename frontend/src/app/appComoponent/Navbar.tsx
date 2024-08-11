@@ -81,7 +81,7 @@ export default function Navbar() {
                 </div>
                 <div className="dropdown dropdown-hover">
                     <div tabIndex={0} role="button">
-                        <span className="btn btn-ghost text-2xl hover:bg-secondary hover:text-neutral hover:font-bold">
+                        <span className="text-2xl font-semibold cursor-none">
                             Brand
                         </span>
                     </div>
@@ -178,7 +178,7 @@ export default function Navbar() {
                         </li>
                         <li>
                             <details>
-                                <summary><Link href={generateLink('brand')} className="btn btn-ghost text-2xl hover:bg-secondary hover:text-primary-content hover:font-bold">Brand</Link></summary>
+                                <summary><div className="text-2xl cursor-none">Brand</div></summary>
                                 <ul className=" grid grid-cols-2 gap-4 pr-5">
                                     <li><Link href={generateLink('brand', 'nike')} className="text-xl focus:text-base-100">Nike</Link></li>
                                     <li><Link href={generateLink('brand', 'adidas')} className="text-xl focus:text-base-100">Adidas</Link></li>

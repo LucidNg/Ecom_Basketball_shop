@@ -20,7 +20,7 @@ func recordExists(db *sqlitecloud.SQCloud, tableName string, attribute string, i
 	return rows.GetInt32Value_(0, 0) != 0, nil
 }
 
-func InsertUser(db *sqlitecloud.SQCloud, email string, password string) error {
+func InsertUser(db *sqlitecloud.SQCloud, fullnane string, email string, password string) error {
 	var id string
 	for {
 		id = uuid.New().String()
@@ -42,6 +42,14 @@ func InsertUser(db *sqlitecloud.SQCloud, email string, password string) error {
 	values := []interface{}{id, email, string(hashedPassword)}
 
 	err = db.ExecuteArray(insertUserSQL, values)
+	if err != nil {
+		return err
+	}
+
+	insertUserDetailSQL := "INSERT INTO userDetail (userID, fullName) VALUES (?, ?)"
+	values = []interface{}{id, fullnane}
+
+	err = db.ExecuteArray(insertUserDetailSQL, values)
 	return err
 }
 
