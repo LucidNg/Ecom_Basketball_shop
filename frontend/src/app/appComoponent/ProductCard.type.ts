@@ -7,6 +7,8 @@ export interface IProduct {
   size: string;
 }
 
+
 export type ProductCardProps = {
   product: IProduct;
+  isEditable: boolean;
 };

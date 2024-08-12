@@ -11,7 +11,7 @@ export default function CheckoutPage() {
   const [deliveryPrice, setDeliveryPrice] = useState(4);
   const [totalPrice, setTotalPrice] = useState(0);
   const [couponPrice, setCouponPrice] = useState(0);
-  const { cart, selectCart } = useCart();
+  const { cart, selectCart, removeCheckedOutItems } = useCart();
 
   const handleCheckboxDeliChange = (
     event: React.ChangeEvent<HTMLInputElement>
@@ -163,14 +163,18 @@ export default function CheckoutPage() {
           <h2 className="text-4xl font-bold text-base-content">Cart info</h2>
           <div
             className="flex flex-col gap-6 flex-grow overflow-auto"
-            style={{ maxHeight: "75vh" }}
+            style={{ maxHeight: "45vh" }}
           >
             {selectCart.map((product, index) => (
               <div
-                key={product.id}
+                key={product.productID}
                 className="flex flex-row items-center gap-20 px-16 py-6 bg-[#EBEBD5] h-full"
               >
-                <ProductCard key={product.id} product={product} />
+                <ProductCard
+                  key={product.productID}
+                  product={product}
+                  isEditable={false}
+                />
               </div>
             ))}
           </div>
@@ -208,7 +212,10 @@ export default function CheckoutPage() {
           </div>
 
           <Link href="/checkout/success" className="self-center">
-            <button className="btn font-semibold text-4xl h-20 w-96 self-center my-20 transition transition-duration-300 transition-property:scale,box-shadow,background-color hover:scale-105 hover:drop-shadow-xl hover:bg-secondary outline-none border-none">
+            <button
+              className="btn font-semibold text-4xl h-20 w-96 self-center my-20 transition transition-duration-300 transition-property:scale,box-shadow,background-color hover:scale-105 hover:drop-shadow-xl hover:bg-secondary outline-none border-none"
+              onClick={removeCheckedOutItems}
+            >
               Check out
             </button>
           </Link>

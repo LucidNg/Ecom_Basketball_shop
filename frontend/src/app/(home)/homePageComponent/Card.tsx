@@ -19,8 +19,6 @@ const Card: React.FC<CardProps> = ({ category, limit }: CardProps) => {
     const fetchProducts = async () => {
       setLoading(true);
       try {
-        // Fetch products with a simulated delay
-        await new Promise(resolve => setTimeout(resolve, 1000));
 
         let fetchedProducts: Product[] = [];
 
@@ -71,9 +69,17 @@ const Card: React.FC<CardProps> = ({ category, limit }: CardProps) => {
             {product.productName}
           </span>
           <div className="flex flex-row items-center justify-between w-40 sm:w-56 lg:w-72 px-5 pb-1">
-            <span className="text-base-content text-xs sm:text-sm lg:text-lg">
-              $ {product.price}
+            <span className="text-base-content text-xs sm:text-sm lg:text-lg notSaled">
+                  $ {product.price}
             </span>
+            {/* <div className="flex flex-col ifSaled">
+              <span className="text-xs font-semibold text-accent sm:text-sm lg:text-lg">
+                $ {product.price}
+              </span>
+              <span className="text-base-content text-xs sm:text-sm lg:text-md">
+                <s>$ {product.price}</s>
+              </span>
+            </div> */}
             <Link href={`/product/${product.productID}`}>
               <button className="btn bg-secondary rounded-none text-neutral font-semibold text-xs sm:text-sm lg:text-lg w-12 sm:w-24 lg:w-32 sm:h-4 lg:h-12 hover:bg-accent hover:text-primary">
                 View

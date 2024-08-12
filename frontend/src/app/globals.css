@@ -30,6 +30,10 @@ body {
   .text-balance {
     text-wrap: balance;
   }
+
+  .custom-checkbox {
+    accent-color: #d72638; /* Example custom color */
+  }
 }
 
 input::placeholder {

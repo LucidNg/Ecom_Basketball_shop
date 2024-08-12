@@ -46,8 +46,9 @@ func CreateTable(db *sqlitecloud.SQCloud) error {
 		"date" TEXT NOT NULL,
 		"shippingAdress" TEXT NOT NULL,
 		"billingAddress" TEXT NOT NULL,
-		"price" INTEGER NOT NULL,
+		"price" REAL NOT NULL,
 		"status" TEXT NOT NULL,
+		"payStatus" TEXT NOT NULL,
 		FOREIGN KEY(userID) REFERENCES users(userID)
 	);`
 
@@ -55,7 +56,7 @@ func CreateTable(db *sqlitecloud.SQCloud) error {
 		"shippingID" TEXT NOT NULL PRIMARY KEY,
 		"orderID" TEXT NOT NULL,
 		"shippingMethod" TEXT NOT NULL,
-		"cost" INTEGER NOT NULL,
+		"cost" REAL NOT NULL,
 		"startTime" TEXT NOT NULL,
 		"estimatedDeliveryTime" TEXT NOT NULL,
 		FOREIGN KEY(orderID) REFERENCES orders(orderID)
@@ -98,19 +99,18 @@ func CreateTable(db *sqlitecloud.SQCloud) error {
 
 	purchaseTable := `CREATE TABLE IF NOT EXISTS purchase (
 		"purchaseID" TEXT NOT NULL PRIMARY KEY,
-		"userID" TEXT NOT NULL,
 		"productID" TEXT NOT NULL,
 		"quantity" INTEGER NOT NULL,
-		"date" TEXT NOT NULL,
-		FOREIGN KEY(userID) REFERENCES users(userID),
 		FOREIGN KEY(productID) REFERENCES product(productID)
 	);`
 
 	cartItemTable := `CREATE TABLE IF NOT EXISTS cartItem (
 		"cartID" TEXT NOT NULL,
 		"productID" TEXT NOT NULL,
+		"size" TEXT NOT NULL,
 		"quantity" INTEGER NOT NULL,
-		PRIMARY KEY(cartID, productID),
+		"price" REAL NOT NULL,
+		PRIMARY KEY(cartID, productID, size),
 		FOREIGN KEY(cartID) REFERENCES cart(cartID),
 		FOREIGN KEY(productID) REFERENCES product(productID)
 	);`
@@ -139,6 +139,17 @@ func CreateTable(db *sqlitecloud.SQCloud) error {
 		"stock" INTEGER NOT NULL,
 		"price" REAL NOT NULL,
 		PRIMARY KEY(productID, size),
+		FOREIGN KEY(productID) REFERENCES product(productID)
+	);`
+
+	orderItemTable := `CREATE TABLE IF NOT EXISTS orderItem (
+		"orderID" TEXT NOT NULL,
+		"productID" TEXT NOT NULL,
+		"size" TEXT NOT NULL,
+		"quantity" INTEGER NOT NULL,
+		"price" REAL NOT NULL,
+		PRIMARY KEY(orderID, productID),
+		FOREIGN KEY(orderID) REFERENCES orders(orderID),
 		FOREIGN KEY(productID) REFERENCES product(productID)
 	);`
 
@@ -199,6 +210,10 @@ func CreateTable(db *sqlitecloud.SQCloud) error {
 	}
 
 	if err := db.Execute(sizeTable); err != nil {
+		return err
+	}
+
+	if err := db.Execute(orderItemTable); err != nil {
 		return err
 	}
 

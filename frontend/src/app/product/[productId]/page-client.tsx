@@ -122,10 +122,11 @@ const DetailedProductPageCli = ({ children1 }: DetailedProductPage) => {
         }`
       );
       addToCart({
-        id: product.productID,
-        name: product.productName,
-        image: mainImage,
+        cartID: "",
+        productID: product.productID,
+        productName: product.productName,
         size: selectedSize,
+        url: images[0],
         quantity: quantity,
         price: quantity * priceBySize[selectedSize],
       });
@@ -184,9 +185,17 @@ const DetailedProductPageCli = ({ children1 }: DetailedProductPage) => {
               <span className="text-5xl font-semibold lg:w-4/5 text-base-content leading-normal lg:px-0 px-10">
                 {product.productName}
               </span>
-              <span className="text-5xl py-16 mx-20 text-base-content">
+              <div className="ifSaled text-5xl py-16 mx-20 flex flex-row items-center gap-5">
+                <span className="text-2xl text-opacity-50 text-base-content">
+                  <s>${selectedSize ? priceBySize[selectedSize] : ""}</s>
+                </span>
+                <span className="text-accent">
+                  ${selectedSize ? priceBySize[selectedSize] : ""}
+                </span>
+              </div>
+              {/* <span className="text-5xl py-16 mx-20 text-base-content notSaled">
                 ${selectedSize ? priceBySize[selectedSize] : ""}
-              </span>
+              </span> */}
               <div className="sizeDisplay grid grid-cols-4 gap-x-12 gap-y-5 lg:w-1/2 w-3/4 mx-20">
                 {sizes.map((size, index) => (
                   <div

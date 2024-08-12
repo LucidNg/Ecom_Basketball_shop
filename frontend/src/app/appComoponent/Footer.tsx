@@ -1,11 +1,12 @@
 import React from "react";
 import Image from "next/image";
+import Link from "next/link";
 
 export default function Footer () {
     return (
         <footer className="footer footer-center bg-neutral text-primary-content px-10 py-7 mt-20">
             <aside>
-                <Image className="inline-block fill-current" src={`/inversed_logo.svg`} alt="Boro logo" width={30} height={30} />
+                <Link href="/"><Image className="inline-block fill-current" src={`/inversed_logo.svg`} alt="Boro logo" width={30} height={30} /></Link>
                 <p className="font-bold text-base-100">
                 BoRo Shop
                 <br />
