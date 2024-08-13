@@ -214,7 +214,9 @@ export default function CheckoutPage() {
           <Link href="/checkout/success" className="self-center">
             <button
               className="btn font-semibold text-4xl h-20 w-96 self-center my-20 transition transition-duration-300 transition-property:scale,box-shadow,background-color hover:scale-105 hover:drop-shadow-xl hover:bg-secondary outline-none border-none"
-              onClick={removeCheckedOutItems}
+              onClick={() => {
+                //removeCheckedOutItems
+              }}
             >
               Check out
             </button>
