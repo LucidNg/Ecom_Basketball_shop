@@ -8,7 +8,7 @@ import { useCart } from "../appComoponent/CartContext";
 
 export default function OrderDetails() {
   const { selectCart } = useCart(); //replace with the actual orderDetails object
-  const [orderStatus, setOrderStatus] = useState("successful");
+  const [orderStatus, setOrderStatus] = useState("pending");
 
   // Function to render the appropriate stamp based on orderStatus
   const renderOrderStatusStamp = () => {
@@ -55,12 +55,12 @@ export default function OrderDetails() {
             transition
             transition-duration-300
             transition-property:scale,box-shadow,background-color
-            hover:scale-105 hover:drop-shadow-xl hover:bg-secondary 
+            hover:scale-105 hover:drop-shadow-xl hover:bg-secondary-content hover:text-secondary 
             outline-none
             border-none"
           onClick={handleConfirmButton}
         >
-          Confirm Order Received
+          I have received it!
         </button>
       </div>
     );
