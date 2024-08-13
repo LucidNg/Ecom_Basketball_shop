@@ -119,8 +119,8 @@ export default function OrderDetails() {
           </div>
 
           <div className="flex justify-between mt-4">
-            <p className="font-bold text-2xl">Thành tiền :</p>
-            <p className="font-bold text-2xl text-red-600">đ 1.563.000</p>
+            <p className="font-bold text-2xl">Total bill :</p>
+            <p className="font-bold text-2xl text-red-600">$ 1.563.000</p>
           </div>
 
           <div className="flex justify-between mt-4">
