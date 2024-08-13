@@ -101,6 +101,13 @@ body {
     text-align: center; /* Centers the text within the element */
     background-color: transparent; /* Keeps the background clear */
   }
+  .tab-primary-bg {
+    background-color: var(--color-primary);
+  }
+
+  .tab-secondary-bg {
+    background-color: var(--color-secondary);
+  }
 }
 
 input::placeholder {

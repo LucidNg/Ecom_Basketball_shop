@@ -1,4 +1,5 @@
 import type { Config } from "tailwindcss";
+import type { PluginAPI } from "tailwindcss/types/config";
 
 const config: Config = {
   content: [
@@ -15,6 +16,13 @@ const config: Config = {
         mainBanner: "url('/mainBanner.svg')",
       },
     },
+  },
+  colors: {
+    primary: "#ebebd3",
+    secondary: "#f4d35e",
+    accent: "#d72638",
+    neutral: "#083d77",
+    // Add more colors as needed
   },
   daisyui: {
     themes: [
@@ -44,6 +52,19 @@ const config: Config = {
       },
     ],
   },
-  plugins: [require("daisyui")],
+  plugins: [
+    require("daisyui"),
+    function ({ addBase, theme }: PluginAPI) {
+      addBase({
+        ":root": {
+          "--color-primary": theme("colors.primary"),
+          "--color-secondary": theme("colors.secondary"),
+          "--color-accent": theme("colors.accent"),
+          "--color-neutral": theme("colors.neutral"),
+          // Add more custom properties for other colors
+        },
+      });
+    },
+  ],
 };
 export default config;
