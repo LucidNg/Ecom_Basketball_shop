@@ -13,7 +13,7 @@ export default function OrderDetails() {
   // Function to render the appropriate stamp based on orderStatus
   const renderOrderStatusStamp = () => {
     switch (orderStatus) {
-      case "successful":
+      case "delivered":
         return <p className="successful-delivery-stamp">Successful Delivery</p>;
       case "delivering":
         return <p className="ongoing-delivery-stamp">Delivering</p>;
@@ -49,8 +49,9 @@ export default function OrderDetails() {
           </button>
         )}
 
-        <button
-          className="bg-secondary text-black text-xl font-semibold py-4 px-8 rounded-xl 
+        {orderStatus === "delivered" && (
+          <button
+            className="bg-secondary text-black text-xl font-semibold py-4 px-8 rounded-xl 
             flex-grow  
             transition
             transition-duration-300
@@ -58,10 +59,11 @@ export default function OrderDetails() {
             hover:scale-105 hover:drop-shadow-xl hover:bg-secondary-content hover:text-secondary 
             outline-none
             border-none"
-          onClick={handleConfirmButton}
-        >
-          I have received it!
-        </button>
+            onClick={handleConfirmButton}
+          >
+            I have received it!
+          </button>
+        )}
       </div>
     );
   };
