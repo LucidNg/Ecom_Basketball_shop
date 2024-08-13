@@ -77,7 +77,8 @@ export default function OrderDetails() {
     <div className="p-10">
       <div className="max-w-7xl mx-auto p-6 bg-white shadow-md rounded-lg">
         <h1 className="text-2xl font-semibold mb-6">
-          Chi tiết đơn hàng ngày 12/05/2024
+          {<span className="font-semibold text-info">#12/05/2024</span>} Order
+          Details
         </h1>
         <div className="space-y-4"></div>
         <div
