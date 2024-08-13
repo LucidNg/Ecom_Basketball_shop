@@ -8,7 +8,7 @@ import { useCart } from "../appComoponent/CartContext";
 
 export default function OrderDetails() {
   const { selectCart } = useCart(); //replace with the actual orderDetails object
-  const [orderStatus, setOrderStatus] = useState("pending");
+  const [orderStatus, setOrderStatus] = useState("delivered");
 
   // Function to render the appropriate stamp based on orderStatus
   const renderOrderStatusStamp = () => {
