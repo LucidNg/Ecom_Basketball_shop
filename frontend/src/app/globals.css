@@ -76,7 +76,20 @@ body {
   }
 
   .ongoing-delivery-stamp {
-    color: #f4d35e; /* Equivalent to text-green-600 */
+    color: #18c257; /* Equivalent to text-green-600 */
+    font-size: 1.125rem; /* Equivalent to text-lg (18px) */
+    font-weight: 700; /* Equivalent to font-bold */
+    border: 2px solid #18c257; /* Equivalent to border-green-600 */
+    border-radius: 0.25rem; /* Equivalent to rounded (4px radius) */
+    padding: 0.25rem 1rem; /* Equivalent to px-4 py-1 */
+    display: inline-block; /* Ensures the element respects padding and borders */
+    text-transform: uppercase; /* Makes the text uppercase */
+    letter-spacing: 1px; /* Slightly increases the space between letters */
+    text-align: center; /* Centers the text within the element */
+    background-color: transparent; /* Keeps the background clear */
+  }
+  .pending-order-stamp {
+    color: #f5c000; /* Equivalent to text-green-600 */
     font-size: 1.125rem; /* Equivalent to text-lg (18px) */
     font-weight: 700; /* Equivalent to font-bold */
     border: 2px solid #f4d35e; /* Equivalent to border-green-600 */

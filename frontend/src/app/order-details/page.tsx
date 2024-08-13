@@ -18,16 +18,59 @@ export default function OrderDetails() {
       case "delivering":
         return <p className="ongoing-delivery-stamp">Delivering</p>;
       case "canceled":
-        return <p className="canceled-order-stamp">Order Canceled</p>;
+        return <p className="canceled-order-stamp">Canceled</p>;
       case "recieved":
-        return <p className="recieved-order-stamp">Order Recieved</p>;
+        return <p className="recieved-order-stamp">Recieved</p>;
+      case "pending":
+        return <p className="pending-order-stamp">Pending</p>;
       default:
         return null;
     }
   };
 
+  const renderUserButtons = () => {
+    if (orderStatus === "canceled" || orderStatus === "recieved") return null;
+    return (
+      <div className="mt-6 flex justify-between gap-4">
+        {(orderStatus === "delivering" || orderStatus === "pending") && (
+          <button
+            className=" text-error text-xl font-semibold py-4 px-8 rounded-xl 
+            flex-grow
+            transition
+            transition-duration-300
+            transition-property:scale,box-shadow,background-color
+            hover:scale-105 hover:drop-shadow-xl hover:bg-accent hover:text-accent-content 
+            outline-none
+            border
+            border-error"
+            onClick={handleCancelButton}
+          >
+            Cancel order
+          </button>
+        )}
+
+        <button
+          className="bg-secondary text-black text-xl font-semibold py-4 px-8 rounded-xl 
+            flex-grow  
+            transition
+            transition-duration-300
+            transition-property:scale,box-shadow,background-color
+            hover:scale-105 hover:drop-shadow-xl hover:bg-secondary 
+            outline-none
+            border-none"
+          onClick={handleConfirmButton}
+        >
+          Confirm Order Received
+        </button>
+      </div>
+    );
+  };
+
   const handleConfirmButton = () => {
     setOrderStatus("recieved");
+  };
+  const handleCancelButton = () => {
+    setOrderStatus("canceled");
   };
 
   return (
@@ -85,21 +128,8 @@ export default function OrderDetails() {
             {renderOrderStatusStamp()}
           </div>
         </div>
-        {orderStatus !== "recieved" && (
-          <div className="mt-6 flex justify-center items-end">
-            <button
-              className="bg-yellow-400 text-black text-xl font-semibold py-4 px-8 rounded-xl uppercase
-            transition
-            transition-duration-300
-            transition-property:scale,box-shadow,background-color
-            hover:scale-105 hover:drop-shadow-xl hover:bg-secondary outline-none
-            border-none"
-              onClick={handleConfirmButton}
-            >
-              Confirm Order Received
-            </button>
-          </div>
-        )}
+
+        {renderUserButtons()}
       </div>
     </div>
   );
