@@ -6,37 +6,48 @@ import (
 	"net/http"
 	"strconv"
 
+	"github.com/google/uuid"
 	"github.com/gorilla/mux"
 	sqlitecloud "github.com/sqlitecloud/sqlitecloud-go"
 )
 
-func QueryUsers(db *sqlitecloud.SQCloud, w http.ResponseWriter) error {
-	rows, err := db.Select("SELECT * FROM users")
+func InsertProduct(db *sqlitecloud.SQCloud, categoryID string, name string, description string, brand string, price string, stock string, dateAdded string, size string) error {
+	var id string
+	for {
+		id = uuid.New().String()
+		exists, err := recordExists(db, "product", "productID", id)
+		if err != nil {
+			return err
+		}
+		if !exists {
+			break
+		}
+	}
+
+	priceValue, err := strconv.ParseFloat(price, 64)
 	if err != nil {
+		fmt.Println("Error:", err)
 		return err
 	}
 
-	defer rows.Dump()
-	_, err = w.Write([]byte(rows.ToJSON()))
+	stockInt, err := strconv.Atoi(stock)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return err
-	}
-	return nil
-}
-
-func QueryCategory(db *sqlitecloud.SQCloud, w http.ResponseWriter) error {
-	rows, err := db.Select("SELECT * FROM category")
-	if err != nil {
+		fmt.Println("Error:", err)
 		return err
 	}
 
-	_, err = w.Write([]byte(rows.ToJSON()))
+	insertProductSQL := "INSERT INTO product (productID, categoryID, productName, description, brand, dateAdded) VALUES (?, ?, ?, ?, ?, ?)"
+	values := []interface{}{id, categoryID, name, description, brand, dateAdded}
+	err = db.ExecuteArray(insertProductSQL, values)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		fmt.Println("Error:", err)
 		return err
 	}
-	return nil
+
+	insertSizeSQL := "INSERT INTO size (productID, size, stock, price) VALUES (?, ?, ?, ?)"
+	values2 := []interface{}{id, size, stockInt, priceValue}
+	err = db.ExecuteArray(insertSizeSQL, values2)
+	return err
 }
 
 func QueryProduct(db *sqlitecloud.SQCloud, w http.ResponseWriter) error {
@@ -293,109 +304,29 @@ func QueryProductByBrand(db *sqlitecloud.SQCloud, w http.ResponseWriter, r *http
 
 }
 
-func QueryAllReviews(db *sqlitecloud.SQCloud, w http.ResponseWriter, r *http.Request) error {
-	vars := mux.Vars(r)
-	productID := vars["productID"]
-	query := `SELECT 
-    r.comment, r.rating, r.date
-	FROM review r
-	JOIN product p ON r.productID = p.productID
-	WHERE p.productID = ?
-	ORDER BY r.date DESC;`
-
-	values := []interface{}{productID}
-
-	rows, err := db.SelectArray(query, values)
-	if err != nil {
-		return err
-	}
-	_, err = w.Write([]byte(rows.ToJSON()))
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return err
-	}
-	return nil
-
-}
-
-func QueryAverageRating(db *sqlitecloud.SQCloud, w http.ResponseWriter, r *http.Request) error {
-	vars := mux.Vars(r)
-	productID := vars["productID"]
-
-	query := `SELECT 
-    AVG(r.rating) AS averageRating
-	FROM review r
-	WHERE r.productID = ?;`
-
-	values := []interface{}{productID}
-
-	rows, err := db.SelectArray(query, values)
-	if err != nil {
-		return err
+func UpdateStock(db *sqlitecloud.SQCloud, w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPut {
+		http.Error(w, "Unsupported method", http.StatusMethodNotAllowed)
+		return
 	}
 
-	_, err = w.Write([]byte(rows.ToJSON()))
+	var req OrderRequest
+	err := json.NewDecoder(r.Body).Decode(&req)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return err
-	}
-	return nil
-
-}
-
-func QueryRatingCount(db *sqlitecloud.SQCloud, w http.ResponseWriter, r *http.Request) error {
-	vars := mux.Vars(r)
-	productID := vars["productID"]
-
-	query := `SELECT
-    SUM(CASE WHEN r.rating = 1 THEN 1 ELSE 0 END) AS one_star,
-    SUM(CASE WHEN r.rating = 2 THEN 1 ELSE 0 END) AS two_star,
-    SUM(CASE WHEN r.rating = 3 THEN 1 ELSE 0 END) AS three_star,
-    SUM(CASE WHEN r.rating = 4 THEN 1 ELSE 0 END) AS four_star,
-    SUM(CASE WHEN r.rating = 5 THEN 1 ELSE 0 END) AS five_star
-	FROM review r
-	WHERE r.productID = ?;`
-
-	values := []interface{}{productID}
-
-	rows, err := db.SelectArray(query, values)
-	if err != nil {
-		return err
-	}
-	_, err = w.Write([]byte(rows.ToJSON()))
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return err
-	}
-	return nil
-
-}
-
-func QueryCartItem(db *sqlitecloud.SQCloud, w http.ResponseWriter, r *http.Request) error {
-	vars := mux.Vars(r)
-	userID := vars["userID"]
-
-	query := `SELECT co.cartID, co.productID, co.size, co.quantity, co.price, p.productName, p.url
-			FROM cartItem co
-			JOIN cart c ON co.cartID = c.cartID
-			JOIN users u ON c.userID = u.userID
-			JOIN product p ON co.productID = p.productID
-			WHERE u.userID = ?;`
-
-	values := []interface{}{userID}
-
-	rows, err := db.SelectArray(query, values)
-	if err != nil {
-		return err
+		http.Error(w, "Invalid request payload", http.StatusBadRequest)
+		return
 	}
 
-	defer rows.Dump()
+	CreateOrderItemsSQL := "UPDATE size SET stock = stock - ? WHERE productID = ? AND size = ?"
 
-	_, err = w.Write([]byte(rows.ToJSON()))
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return err
+	for _, product := range req.Products {
+		values := []interface{}{product.Quantity, product.ProductID, product.Size}
+		err = db.ExecuteArray(CreateOrderItemsSQL, values)
+		if err != nil {
+			fmt.Println("Error:", err)
+		}
 	}
-	return nil
 
+	w.WriteHeader(http.StatusCreated)
+	w.Write([]byte("Stock updated successfully"))
 }
