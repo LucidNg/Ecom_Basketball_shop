@@ -55,7 +55,7 @@ func QueryCartItem(db *sqlitecloud.SQCloud, w http.ResponseWriter, r *http.Reque
 	vars := mux.Vars(r)
 	userID := vars["userID"]
 
-	query := `SELECT co.cartID, co.productID, co.size, co.quantity, co.price, p.productName, p.url
+	query := `SELECT co.cartID, co.productID, co.size, co.quantity, co.price, p.productName, COALESCE(p.url, 'null') AS url
 			FROM cartItem co
 			JOIN cart c ON co.cartID = c.cartID
 			JOIN users u ON c.userID = u.userID

@@ -19,8 +19,8 @@ export async function FetchCartItemsByUserID(
   userID: string
 ): Promise<Array<CartItem>> {
   let url = process.env.API_ENDPOINT
-    ? `${process.env.API_ENDPOINT}/cartItems/${userID}`
-    : `${connectString}/cartItems/${userID}`;
+    ? `${process.env.API_ENDPOINT}/cartItem/${userID}`
+    : `${connectString}/cartItem/${userID}`;
 
   const response = await fetch(url, {
     method: "GET",
