@@ -21,16 +21,14 @@ const (
 
 func corsMiddleware(next http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		// Set allowed origins dynamically based on incoming request origin
 		origin := r.Header.Get("Origin")
-		if origin == "" {
-			origin = "*"
+
+		if origin != "" {
+			w.Header().Set("Access-Control-Allow-Origin", origin)
 		}
-		w.Header().Set("Access-Control-Allow-Origin", origin)
+
 		w.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
 		w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
-
-		// Set Access-Control-Allow-Credentials header
 		w.Header().Set("Access-Control-Allow-Credentials", "true")
 
 		if r.Method == "OPTIONS" {
@@ -97,6 +95,22 @@ func main() {
 				return
 			}
 			w.Write([]byte("User inserted successfully"))
+		} else {
+			http.Error(w, "Unsupported method", http.StatusMethodNotAllowed)
+		}
+	}))).Methods(http.MethodGet, http.MethodPost)
+
+	r.HandleFunc("/authenticate", rateLimiter(limiter, corsMiddleware(func(w http.ResponseWriter, r *http.Request) {
+		if r.Method == http.MethodPost {
+			email := r.FormValue("email")
+			password := r.FormValue("password")
+
+			token, err := database.AuthenticateUser(db, email, password)
+			if err != nil {
+				http.Error(w, "Authentication failed: "+err.Error(), http.StatusUnauthorized)
+				return
+			}
+			w.Write([]byte(token))
 		} else {
 			http.Error(w, "Unsupported method", http.StatusMethodNotAllowed)
 		}

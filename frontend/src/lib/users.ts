@@ -25,3 +25,29 @@ export async function RegisterUser(
 
     return "User registered successfully";
 }
+
+export interface UserLogin {
+    email: string;
+    password: string;
+}
+
+export async function LoginUser(
+    userData: UserLogin
+): Promise<string> {
+    const url = `${connectString}/authenticate?email=${encodeURIComponent(userData.email)}&password=${encodeURIComponent(userData.password)}`;
+
+    const response = await fetch(url, {
+        method: "POST",
+        credentials: "include",
+        mode: "cors",
+        cache: "no-cache",
+    });
+
+    if (!response.ok) {
+        const errorMsg = await response.text();
+        throw new Error(`Failed to login: ${errorMsg}`);
+    }
+
+    const jwt = await response.text();
+    return jwt; // Returning the JWT token received from the server
+}
