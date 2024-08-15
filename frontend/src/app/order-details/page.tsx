@@ -3,12 +3,27 @@
 import React, { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import ProductCard from "../appComoponent/ProductCard";
-import { CartItem } from "../../lib/productItem";
+import { OrderItem } from "../../lib/productItem";
+import { Order, OrderDetailsProps } from "@/lib/order";
 import { useOrders } from "../appComoponent/OrdersContext";
 
-export default function OrderDetails() {
-  const { orders, updatePaymentStatus } = useOrders();
+export default async function OrderDetails({ order }: OrderDetailsProps) {
+  const { orders, getOrderItems, updatePaymentStatus } = useOrders();
+  const [orderItems, setOrderItems] = useState<OrderItem[]>([]);
   const [orderStatus, setOrderStatus] = useState("delivered");
+
+  useEffect(() => {
+    const fetchItems = async () => {
+      try {
+        const items = await getOrderItems(order.orderID);
+        setOrderItems(items);
+      } catch (error) {
+        console.error("Failed to fetch order items: ", error);
+      }
+    };
+
+    fetchItems();
+  }, [order, getOrderItems]);
 
   // Function to render the appropriate stamp based on orderStatus
   const renderOrderStatusStamp = () => {
@@ -87,14 +102,14 @@ export default function OrderDetails() {
           className="flex flex-col gap-6 flex-grow overflow-auto"
           style={{ maxHeight: "45vh" }}
         >
-          {selectCart.map((product, index) => (
+          {orderItems.map((item, index) => (
             <div
-              key={product.productID}
+              key={item.productID}
               className="flex flex-row items-center gap-20 px-16 py-6 bg-primary h-full"
             >
               <ProductCard
-                key={product.productID}
-                product={product}
+                key={item.productID}
+                product={item}
                 isEditable={false}
               />
             </div>

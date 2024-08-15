@@ -23,6 +23,11 @@ export enum OrderStatus {
   Received = "received",
   Pending = "pending",
 }
+
+export type OrderDetailsProps = {
+  order: Order;
+};
+
 export async function FetchOrdersByUserID(
   userID: string
 ): Promise<Array<Order>> {
@@ -36,7 +41,7 @@ export async function FetchOrdersByUserID(
       payment_method: "Credit Card",
       payment_status: "Paid",
       shippingMethod: "Express",
-      shippingStatus: "Shipped",
+      shippingStatus: OrderStatus.Delivered,
       shippingAddress: "123 Main St, City A, Country X",
       billingAddress: "123 Main St, City A, Country X",
       totalBill: 1500000,
@@ -50,7 +55,7 @@ export async function FetchOrdersByUserID(
       payment_method: "PayPal",
       payment_status: "Paid",
       shippingMethod: "Standard",
-      shippingStatus: "In Transit",
+      shippingStatus: OrderStatus.Delivering,
       shippingAddress: "456 Elm St, City B, Country Y",
       billingAddress: "456 Elm St, City B, Country Y",
       totalBill: 2100000,
@@ -64,7 +69,7 @@ export async function FetchOrdersByUserID(
       payment_method: "Bank Transfer",
       payment_status: "Pending",
       shippingMethod: "Standard",
-      shippingStatus: "Pending",
+      shippingStatus: OrderStatus.Pending,
       shippingAddress: "789 Oak St, City C, Country Z",
       billingAddress: "789 Oak St, City C, Country Z",
       totalBill: 3200000,
@@ -78,7 +83,7 @@ export async function FetchOrdersByUserID(
       payment_method: "Cash on Delivery",
       payment_status: "Pending",
       shippingMethod: "Express",
-      shippingStatus: "Processing",
+      shippingStatus: OrderStatus.Pending,
       shippingAddress: "101 Pine St, City D, Country W",
       billingAddress: "101 Pine St, City D, Country W",
       totalBill: 4500000,
