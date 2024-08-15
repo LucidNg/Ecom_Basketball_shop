@@ -2,15 +2,33 @@
 
 import React, { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
+import { useParams } from "next/navigation";
 import ProductCard from "../../appComoponent/ProductCard";
 import { OrderItem } from "../../../lib/productItem";
 import { Order, OrderDetailsProps, ShippingStatus } from "@/lib/order";
 import { useOrders, OrdersProvider } from "../../appComoponent/OrdersContext";
 
-export default function OrderDetails({ order }: OrderDetailsProps) {
-  const { orders, getOrderItems, updateShippingStatus } = useOrders();
+export default function OrderDetails() {
+  const { orderId } = useParams();
+  const { getOrder, getOrderItems, updateShippingStatus } = useOrders();
+  const [order, setOrder] = useState<Order>();
   const [orderItems, setOrderItems] = useState<OrderItem[]>([]);
   //const [order.shippingStatus, setShippingStatus] = useState("delivered");
+
+  useEffect(() => {
+    const fetchOrderDetails = async () => {
+      try {
+        const normalizedOrderId = Array.isArray(orderId) ? orderId[0] : orderId;
+        const details = await getOrder(normalizedOrderId);
+        setOrder(details);
+      } catch (error) {
+        console.error("Failed to fetch order details: ", error);
+        throw new Error();
+      }
+    };
+
+    fetchOrderDetails();
+  }, [orderId, getOrder]);
 
   useEffect(() => {
     const fetchItems = async () => {
@@ -24,6 +42,16 @@ export default function OrderDetails({ order }: OrderDetailsProps) {
 
     fetchItems();
   }, [order, getOrderItems]);
+
+  if (order === undefined) {
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <p className="text-xl font-semibold">
+          The order ID {orderId} does not exist
+        </p>
+      </div>
+    );
+  }
 
   // Function to render the appropriate stamp based on order.shippingStatus
   const renderShippingStatusStamp = () => {

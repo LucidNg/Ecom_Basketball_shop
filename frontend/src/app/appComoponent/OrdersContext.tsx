@@ -18,6 +18,7 @@ import { Order, ShippingStatus, FetchOrdersByUserID } from "@/lib/order";
 interface OrdersContextType {
   orders: Order[];
   addOrder: (order: Order) => void;
+  getOrder: (orderId: string) => Order | undefined;
   getOrderItems: (orderID: string) => Promise<OrderItem[]>;
   updateShippingStatus: (orderID: string, status: ShippingStatus) => void;
 }
@@ -52,6 +53,16 @@ export const OrdersProvider = ({ children }: { children: ReactNode }) => {
     alert(`Order ${order.orderID} is added to list of Orders`);
   };
 
+  const getOrder = (orderId: string): Order | undefined => {
+    const order = orders.find((order) => order.orderID === orderId);
+
+    if (!order) {
+      throw new Error(`Order with ID ${orderId} not found.`);
+    }
+
+    return order;
+  };
+
   const getOrderItems = (orderID: string) => {
     if (orders.find((order) => order.orderID === orderID) !== undefined) {
       return FetchOrderItemsByOrderID(orderID);
@@ -67,6 +78,7 @@ export const OrdersProvider = ({ children }: { children: ReactNode }) => {
       value={{
         orders,
         addOrder,
+        getOrder,
         getOrderItems,
         updateShippingStatus,
       }}
