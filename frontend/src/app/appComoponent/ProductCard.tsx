@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import Image from "next/image";
-import { ProductCardProps } from "../../lib/cartItem";
+import { ProductCardProps } from "../../lib/productItem";
 import { useCart } from "./CartContext";
 
 const ProductCard = ({ product, isEditable }: ProductCardProps) => {

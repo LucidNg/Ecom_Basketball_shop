@@ -7,7 +7,7 @@ import React, {
   ReactNode,
   useEffect,
 } from "react";
-import { CartItem, FetchCartItemsByUserID } from "../../lib/cartItem";
+import { CartItem, FetchCartItemsByUserID } from "../../lib/productItem";
 import { remove, update } from "lodash";
 
 interface CartContextType {

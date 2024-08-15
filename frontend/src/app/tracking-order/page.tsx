@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import ProductCard from "../appComoponent/ProductCard";
-import { CartItem } from "../../lib/cartItem";
+import { CartItem } from "../../lib/productItem";
 import { useCart } from "../appComoponent/CartContext";
 
 export default function TrackingOrders() {
