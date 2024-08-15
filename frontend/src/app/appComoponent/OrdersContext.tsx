@@ -7,13 +7,14 @@ import React, {
   ReactNode,
   useEffect,
 } from "react";
-import { CartItem, FetchCartItemsByUserID } from "../../lib/productItem";
+import { OrderItem } from "../../lib/productItem";
 import { remove, update } from "lodash";
-
-export interface OrderDetails {}
+import { Order } from "@/lib/order";
 
 interface OrdersContextType {
-  orders: OrderDetails[];
+  orders: Order[];
+  addOrder: (order: Order) => void;
+  updatePaymentStatus: (order: Order) => void;
 }
 
 const CartContext = createContext<OrdersContextType | undefined>(undefined);

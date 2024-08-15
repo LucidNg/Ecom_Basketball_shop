@@ -10,12 +10,10 @@ export interface ProductItem {
 }
 
 export interface CartItem extends ProductItem {
-  type?: "cart";
   cartID: string;
 }
 
 export interface OrderItem extends ProductItem {
-  type?: "order";
   orderID: string;
 }
 
@@ -24,11 +22,11 @@ export type ProductCardProps<T extends ProductItem> = {
   isEditable: boolean;
 };
 
-const isCartItem = (item: CartItem | OrderItem): item is CartItem => {
+export const isCartItem = (item: CartItem | OrderItem): item is CartItem => {
   return (item as CartItem).cartID !== undefined;
 };
 
-const isOrderItem = (item: CartItem | OrderItem): item is OrderItem => {
+export const isOrderItem = (item: CartItem | OrderItem): item is OrderItem => {
   return (item as CartItem).cartID !== undefined;
 };
 
