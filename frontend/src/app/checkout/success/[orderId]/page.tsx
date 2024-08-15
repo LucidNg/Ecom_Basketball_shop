@@ -1,7 +1,12 @@
+"use client";
+
 import React from "react";
+import { useParams } from "next/navigation";
 import Link from "next/link";
 
 export default function CheckoutSuccessPage() {
+  const { orderId } = useParams();
+
   return (
     <div className="flex flex-col items-center justify-center pt-28">
       <video width="400" height="400" autoPlay loop muted className="mb-4">
@@ -20,7 +25,7 @@ export default function CheckoutSuccessPage() {
             Shop more
           </button>
         </Link>
-        <Link href="/order-details">
+        <Link href={`/order-details/${orderId}`}>
           <button className="btn w-56 h-16 text-2xl font-semibold text-neutraltransition transition-duration-300 transition-property:scale,box-shadow,background-color hover:scale-105 hover:drop-shadow-xl hover:bg-secondary outline-none border-none">
             Order&#39;s detail
           </button>

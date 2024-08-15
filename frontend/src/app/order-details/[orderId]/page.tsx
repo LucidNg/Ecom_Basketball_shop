@@ -2,12 +2,12 @@
 
 import React, { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
-import ProductCard from "../appComoponent/ProductCard";
-import { OrderItem } from "../../lib/productItem";
+import ProductCard from "../../appComoponent/ProductCard";
+import { OrderItem } from "../../../lib/productItem";
 import { Order, OrderDetailsProps } from "@/lib/order";
-import { useOrders } from "../appComoponent/OrdersContext";
+import { useOrders, OrdersProvider } from "../../appComoponent/OrdersContext";
 
-export default async function OrderDetails({ order }: OrderDetailsProps) {
+export default function OrderDetails({ order }: OrderDetailsProps) {
   const { orders, getOrderItems, updatePaymentStatus } = useOrders();
   const [orderItems, setOrderItems] = useState<OrderItem[]>([]);
   const [orderStatus, setOrderStatus] = useState("delivered");
