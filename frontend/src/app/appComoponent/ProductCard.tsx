@@ -2,10 +2,13 @@
 
 import React, { useState } from "react";
 import Image from "next/image";
-import { ProductCardProps } from "../../lib/productItem";
+import { CartItem, OrderItem, ProductCardProps } from "../../lib/productItem";
 import { useCart } from "./CartContext";
 
-const ProductCard = ({ product, isEditable }: ProductCardProps) => {
+const ProductCard = ({
+  product,
+  isEditable,
+}: ProductCardProps<CartItem | OrderItem>) => {
   //console.log(`Rendering ProductCard for product ID: ${product.id}`);
   //const [quantity, setQuantity] = useState<number>(product.quantity);
   const { increaseQuantity, decreaseQuantity } = useCart();
@@ -13,13 +16,13 @@ const ProductCard = ({ product, isEditable }: ProductCardProps) => {
   const _decreaseQuantity = () => {
     //if (quantity > 1) setQuantity(quantity - 1);
     //console.log(`decrease quantity button clicked!`);
-    decreaseQuantity(product);
+    if ( ) decreaseQuantity(product);
   };
 
   const _increaseQuantity = () => {
     //setQuantity(quantity + 1);
     //console.log(`increase quantity button clicked!`);
-    increaseQuantity(product);
+    if (product.type === "cart") increaseQuantity(product);
   };
 
   return (

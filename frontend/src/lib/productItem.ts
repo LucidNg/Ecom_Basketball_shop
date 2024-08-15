@@ -1,7 +1,6 @@
 import { connectString } from "./constant";
 
-export interface CartItem {
-  cartID: string;
+export interface ProductItem {
   productID: string;
   size: string;
   quantity: number;
@@ -10,10 +9,28 @@ export interface CartItem {
   url: string;
 }
 
-export type ProductCardProps = {
-    product: CartItem;
-    isEditable: boolean;
-  };
+export interface CartItem extends ProductItem {
+  type?: "cart";
+  cartID: string;
+}
+
+export interface OrderItem extends ProductItem {
+  type?: "order";
+  orderID: string;
+}
+
+export type ProductCardProps<T extends ProductItem> = {
+  product: T;
+  isEditable: boolean;
+};
+
+const isCartItem = (item: CartItem | OrderItem): item is CartItem => {
+  return (item as CartItem).cartID !== undefined;
+};
+
+const isOrderItem = (item: CartItem | OrderItem): item is OrderItem => {
+  return (item as CartItem).cartID !== undefined;
+};
 
 export async function FetchCartItemsByUserID(
   userID: string
