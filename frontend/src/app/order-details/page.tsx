@@ -4,10 +4,10 @@ import React, { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import ProductCard from "../appComoponent/ProductCard";
 import { CartItem } from "../../lib/productItem";
-import { useCart } from "../appComoponent/CartContext";
+import { useOrders } from "../appComoponent/OrdersContext";
 
 export default function OrderDetails() {
-  const { selectCart } = useCart(); //replace with the actual orderDetails object
+  const { orders, updatePaymentStatus } = useOrders();
   const [orderStatus, setOrderStatus] = useState("delivered");
 
   // Function to render the appropriate stamp based on orderStatus

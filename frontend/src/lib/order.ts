@@ -9,13 +9,20 @@ export interface Order {
   payment_method: string;
   payment_status: string;
   shippingMethod: string;
-  shippingStatus: string;
+  shippingStatus: OrderStatus;
   shippingAddress: string;
   billingAddress: string;
   totalBill: number;
   quantity: number;
 }
 
+export enum OrderStatus {
+  Delivered = "delivered",
+  Delivering = "delivering",
+  Canceled = "canceled",
+  Received = "received",
+  Pending = "pending",
+}
 export async function FetchOrdersByUserID(
   userID: string
 ): Promise<Array<Order>> {
