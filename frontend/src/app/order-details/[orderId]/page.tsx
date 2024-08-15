@@ -4,13 +4,13 @@ import React, { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import ProductCard from "../../appComoponent/ProductCard";
 import { OrderItem } from "../../../lib/productItem";
-import { Order, OrderDetailsProps } from "@/lib/order";
+import { Order, OrderDetailsProps, ShippingStatus } from "@/lib/order";
 import { useOrders, OrdersProvider } from "../../appComoponent/OrdersContext";
 
 export default function OrderDetails({ order }: OrderDetailsProps) {
-  const { orders, getOrderItems, updatePaymentStatus } = useOrders();
+  const { orders, getOrderItems, updateShippingStatus } = useOrders();
   const [orderItems, setOrderItems] = useState<OrderItem[]>([]);
-  const [orderStatus, setOrderStatus] = useState("delivered");
+  //const [order.shippingStatus, setShippingStatus] = useState("delivered");
 
   useEffect(() => {
     const fetchItems = async () => {
@@ -25,18 +25,18 @@ export default function OrderDetails({ order }: OrderDetailsProps) {
     fetchItems();
   }, [order, getOrderItems]);
 
-  // Function to render the appropriate stamp based on orderStatus
-  const renderOrderStatusStamp = () => {
-    switch (orderStatus) {
-      case "delivered":
+  // Function to render the appropriate stamp based on order.shippingStatus
+  const renderShippingStatusStamp = () => {
+    switch (order.shippingStatus) {
+      case ShippingStatus.Delivered:
         return <p className="successful-delivery-stamp">Successful Delivery</p>;
-      case "delivering":
+      case ShippingStatus.Delivering:
         return <p className="ongoing-delivery-stamp">Delivering</p>;
-      case "canceled":
+      case ShippingStatus.Canceled:
         return <p className="canceled-order-stamp">Canceled</p>;
-      case "recieved":
+      case ShippingStatus.Received:
         return <p className="recieved-order-stamp">Recieved</p>;
-      case "pending":
+      case ShippingStatus.Pending:
         return <p className="pending-order-stamp">Pending</p>;
       default:
         return null;
@@ -44,10 +44,15 @@ export default function OrderDetails({ order }: OrderDetailsProps) {
   };
 
   const renderUserButtons = () => {
-    if (orderStatus === "canceled" || orderStatus === "recieved") return null;
+    if (
+      order.shippingStatus === ShippingStatus.Canceled ||
+      order.shippingStatus === ShippingStatus.Received
+    )
+      return null;
     return (
       <div className="mt-6 flex justify-between gap-4">
-        {(orderStatus === "delivering" || orderStatus === "pending") && (
+        {(order.shippingStatus === "delivering" ||
+          order.shippingStatus === "pending") && (
           <button
             className=" text-error text-xl font-semibold py-4 px-8 rounded-xl 
             flex-grow
@@ -64,7 +69,7 @@ export default function OrderDetails({ order }: OrderDetailsProps) {
           </button>
         )}
 
-        {orderStatus === "delivered" && (
+        {order.shippingStatus === ShippingStatus.Delivered && (
           <button
             className="bg-secondary text-black text-xl font-semibold py-4 px-8 rounded-xl 
             flex-grow  
@@ -84,10 +89,10 @@ export default function OrderDetails({ order }: OrderDetailsProps) {
   };
 
   const handleConfirmButton = () => {
-    setOrderStatus("recieved");
+    updateShippingStatus(order.orderID, ShippingStatus.Received);
   };
   const handleCancelButton = () => {
-    setOrderStatus("canceled");
+    updateShippingStatus(order.orderID, ShippingStatus.Canceled);
   };
 
   return (
@@ -118,12 +123,12 @@ export default function OrderDetails({ order }: OrderDetailsProps) {
         <div className="mt-6">
           <div className="flex justify-between">
             <p className="font-medium text-xl">Coupon applied :</p>
-            <p className="font-medium text-lg">Xc6A8</p>
+            <p className="font-medium text-lg">{order.coupon}</p>
           </div>
 
           <div className="flex justify-between mt-2">
             <p className="font-medium text-xl">Delivery method :</p>
-            <p className="font-medium text-lg">Standard</p>
+            <p className="font-medium text-lg">{order.shippingMethod}</p>
           </div>
 
           <div className="flex justify-between mt-2">
@@ -133,17 +138,19 @@ export default function OrderDetails({ order }: OrderDetailsProps) {
 
           <div className="flex justify-between mt-2">
             <p className="font-medium text-xl">Payment Method :</p>
-            <p className="font-medium text-lg">COD</p>
+            <p className="font-medium text-lg">{order.paymentMethod}</p>
           </div>
 
           <div className="flex justify-between mt-4">
             <p className="font-bold text-2xl">Total bill :</p>
-            <p className="font-bold text-2xl text-red-600">$ 1.563.000</p>
+            <p className="font-bold text-2xl text-red-600">
+              $ {order.totalBill}
+            </p>
           </div>
 
           <div className="flex justify-between mt-4">
             <p className="font-medium text-xl">Order status :</p>
-            {renderOrderStatusStamp()}
+            {renderShippingStatusStamp()}
           </div>
         </div>
 

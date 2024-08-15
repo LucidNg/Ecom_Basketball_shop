@@ -13,13 +13,13 @@ import {
   FetchOrderItemsByOrderID,
 } from "../../lib/productItem";
 import { remove, update } from "lodash";
-import { Order, OrderStatus, FetchOrdersByUserID } from "@/lib/order";
+import { Order, ShippingStatus, FetchOrdersByUserID } from "@/lib/order";
 
 interface OrdersContextType {
   orders: Order[];
   addOrder: (order: Order) => void;
   getOrderItems: (orderID: string) => Promise<OrderItem[]>;
-  updatePaymentStatus: (orderID: string, status: OrderStatus) => void;
+  updateShippingStatus: (orderID: string, status: ShippingStatus) => void;
 }
 
 const OrdersContext = createContext<OrdersContextType | undefined>(undefined);
@@ -58,7 +58,7 @@ export const OrdersProvider = ({ children }: { children: ReactNode }) => {
     } else throw new Error("Order ID does not exist");
   };
 
-  const updatePaymentStatus = (orderID: string, status: OrderStatus) => {
+  const updateShippingStatus = (orderID: string, status: ShippingStatus) => {
     alert(`Order ${orderID} is updated to ${status}`);
   };
 
@@ -68,7 +68,7 @@ export const OrdersProvider = ({ children }: { children: ReactNode }) => {
         orders,
         addOrder,
         getOrderItems,
-        updatePaymentStatus,
+        updateShippingStatus,
       }}
     >
       {children}
