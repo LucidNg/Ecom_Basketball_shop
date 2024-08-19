@@ -33,7 +33,7 @@ export default function OrderDetails() {
   useEffect(() => {
     const fetchItems = async () => {
       try {
-        const items = await getOrderItems(order.orderID);
+        const items = await getOrderItems(order ? order.orderID : "");
         setOrderItems(items);
       } catch (error) {
         console.error("Failed to fetch order items: ", error);

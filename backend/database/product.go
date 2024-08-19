@@ -215,7 +215,6 @@ func QueryProductByName(db *sqlitecloud.SQCloud, w http.ResponseWriter, r *http.
 	if err != nil {
 		return err
 	}
-	defer rows.Dump()
 	_, err = w.Write([]byte(rows.ToJSON()))
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)

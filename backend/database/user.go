@@ -11,12 +11,13 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-func CreateJWT(userID, email string) (string, error) {
+func CreateJWT(userID, email, fullname string) (string, error) {
 	// Define the JWT claims
 	claims := jwt.MapClaims{
-		"userID": userID,
-		"email":  email,
-		"exp":    time.Now().Add(2 * time.Hour).Unix(), // Set expiration to 2 hours
+		"userID":   userID,
+		"email":    email,
+		"fullname": fullname,
+		"exp":      time.Now().Add(2 * time.Hour).Unix(), // Set expiration to 2 hours
 	}
 
 	// Create a new JWT token
@@ -84,14 +85,23 @@ func AuthenticateUser(db *sqlitecloud.SQCloud, email string, password string) (s
 	// Get the userID and hashed password from the result
 	userID := rows.GetStringValue_(0, 0)
 	hashedPassword := rows.GetStringValue_(0, 1)
-
 	// Compare the provided password with the stored hashed password
 	err = bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(password))
 	if err != nil {
 		return "", errors.New("invalid password")
 	}
 
-	token, err := CreateJWT(userID, email)
+	query = "SELECT fullName FROM userDetail WHERE userID = ?"
+	values = []interface{}{userID}
+
+	rows, err = db.SelectArray(query, values)
+	if err != nil {
+		return "", err
+	}
+	defer rows.Dump()
+	fullname := rows.GetStringValue_(0, 0)
+
+	token, err := CreateJWT(userID, email, fullname)
 	if err != nil {
 		return "", err
 	}
@@ -105,7 +115,6 @@ func QueryUsers(db *sqlitecloud.SQCloud, w http.ResponseWriter) error {
 		return err
 	}
 
-	defer rows.Dump()
 	_, err = w.Write([]byte(rows.ToJSON()))
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
