@@ -1,11 +1,13 @@
 package database
 
 import (
+	"encoding/json"
 	"errors"
+	"fmt"
 	"net/http"
 	"time"
 
-	"github.com/golang-jwt/jwt/v4"
+	"github.com/dgrijalva/jwt-go"
 	"github.com/google/uuid"
 	sqlitecloud "github.com/sqlitecloud/sqlitecloud-go"
 	"golang.org/x/crypto/bcrypt"
@@ -68,18 +70,18 @@ func InsertUser(db *sqlitecloud.SQCloud, fullnane string, email string, password
 	return err
 }
 
-func AuthenticateUser(db *sqlitecloud.SQCloud, email string, password string) (string, error) {
+func AuthenticateUser(db *sqlitecloud.SQCloud, email string, password string, w http.ResponseWriter) error {
 	// Query to get the user record by email
 	query := "SELECT userID, password FROM users WHERE email = ?"
 	values := []interface{}{email}
 	rows, err := db.SelectArray(query, values)
 	if err != nil {
-		return "", err
+		return err
 	}
 
 	// Check if a user was found
 	if rows.GetNumberOfRows() == 0 {
-		return "", errors.New("user not found")
+		return errors.New("user not found")
 	}
 
 	// Get the userID and hashed password from the result
@@ -88,7 +90,7 @@ func AuthenticateUser(db *sqlitecloud.SQCloud, email string, password string) (s
 	// Compare the provided password with the stored hashed password
 	err = bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(password))
 	if err != nil {
-		return "", errors.New("invalid password")
+		return errors.New("invalid password")
 	}
 
 	query = "SELECT fullName FROM userDetail WHERE userID = ?"
@@ -96,17 +98,28 @@ func AuthenticateUser(db *sqlitecloud.SQCloud, email string, password string) (s
 
 	rows, err = db.SelectArray(query, values)
 	if err != nil {
-		return "", err
+		return err
 	}
 	defer rows.Dump()
 	fullname := rows.GetStringValue_(0, 0)
 
 	token, err := CreateJWT(userID, email, fullname)
 	if err != nil {
-		return "", err
+		return err
 	}
 
-	return token, nil
+	// Set the JWT as an HTTP-only cookie
+	http.SetCookie(w, &http.Cookie{
+		Name:     "jwt",                         // Cookie name
+		Value:    token,                         // The JWT
+		Path:     "/",                           // Path where the cookie is valid
+		HttpOnly: true,                          // Prevents access via JavaScript
+		Secure:   false,                         // Ensures the cookie is only sent over HTTPS
+		Expires:  time.Now().Add(2 * time.Hour), // Set expiration to 2 hours
+		SameSite: http.SameSiteLaxMode,          // Prevent CSRF
+	})
+
+	return nil
 }
 
 func QueryUsers(db *sqlitecloud.SQCloud, w http.ResponseWriter) error {
@@ -121,4 +134,71 @@ func QueryUsers(db *sqlitecloud.SQCloud, w http.ResponseWriter) error {
 		return err
 	}
 	return nil
+}
+
+var jwtSecret = []byte("cs428")
+
+// Claims struct for JWT
+type User struct {
+	UserID   string `json:"userID"`
+	Email    string `json:"email"`
+	Fullname string `json:"fullName"`
+	jwt.StandardClaims
+}
+
+// ParseJWT function to parse and validate JWT
+func getUserInfoFromToken(tokenString string) (*User, error) {
+	// Parse the JWT token
+	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
+		// Ensure the token's signing method is what you expect
+		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+			return nil, jwt.ErrInvalidKey
+		}
+		return []byte("cs428"), nil
+	})
+	if err != nil || !token.Valid {
+		return nil, err
+	}
+
+	// Extract claims from the token
+	claims, ok := token.Claims.(jwt.MapClaims)
+	if !ok {
+		return nil, jwt.ErrInvalidKey
+	}
+
+	// Return user information based on claims
+	user := &User{
+		Fullname: claims["fullname"].(string),
+		Email:    claims["email"].(string),
+		UserID:   claims["userID"].(string),
+		// Add other user details if needed
+	}
+	return user, nil
+}
+
+func AuthStatusHandler(w http.ResponseWriter, r *http.Request) {
+	// Extract token from cookies
+	cookie, err := r.Cookie("jwt")
+	if err != nil {
+		fmt.Println(err)
+		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		return
+	}
+
+	tokenString := cookie.Value
+	user, err := getUserInfoFromToken(tokenString)
+	if err != nil {
+		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		return
+	}
+
+	// Respond with user information
+	response := map[string]string{
+		"fullname": user.Fullname,
+		"email":    user.Email,
+		"userID":   user.UserID,
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(response)
 }

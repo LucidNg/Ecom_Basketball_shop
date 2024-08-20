@@ -100,17 +100,19 @@ func main() {
 		}
 	}))).Methods(http.MethodGet, http.MethodPost)
 
+	r.HandleFunc("/auth/status", corsMiddleware(http.HandlerFunc(database.AuthStatusHandler))).Methods(http.MethodGet)
+
 	r.HandleFunc("/authenticate", rateLimiter(limiter, corsMiddleware(func(w http.ResponseWriter, r *http.Request) {
 		if r.Method == http.MethodPost {
 			email := r.FormValue("email")
 			password := r.FormValue("password")
 
-			token, err := database.AuthenticateUser(db, email, password)
+			err := database.AuthenticateUser(db, email, password, w)
 			if err != nil {
 				http.Error(w, "Authentication failed: "+err.Error(), http.StatusUnauthorized)
 				return
 			}
-			w.Write([]byte(token))
+			w.Write([]byte("Authentication Success"))
 		} else {
 			http.Error(w, "Unsupported method", http.StatusMethodNotAllowed)
 		}
