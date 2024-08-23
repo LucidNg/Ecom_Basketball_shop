@@ -6,6 +6,7 @@ import Link from "next/link";
 import { Search, ShoppingCart } from "@geist-ui/icons";
 import { FetchProductByName, Product } from "@/lib/product";
 import { useCart } from "./CartContext";
+import { decryptToken } from '@/lib/decrypt';
 
 export default function TopBar() {
   const [searchValue, setSearchValue] = useState<string>("");
@@ -43,7 +44,8 @@ export default function TopBar() {
     if (token) {
       setIsAuthenticated(true);
       // Optionally, decode the token to get user information
-      const payload = JSON.parse(atob(token.split('.')[1]));
+      const decrypted = decryptToken(token); 
+      const payload = JSON.parse(atob(decrypted.split('.')[1]));
       setUsername(payload.fullname);
       console.log(payload)
     } else {

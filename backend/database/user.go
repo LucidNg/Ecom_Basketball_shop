@@ -106,7 +106,13 @@ func AuthenticateUser(db *sqlitecloud.SQCloud, email string, password string) (s
 		return "", err
 	}
 
-	return token, nil
+	encryptionKey := "thisis32bitlongpassphraseimusing!" // Your AES key (must be 16, 24, or 32 bytes)
+	encryptedToken, err := Encrypt(token, encryptionKey)
+	if err != nil {
+		return "", err
+	}
+
+	return encryptedToken, nil
 }
 
 func QueryUsers(db *sqlitecloud.SQCloud, w http.ResponseWriter) error {
