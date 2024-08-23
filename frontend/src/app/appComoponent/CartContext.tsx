@@ -9,6 +9,7 @@ import React, {
 } from "react";
 import { CartItem, FetchCartItemsByUserID } from "../../lib/productItem";
 import { remove, update } from "lodash";
+import { decryptToken } from "@/lib/decrypt";
 
 interface CartContextType {
   cart: CartItem[];
@@ -38,20 +39,29 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
   const [cart, setCart] = useState<CartItem[]>([
   ]);
 
-  const userID = "60629436-da35-401c-9bf8-6e8e3aed90ed"; // Replace with the actual user ID
-
   useEffect(() => {
-    const fetchCartItems = async () => {
-      try {
-        const cartItems = await FetchCartItemsByUserID(userID);
-        setCart(cartItems);
-      } catch (error) {
-        console.error("Failed to fetch cart items:", error);
-      }
-    };
-
-    fetchCartItems();
-  }, [userID]);
+    // Retrieve the user ID from a reliable source, e.g., localStorage or another context
+    const token = localStorage.getItem("jwt"); // Replace with the actual key used for storing user ID
+    if (token) {
+      const decrypted = decryptToken(token); 
+      const payload = JSON.parse(atob(decrypted.split('.')[1]));
+      const userID = payload.userID
+      const fetchCartItems = async () => {
+        try {
+          const cartItems = await FetchCartItemsByUserID(userID);
+          setCart(cartItems);
+        } catch (error) {
+          console.error("Failed to fetch cart items:", error);
+        }
+      };
+  
+      fetchCartItems();
+    } else {
+      console.log("User ID not found. Cannot fetch cart items.");
+      // Optionally, handle the case where user ID is not available
+    }
+  }, []); // The dependency array is empty
+  
 
   const addToCart = (product: CartItem) => {
     setCart((prevCart) => {

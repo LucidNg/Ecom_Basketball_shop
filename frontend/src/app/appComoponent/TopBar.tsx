@@ -3,6 +3,7 @@
 import React, { useState, useEffect, ChangeEvent, useCallback } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/navigation"; // Import the hook for navigation
 import { Search, ShoppingCart } from "@geist-ui/icons";
 import { FetchProductByName, Product } from "@/lib/product";
 import { useCart } from "./CartContext";
@@ -15,6 +16,7 @@ export default function TopBar() {
   const { cart } = useCart();
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
   const [username, setUsername] = useState<string>("");
+  const router = useRouter(); // Initialize router for navigation
 
   // Fetch products based on search input
   const fetchProducts = useCallback(async () => {
@@ -47,11 +49,19 @@ export default function TopBar() {
       const decrypted = decryptToken(token); 
       const payload = JSON.parse(atob(decrypted.split('.')[1]));
       setUsername(payload.fullname);
-      console.log(payload)
     } else {
       setIsAuthenticated(false);
     }
   }, []);
+
+  const handleLogout = () => {
+    // Remove JWT from local storage
+    localStorage.removeItem("jwt");
+    setIsAuthenticated(false);
+    setUsername("");
+    // Navigate to the home page
+    router.push("/");
+  };
 
   const handleSearchChange = (e: ChangeEvent<HTMLInputElement>) => {
     setSearchValue(e.target.value);
@@ -111,14 +121,11 @@ export default function TopBar() {
 
       {isAuthenticated ? (
         <div className="afterLogined flex items-center">
-          {/* <div className="text-base-content px-3 sm:px-5 2xl:px-10 userInfo hidden 2xl:inline 2xl:text-2xl">
-            <span className="whitespace-nowrap ">Hello, {username}</span>
-          </div> */}
           <div className="dropdown dropdown-hover">
             <div tabIndex={0} role="button" className="text-base-content px-3 sm:px-5 2xl:px-10 userInfo hidden 2xl:inline 2xl:text-2xl">Hello, {username}</div>
             <ul tabIndex={0} className="dropdown-content menu bg-base-100 rounded-box z-[1] w-52 p-2 shadow">
               <Link href="/profile"><a className="whitespace-nowrap text-primary-content">Profile</a></Link>
-              <Link href=""><a className="whitespace-nowrap text-primary-content">Logout</a ></Link>
+              <a role="button" className="whitespace-nowrap text-primary-content" onClick={handleLogout}>Logout</a>
             </ul>
           </div>
 
@@ -146,18 +153,19 @@ export default function TopBar() {
           <button className="h-[50px] font-semibold text-accent-content bg-accent hover:bg-red-500 w-24 lg:text-xl lg:w-44 xl:w-40">
             <Link href="/auth/register">Sign up</Link>
           </button>
+          <Link href="/shopping-cart">
+            <button className="Cart justify-end bg-base-100 h-[40px] sm:h-[50px] flex items-center rounded-lg mr-7">
+              <div className="px-3 flex">
+                <ShoppingCart color="black" className="h-5 w-5 sm:h-8 sm:w-8" />
+                <span className="text-base-content hidden sm:text-2xl sm:inline px-4">
+                  {cart.length}
+                </span>
+              </div>
+            </button>
+          </Link>
         </div>
       )}
-      <Link href="/shopping-cart">
-        <button className="Cart justify-end bg-base-100 h-[40px] sm:h-[50px] flex items-center rounded-lg mr-7">
-          <div className="px-3 flex">
-            <ShoppingCart color="black" className="h-5 w-5 sm:h-8 sm:w-8" />
-            <span className="text-base-content hidden sm:text-2xl sm:inline px-4">
-              {cart.length}
-            </span>
-          </div>
-        </button>
-      </Link>
+      
     </div>
   );
 }
