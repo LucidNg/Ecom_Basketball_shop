@@ -111,8 +111,15 @@ export default function TopBar() {
 
       {isAuthenticated ? (
         <div className="afterLogined flex items-center">
-          <div className="text-base-content px-3 sm:px-5 2xl:px-10 userInfo hidden 2xl:inline 2xl:text-2xl">
+          {/* <div className="text-base-content px-3 sm:px-5 2xl:px-10 userInfo hidden 2xl:inline 2xl:text-2xl">
             <span className="whitespace-nowrap ">Hello, {username}</span>
+          </div> */}
+          <div className="dropdown dropdown-hover">
+            <div tabIndex={0} role="button" className="text-base-content px-3 sm:px-5 2xl:px-10 userInfo hidden 2xl:inline 2xl:text-2xl">Hello, {username}</div>
+            <ul tabIndex={0} className="dropdown-content menu bg-base-100 rounded-box z-[1] w-52 p-2 shadow">
+              <Link href="/profile"><a className="whitespace-nowrap text-primary-content">Profile</a></Link>
+              <Link href=""><a className="whitespace-nowrap text-primary-content">Logout</a ></Link>
+            </ul>
           </div>
 
           <div className="avatar 2xl:hidden px-5">
