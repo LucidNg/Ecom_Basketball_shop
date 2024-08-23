@@ -16,16 +16,16 @@ export default function Login() {
         e.preventDefault();
 
         try {
-            const jwt = await LoginUser({ email, password });
+            await LoginUser({ email, password });
             setSuccess('Login successful!');
             setError('');
-            localStorage.setItem('jwt', jwt); // Store the JWT token in localStorage
             router.push('/home'); // Redirect to the dashboard or another page
         } catch (err: any) {
-            setError(err.message);
+            setError(err.message || 'Failed to login');
             setSuccess('');
         }
     };
+    
     return (
         <div className="hero bg-base-200 min-h-screen">
             <div className="hero-content flex-col lg:flex-row-reverse">

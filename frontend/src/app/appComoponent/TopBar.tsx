@@ -6,6 +6,7 @@ import Link from "next/link";
 import { Search, ShoppingCart } from "@geist-ui/icons";
 import { FetchProductByName, Product } from "@/lib/product";
 import { useCart } from "./CartContext";
+import {getAuthStatus} from "@/lib/users"
 
 export default function TopBar() {
   const [searchValue, setSearchValue] = useState<string>("");
@@ -37,18 +38,23 @@ export default function TopBar() {
     setShowDropdown(searchResults.length > 0);
   }, [searchResults]);
 
-  // Check JWT in local storage
   useEffect(() => {
-    const token = localStorage.getItem("jwt");
-    if (token) {
-      setIsAuthenticated(true);
-      // Optionally, decode the token to get user information
-      const payload = JSON.parse(atob(token.split('.')[1]));
-      setUsername(payload.fullname);
-      console.log(payload)
-    } else {
-      setIsAuthenticated(false);
+    async function checkAuthStatus() {
+      try {
+        const userData = await getAuthStatus();
+        if (userData) {
+          setIsAuthenticated(true);
+          setUsername(userData.fullname);
+        } else {
+          setIsAuthenticated(false);
+        }
+      } catch (error) {
+        console.error('Failed to check authentication status:', error);
+        setIsAuthenticated(false);
+      }
     }
+
+    checkAuthStatus();
   }, []);
 
   const handleSearchChange = (e: ChangeEvent<HTMLInputElement>) => {

@@ -114,9 +114,9 @@ func AuthenticateUser(db *sqlitecloud.SQCloud, email string, password string, w 
 		Value:    token,                         // The JWT
 		Path:     "/",                           // Path where the cookie is valid
 		HttpOnly: true,                          // Prevents access via JavaScript
-		Secure:   false,                         // Ensures the cookie is only sent over HTTPS
+		Secure:   true,                          // Ensures the cookie is only sent over HTTPS
 		Expires:  time.Now().Add(2 * time.Hour), // Set expiration to 2 hours
-		SameSite: http.SameSiteLaxMode,          // Prevent CSRF
+		SameSite: http.SameSiteStrictMode,       // Prevent CSRF
 	})
 
 	return nil
