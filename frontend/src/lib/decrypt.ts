@@ -6,7 +6,7 @@ type EncryptedToken = string;
 // Decrypt function to decrypt an AES-encrypted token
 export function decryptToken(encryptedToken: EncryptedToken): string {
   // Ensure the encryption key matches the one used on the server
-  const encryptionKey: string = 'thisis32bitlongpassphraseimusing!'; // Must be the same key as used in the Go server
+  const encryptionKey: string = 'thisis32bitlongpassphraseimusing'; // Must be the same key as used in the Go server
 
   // Convert key to Utf8 format (for CryptoJS)
   const key = CryptoJS.enc.Utf8.parse(encryptionKey);
