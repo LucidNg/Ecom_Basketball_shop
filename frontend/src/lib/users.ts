@@ -33,12 +33,12 @@ export interface UserLogin {
 
 export async function LoginUser(
     userData: UserLogin
-): Promise<void> {
+): Promise<string> {
     const url = `${connectString}/authenticate?email=${encodeURIComponent(userData.email)}&password=${encodeURIComponent(userData.password)}`;
 
     const response = await fetch(url, {
         method: "POST",
-        credentials: "include", // This ensures that cookies (including HTTP-only) are included in requests
+        credentials: "include",
         mode: "cors",
         cache: "no-cache",
     });
@@ -48,23 +48,6 @@ export async function LoginUser(
         throw new Error(`Failed to login: ${errorMsg}`);
     }
 
-}
-
-export async function getAuthStatus(): Promise<{ fullname: string; email: string; userID: string } | null> {
-    const url = `${connectString}/auth/status`;
-
-    const response = await fetch(url, {
-        method: "GET",
-        credentials: "include", // Important to include cookies in the request
-        mode: "cors",
-        cache: "no-cache",
-    });
-
-    if (!response.ok) {
-        console.error('Failed to fetch auth status:', response.statusText);
-        return null;
-    }
-
-    const data = await response.json();
-    return data;
+    const jwt = await response.text();
+    return jwt; // Returning the JWT token received from the server
 }
