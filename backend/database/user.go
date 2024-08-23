@@ -106,7 +106,7 @@ func AuthenticateUser(db *sqlitecloud.SQCloud, email string, password string) (s
 		return "", err
 	}
 
-	encryptionKey := "thisis32bitlongpassphraseimusing!" // Your AES key (must be 16, 24, or 32 bytes)
+	encryptionKey := "thisis32bitlongpassphraseimusing" // Your AES key (must be 16, 24, or 32 bytes)
 	encryptedToken, err := Encrypt(token, encryptionKey)
 	if err != nil {
 		return "", err
