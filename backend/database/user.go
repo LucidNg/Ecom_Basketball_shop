@@ -36,13 +36,13 @@ func CreateJWT(userID, email, fullname, cartID string) (string, error) {
 	return signedToken, nil
 }
 
-func InsertUser(db *sqlitecloud.SQCloud, fullnane string, email string, password string) error {
+func InsertUser(db *sqlitecloud.SQCloud, fullname string, email string, password string) (string, error) {
 	var id string
 	for {
 		id = uuid.New().String()
 		exists, err := recordExists(db, "users", "userID", id)
 		if err != nil {
-			return err
+			return "", err
 		}
 		if !exists {
 			break
@@ -51,7 +51,7 @@ func InsertUser(db *sqlitecloud.SQCloud, fullnane string, email string, password
 
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 	if err != nil {
-		return err
+		return "", err
 	}
 
 	insertUserSQL := "INSERT INTO users (userID, email, password) VALUES (?, ?, ?)"
@@ -59,14 +59,18 @@ func InsertUser(db *sqlitecloud.SQCloud, fullnane string, email string, password
 
 	err = db.ExecuteArray(insertUserSQL, values)
 	if err != nil {
-		return err
+		return "", err
 	}
 
 	insertUserDetailSQL := "INSERT INTO userDetail (userID, fullName) VALUES (?, ?)"
-	values = []interface{}{id, fullnane}
+	values = []interface{}{id, fullname}
 
 	err = db.ExecuteArray(insertUserDetailSQL, values)
-	return err
+	if err != nil {
+		return "", err
+	}
+
+	return id, nil
 }
 
 func AuthenticateUser(db *sqlitecloud.SQCloud, email string, password string) (string, error) {
