@@ -77,7 +77,7 @@ export default function OrderDetails() {
       order.shippingStatus === ShippingStatus.Received
     )
       return null;
-      
+
     return (
       <div className="mt-6 flex justify-between gap-4">
         {/* Cancel button container */}
@@ -128,13 +128,12 @@ export default function OrderDetails() {
   return (
     <div className="p-10">
       <div className="max-w-7xl mx-auto p-6 bg-white shadow-md rounded-lg">
-        <h1 className="text-2xl font-semibold mb-6 text-primary-content">Order&apos;s ID.
-          {<span className="font-semibold text-info pl-2">#{orderId}</span>} 
+        <h1 className="text-2xl font-semibold mb-6 text-primary-content">
+          Order&apos;s ID.
+          {<span className="font-semibold text-info pl-2">#{orderId}</span>}
         </h1>
         <div className="space-y-4"></div>
-        <div
-          className="flex flex-col gap-6"
-        >
+        <div className="flex flex-col gap-6">
           {orderItems.map((item, index) => (
             <div
               key={item.productID}
@@ -171,9 +170,7 @@ export default function OrderDetails() {
 
           <div className="flex justify-between mt-4">
             <p className="font-bold text-2xl">Total bill :</p>
-            <p className="font-bold text-2xl">
-              $ {order.totalBill}
-            </p>
+            <p className="font-bold text-2xl">$ {order.totalBill}</p>
           </div>
 
           <div className="flex justify-between mt-4">

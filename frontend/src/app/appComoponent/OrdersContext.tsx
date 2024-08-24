@@ -66,10 +66,20 @@ export const OrdersProvider = ({ children }: { children: ReactNode }) => {
   const getOrderItems = (orderID: string) => {
     if (orders.find((order) => order.orderID === orderID) !== undefined) {
       return FetchOrderItemsByOrderID(orderID);
-    } else throw new Error("Order ID does not exist");
+    } else throw new Error(`Order with ID ${orderID} not found.`);
   };
 
   const updateShippingStatus = (orderID: string, status: ShippingStatus) => {
+    const orderIndex = orders.findIndex((order) => order.orderID === orderID);
+
+    if (orderIndex === -1) {
+      throw new Error(`Order with ID ${orderID} not found.`);
+    }
+
+    const updatedOrders = [...orders];
+    updatedOrders[orderIndex].shippingStatus = status;
+    setOrders(updatedOrders);
+
     alert(`Order ${orderID} is updated to ${status}`);
   };
 
