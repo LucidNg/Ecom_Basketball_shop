@@ -1,6 +1,8 @@
 package database
 
 import (
+	"fmt"
+
 	sqlitecloud "github.com/sqlitecloud/sqlitecloud-go"
 )
 
@@ -219,4 +221,13 @@ func CreateTable(db *sqlitecloud.SQCloud) error {
 
 	return nil
 
+}
+
+func recordExists(db *sqlitecloud.SQCloud, tableName string, attribute string, id string) (bool, error) {
+	query := fmt.Sprintf("SELECT COUNT(1) FROM %s WHERE %s = '%s'", tableName, attribute, id)
+	rows, err := db.Select(query)
+	if err != nil && rows.GetInt32Value_(0, 0) == 0 {
+		return false, err
+	}
+	return rows.GetInt32Value_(0, 0) != 0, nil
 }

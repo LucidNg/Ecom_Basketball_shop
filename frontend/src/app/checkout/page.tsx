@@ -13,6 +13,8 @@ export default function CheckoutPage() {
   const [couponPrice, setCouponPrice] = useState(0);
   const { cart, selectCart, removeCheckedOutItems } = useCart();
 
+  const orderID = "ORDER001"; // Replace with actual generated orderID
+
   const handleCheckboxDeliChange = (
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
@@ -211,10 +213,12 @@ export default function CheckoutPage() {
             </h4>
           </div>
 
-          <Link href="/checkout/success" className="self-center">
+          <Link href={`/checkout/success/${orderID}`} className="self-center">
             <button
               className="btn font-semibold text-4xl h-20 w-96 self-center my-20 transition transition-duration-300 transition-property:scale,box-shadow,background-color hover:scale-105 hover:drop-shadow-xl hover:bg-secondary outline-none border-none"
-              onClick={removeCheckedOutItems}
+              onClick={() => {
+                //removeCheckedOutItems;
+              }}
             >
               Check out
             </button>

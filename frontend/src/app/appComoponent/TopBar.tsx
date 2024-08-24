@@ -3,8 +3,7 @@
 import React, { useState, useEffect, ChangeEvent, useCallback } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { Search } from "@geist-ui/icons";
-import { ShoppingCart } from "@geist-ui/icons";
+import { Search, ShoppingCart } from "@geist-ui/icons";
 import { FetchProductByName, Product } from "@/lib/product";
 import { useCart } from "./CartContext";
 
@@ -13,6 +12,10 @@ export default function TopBar() {
   const [searchResults, setSearchResults] = useState<Product[]>([]);
   const [showDropdown, setShowDropdown] = useState<boolean>(false);
   const { cart } = useCart();
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
+  const [username, setUsername] = useState<string>("");
+
+  // Fetch products based on search input
   const fetchProducts = useCallback(async () => {
     try {
       const fetchedProducts = await FetchProductByName(searchValue);
@@ -31,9 +34,22 @@ export default function TopBar() {
   }, [searchValue, fetchProducts]);
 
   useEffect(() => {
-    console.log("lentgh:", searchResults);
     setShowDropdown(searchResults.length > 0);
   }, [searchResults]);
+
+  // Check JWT in local storage
+  useEffect(() => {
+    const token = localStorage.getItem("jwt");
+    if (token) {
+      setIsAuthenticated(true);
+      // Optionally, decode the token to get user information
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      setUsername(payload.fullname);
+      console.log(payload)
+    } else {
+      setIsAuthenticated(false);
+    }
+  }, []);
 
   const handleSearchChange = (e: ChangeEvent<HTMLInputElement>) => {
     setSearchValue(e.target.value);
@@ -91,35 +107,38 @@ export default function TopBar() {
         )}
       </div>
 
-      <div className="beforeLogined flex items-center pl-5 pr-4 lg:pr-8">                
+      {isAuthenticated ? (
+        <div className="afterLogined flex items-center">
+          <div className="text-base-content px-3 sm:px-5 2xl:px-10 userInfo hidden 2xl:inline 2xl:text-2xl">
+            <span className="whitespace-nowrap ">Hello, {username}</span>
+          </div>
+
+          <div className="avatar 2xl:hidden px-5">
+            <div className="w-8 sm:w-12 rounded-full bg-secondary">
+              <Image src="" alt="user" />
+            </div>
+          </div>
+          <Link href="/shopping-cart">
+            <button className="Cart justify-end bg-base-100 h-[40px] sm:h-[50px] flex items-center rounded-lg mr-5 sm:mr-10">
+              <div className="px-3 flex">
+                <ShoppingCart color="black" className="h-5 w-5 sm:h-8 sm:w-8" />
+                <span className="text-base-content hidden sm:text-2xl sm:inline px-4">
+                  {cart.length}
+                </span>
+              </div>
+            </button>
+          </Link>
+        </div>
+      ) : (
+        <div className="beforeLogined flex items-center pl-5 pr-4 lg:pr-8">
           <button className="h-[50px] text-xl font-semibold text-base-content hover:text-accent hidden lg:inline lg:w-44 xl:text-xl xl:w-40">
-              <Link href="/auth/login">Login</Link>
+            <Link href="/auth/login">Login</Link>
           </button>
           <button className="h-[50px] font-semibold text-accent-content bg-accent hover:bg-red-500 w-24 lg:text-xl lg:w-44 xl:w-40">
-              <Link href="/auth/register">Sign up</Link>
+            <Link href="/auth/register">Sign up</Link>
           </button>
-      </div>
-      {/* <div className="afterLogined flex items-center">
-        <div className="text-base-content px-3 sm:px-5 2xl:px-10 userInfo hidden 2xl:inline 2xl:text-2xl">
-          <span className="whitespace-nowrap ">Xin chào, Văn A</span>
         </div>
-
-        <div className="avatar 2xl:hidden px-5">
-          <div className="w-8 sm:w-12 rounded-full bg-secondary">
-            <Image src="" alt="user" />
-          </div>
-        </div>
-        <Link href="/shopping-cart">
-          <button className="Cart justify-end bg-base-100 h-[40px] sm:h-[50px] flex items-center rounded-lg mr-5 sm:mr-10">
-            <div className="px-3 flex">
-              <ShoppingCart color="black" className="h-5 w-5 sm:h-8 sm:w-8" />
-              <span className="text-base-content hidden sm:text-2xl sm:inline px-4">
-                {cart.length}
-              </span>
-            </div>
-          </button>
-        </Link>
-      </div> */}
+      )}
       <Link href="/shopping-cart">
         <button className="Cart justify-end bg-base-100 h-[40px] sm:h-[50px] flex items-center rounded-lg mr-7">
           <div className="px-3 flex">

@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import ProductCard from "./ProductCard";
-import { CartItem } from "../../lib/cartItem";
+import { CartItem } from "../../lib/productItem";
 import { useCart } from "./CartContext";
 
 const ShoppingCart = () => {
@@ -67,7 +67,9 @@ const ShoppingCart = () => {
   useEffect(() => {
     setSelectItems(selectCart);
     const newCheckedItems = cart.map((item) =>
-      selectCart.some((selectedItem) => selectedItem.productID === item.productID)
+      selectCart.some(
+        (selectedItem) => selectedItem.productID === item.productID
+      )
     );
     setCheckedItems(newCheckedItems);
     setIsSelectAll(newCheckedItems.every(Boolean));
@@ -155,8 +157,8 @@ const ShoppingCart = () => {
               <button
                 className={`px-6 py-3 ${
                   selectItems.length === 0
-                    ? "bg-gray-400 cursor-not-allowed"
-                    : "bg-secondary text-secondary-content font-semibold hover:bg-secondary-content hover:text-secondary hover:font-semibold}"
+                    ? "bg-gray-400 cursor-not-allowed text-xl font-semibold py-4 px-8 rounded-xl"
+                    : "bg-secondary text-black text-xl font-semibold py-4 px-8 rounded-xl  flex-grow   transition transition-duration-300 transition-property:scale,box-shadow,background-color hover:scale-105 hover:drop-shadow-xl hover:bg-secondary-content hover:text-secondary  outline-none border-none"
                 }`}
                 disabled={selectItems.length === 0}
               >
