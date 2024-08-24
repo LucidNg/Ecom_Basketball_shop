@@ -10,6 +10,8 @@ import { FetchProduct } from "@/lib/product";
 import { IProduct } from "@/app/appComoponent/ProductCard.type";
 import { useCart } from "@/app/appComoponent/CartContext";
 import { add } from "lodash";
+import { AddCartItem } from "@/lib/cartItem";
+import { decryptToken } from "@/lib/decrypt";
 
 var categoryID = "";
 
@@ -111,9 +113,17 @@ const DetailedProductPageCli = ({ children1 }: DetailedProductPage) => {
     }
   };
 
-  const addToCartHandler = () => {
+  const addToCartHandler = async () => {
     if (productDetails && selectedSize) {
       const product = productDetails.productDetails[0];
+      const token = localStorage.getItem("jwt");
+      let cartID = "";
+      if (token) {
+        
+        const decrypted = decryptToken(token); 
+        const payload = JSON.parse(atob(decrypted.split('.')[1]));
+        cartID = payload.cartID
+      }
       console.log(
         `Added ${quantity} ${
           product.productName
@@ -121,15 +131,21 @@ const DetailedProductPageCli = ({ children1 }: DetailedProductPage) => {
           quantity * priceBySize[selectedSize]
         }`
       );
-      addToCart({
-        cartID: "",
+      const cartItem = {
+        cartID: "",  // You might need to fetch or generate the cartID if it's not available yet
         productID: product.productID,
-        productName: product.productName,
         size: selectedSize,
-        url: images[0],
-        quantity: quantity,
-        price: quantity * priceBySize[selectedSize],
-      });
+        quantity: quantity.toString(), // Ensure quantity is passed as a string
+        price: (quantity * priceBySize[selectedSize]).toFixed(2) // Convert price to a string with two decimals
+      };
+  
+      try {
+        // Call the AddCartItem function with the constructed cartItem object
+        await AddCartItem(cartItem);
+        console.log("Item added to cart successfully.");
+      } catch (error) {
+        console.error("Failed to add item to cart:", error);
+      }
     }
   };
 
