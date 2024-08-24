@@ -1,4 +1,5 @@
 import { connectString } from "./constant";
+import { decryptToken } from "./decrypt";
 
 export interface UserRegistration {
     fullname: string;
@@ -49,5 +50,32 @@ export async function LoginUser(
     }
 
     const jwt = await response.text();
+    // Step 2: Decrypt the JWT token using the decryptToken function
+    const decryptedJwt = decryptToken(jwt);
+
+    // Step 3: Parse the decrypted JWT to extract the userID
+    let userID: string;
+    try {
+        const parsedToken = JSON.parse(decryptedJwt);
+        userID = parsedToken.userID; // Assume userID is stored directly in the JWT payload
+    } catch (error) {
+        throw new Error("Failed to parse decrypted JWT: " + error);
+    }
+
+    // Step 4: Make a request to the /createCart endpoint using the extracted userID
+    const createCartUrl = `${connectString}/createCart?userID=${encodeURIComponent(userID)}`;
+
+    const createCartResponse = await fetch(createCartUrl, {
+        method: "POST",
+        credentials: "include",
+        mode: "cors",
+        cache: "no-cache",
+    });
+
+    if (!createCartResponse.ok) {
+        const errorMsg = await createCartResponse.text();
+        throw new Error(`Failed to create cart: ${errorMsg}`);
+    }
+
     return jwt; // Returning the JWT token received from the server
 }

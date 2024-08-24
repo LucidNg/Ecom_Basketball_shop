@@ -117,7 +117,7 @@ const DetailedProductPageCli = ({ children1 }: DetailedProductPage) => {
       console.log(
         `Added ${quantity} ${
           product.productName
-        } (size: ${selectedSize}) to cart. Total: ${
+        }, ${product.productID} (size: ${selectedSize}) to cart. Total: ${
           quantity * priceBySize[selectedSize]
         }`
       );
