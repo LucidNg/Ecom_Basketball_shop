@@ -1,5 +1,6 @@
 import { connectString } from "./constant";
 import { OrderItem } from "./productItem";
+import { v4 as uuidv4 } from "uuid";
 
 export interface Order {
   orderID: string;
@@ -25,9 +26,20 @@ export enum ShippingStatus {
   Pending = "pending",
 }
 
+export enum PaymentStatus {
+  Paid = "paid",
+  Unpaid = "unpaid",
+  Refunded = "refunded",
+  PartiallyRefunded = "partially_refunded",
+}
+
 export type OrderDetailsProps = {
   order: Order;
 };
+
+export function getNewOrderID(): string {
+  return uuidv4();
+}
 
 export async function FetchOrdersByUserID(
   userID: string
