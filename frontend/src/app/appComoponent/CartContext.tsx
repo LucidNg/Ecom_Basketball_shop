@@ -36,8 +36,7 @@ export const useCart = () => {
 
 export const CartProvider = ({ children }: { children: ReactNode }) => {
   const [selectCart, setSelectCart] = useState<CartItem[]>([]);
-  const [cart, setCart] = useState<CartItem[]>([
-  ]);
+  const [cart, setCart] = useState<CartItem[]>([]);
 
   const [tokenAvailable, setTokenAvailable] = useState(false);
   
@@ -99,6 +98,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
       } else {
         return [...prevCart, product];
       }
+      g;
     });
   };
 
