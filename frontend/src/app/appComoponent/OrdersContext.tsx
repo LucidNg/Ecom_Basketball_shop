@@ -50,6 +50,18 @@ export const OrdersProvider = ({ children }: { children: ReactNode }) => {
   }, [userID]);
 
   const addOrder = (order: Order) => {
+    setOrders((prevOrders) => {
+      const existingProductIndex = prevOrders.findIndex(
+        (item) => item.orderID === order.orderID
+      );
+      if (existingProductIndex !== -1) {
+        throw new Error(
+          `Server Error: the order with ID ${order.orderID} has already existed`
+        );
+      } else {
+        return [...prevOrders, order];
+      }
+    });
     alert(`Order ${order.orderID} is added to list of Orders`);
   };
 
