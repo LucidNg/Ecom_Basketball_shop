@@ -123,16 +123,12 @@ const DetailedProductPageCli = ({ children1 }: DetailedProductPage) => {
         const decrypted = decryptToken(token); 
         const payload = JSON.parse(atob(decrypted.split('.')[1]));
         cartID = payload.cartID
+      } else {
+        console.error("No token found. Cannot add item to cart.");
+        return;
       }
-      console.log(
-        `Added ${quantity} ${
-          product.productName
-        }, ${product.productID} (size: ${selectedSize}) to cart. Total: ${
-          quantity * priceBySize[selectedSize]
-        }`
-      );
       const cartItem = {
-        cartID: "",  // You might need to fetch or generate the cartID if it's not available yet
+        cartID: cartID,  // You might need to fetch or generate the cartID if it's not available yet
         productID: product.productID,
         size: selectedSize,
         quantity: quantity.toString(), // Ensure quantity is passed as a string
@@ -153,7 +149,6 @@ const DetailedProductPageCli = ({ children1 }: DetailedProductPage) => {
 
   const product = productDetails.productDetails[0];
   categoryID = product.categoryID;
-  console.log("CategoryID", categoryID);
 
   return (
     <div className="w-screen flex flex-col pt-20 bg-base-100">

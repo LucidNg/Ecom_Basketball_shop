@@ -59,6 +59,7 @@ export default function TopBar() {
     localStorage.removeItem("jwt");
     setIsAuthenticated(false);
     setUsername("");
+    
     // Navigate to the home page
     router.push("/");
   };

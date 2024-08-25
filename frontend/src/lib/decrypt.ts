@@ -33,6 +33,5 @@ export function decryptToken(encryptedToken: EncryptedToken): string {
 
   // Convert decrypted data from bytes to Utf8 string
   const decryptedText: string = decrypted.toString(CryptoJS.enc.Utf8);
-
   return decryptedText;
 }

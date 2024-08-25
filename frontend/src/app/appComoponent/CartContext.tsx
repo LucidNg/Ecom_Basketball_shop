@@ -39,29 +39,52 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
   const [cart, setCart] = useState<CartItem[]>([
   ]);
 
-  // useEffect(() => {
-  //   // Retrieve the user ID from a reliable source, e.g., localStorage or another context
-  //   const token = localStorage.getItem("jwt"); // Replace with the actual key used for storing user ID
-  //   if (token) {
-  //     const decrypted = decryptToken(token); 
-  //     const payload = JSON.parse(atob(decrypted.split('.')[1]));
-  //     const userID = payload.userID
-  //     const fetchCartItems = async () => {
-  //       try {
-  //         const cartItems = await FetchCartItemsByUserID(userID);
-  //         setCart(cartItems);
-  //       } catch (error) {
-  //         console.error("Failed to fetch cart items:", error);
-  //       }
-  //     };
+  const [tokenAvailable, setTokenAvailable] = useState(false);
   
-  //     fetchCartItems();
-  //   } else {
-  //     console.log("User ID not found. Cannot fetch cart items.");
-  //     // Optionally, handle the case where user ID is not available
-  //   }
-  // }, []); // The dependency array is empty
-  
+  useEffect(() => {
+    const token = localStorage.getItem("jwt"); // Check immediately if token is available
+
+    if (token) {
+      setTokenAvailable(true);
+    } else {
+      // Set up an interval to keep checking for the token
+      const checkForToken = setInterval(() => {
+        const token = localStorage.getItem("jwt");
+        if (token) {
+          setTokenAvailable(true);
+          clearInterval(checkForToken);
+        }
+      }, 100); // Adjust interval as needed
+
+      return () => clearInterval(checkForToken); // Clear interval on component unmount
+    }
+  }, []);
+
+  useEffect(() => {
+    if (!tokenAvailable) return; // Only proceed if token is available
+
+    const token = localStorage.getItem("jwt");
+    if (token) {
+    const decrypted = decryptToken(token); 
+    const payload = JSON.parse(atob(decrypted.split('.')[1]));
+    const userID = payload.userID;
+
+    const fetchCartItems = async () => {
+      try {
+        const cartItems = await FetchCartItemsByUserID(userID);
+        setCart(cartItems);
+      } catch (error) {
+        console.error("Failed to fetch cart items:", error);
+      }
+    };
+
+    fetchCartItems();
+
+    } else {
+      setCart([]);
+    }
+
+  }, [tokenAvailable]); // Dependency array includes tokenAvailable
 
   const addToCart = (product: CartItem) => {
     setCart((prevCart) => {
