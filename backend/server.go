@@ -89,12 +89,12 @@ func main() {
 			email := r.FormValue("email")
 			password := r.FormValue("password")
 			fullname := r.FormValue("fullname")
-			err := database.InsertUser(db, fullname, email, password)
+			id, err := database.InsertUser(db, fullname, email, password)
 			if err != nil {
 				http.Error(w, "Failed to create user: "+err.Error(), http.StatusInternalServerError)
 				return
 			}
-			w.Write([]byte("User inserted successfully"))
+			w.Write([]byte(id))
 		} else {
 			http.Error(w, "Unsupported method", http.StatusMethodNotAllowed)
 		}
