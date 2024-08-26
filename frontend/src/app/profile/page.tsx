@@ -1,5 +1,7 @@
 "use client";
-import React, { useState } from "react";
+import { decryptToken } from "@/lib/decrypt";
+import React, { useEffect, useState } from "react";
+import { CheckPassword } from "@/lib/users";
 
 export default function ProfilePage() {
     const [isEditable, setIsEditable] = useState(false);
@@ -12,6 +14,45 @@ export default function ProfilePage() {
     const [currentPassword, setCurrentPassword] = useState('');
     const [newPassword, setNewPassword] = useState('');
     const [error, setError] = useState('');
+    const [tokenAvailable, setTokenAvailable] = useState(false);
+
+    useEffect(() => {
+        const token = localStorage.getItem("jwt");
+
+        if (token) {
+            setTokenAvailable(true);
+        } else {
+            const checkForToken = setInterval(() => {
+                const token = localStorage.getItem("jwt");
+                if (token) {
+                    setTokenAvailable(true);
+                    clearInterval(checkForToken);
+                }
+            }, 100);
+
+            return () => clearInterval(checkForToken);
+        }
+    }, []);
+
+    useEffect(() => {
+        if (!tokenAvailable) return;
+
+        const token = localStorage.getItem("jwt");
+        if (token) {
+            const decrypted = decryptToken(token);
+            const payload = JSON.parse(atob(decrypted.split(".")[1]));
+            
+            setName(payload.fullname);
+            setEmail(payload.email);
+            setDateOfBirth(payload.dob);
+            setAddress(payload.address);
+            setContactNumber(payload.phoneNumber);
+
+            console.log("User data loaded successfully.");
+        } else {
+            console.log("Error: User not found");
+        }
+    }, [tokenAvailable]);
 
     const handleToggleEdit = () => {
         if (isEditable) {
@@ -20,24 +61,35 @@ export default function ProfilePage() {
         setIsEditable(!isEditable);
     };
 
-    const handlePasswordChange = () => {
-        if (currentPassword === password) {
-            setPassword(newPassword);
-            setError('');
-            if (isEditable) {
-                const modal = document.getElementById('my_modal_3');
-                if (modal) {
-                    (modal as HTMLDialogElement).showModal();
-                }
-            }
-        } else {
-            setError("Cannot change password");
+    const handlePasswordChange = async () => {        
+        
+        const isPasswordCorrect = await CheckPassword({ email, password: currentPassword });
+        if (!isPasswordCorrect) {
+            setError("Current password is incorrect.");
+            return;
+        }
+
+        const passwordRegex = /^(?=.*[a-zA-Z])(?=.*\d)[A-Za-z\d]{8,}$/;
+        if (!passwordRegex.test(newPassword)) {
+            setError("New password must be at least 8 characters long and include both text and numbers.");
+            return;
+        }
+
+
+        setPassword(newPassword);
+        setError('');
+
+        alert("Password updated successfully");
+
+        const modal = document.getElementById('my_modal_3');
+        if (modal) {
+            (modal as HTMLDialogElement).close();
         }
     };
 
     return (
         <>
-            <div role="tablist" className="tabs tabs-lifted p-24 mt-2 mx-auto w-7/12">
+            <div role="tablist" className="tabs tabs-lifted p-24 mt-2 mx-auto md:w-7/12">
                 {/* Profile Tab */}
                 <input  
                     type="radio" 
@@ -62,16 +114,17 @@ export default function ProfilePage() {
                         />
 
                         <div className="flex items-center justify-center">
-                            <span className="text-2xl text-primary-content cursor-not-allowed">Date of birth :</span>
+                            <span className="text-2xl text-primary-content cursor-not-allowed xl:inline hidden">Date of birth :</span>
                             <input 
                                 className={`border border-primary-content text-primary-content placeholder:text-opacity-50 placeholder:text-primary-content 
-                                    p-2 text-xl rounded-lg caret-transparent focus:caret-black focus:border-b-4 ml-2 ${
+                                    p-2 text-xl rounded-lg w-4/5 caret-transparent focus:caret-black focus:border-b-4 ml-2 ${
                                     isEditable ? 'bg-white' : 'bg-gray-200 cursor-not-allowed'
                                 }`}
                                 type="date"
                                 value={dateOfBirth}
                                 onChange={(e) => setDateOfBirth(e.target.value)}
                                 disabled={!isEditable}
+                                placeholder="Date of Birth"
                             />
                         </div>
 
@@ -124,7 +177,7 @@ export default function ProfilePage() {
                                 id="visual-password"
                             />
                             <button 
-                                className={`text-base-content hover:underline absolute right-2 top-1/2 transform -translate-y-1/2 bg-transparent border-none ${
+                                className={`text-base-content text-sm hover:underline absolute right-2 top-1/2 transform -translate-y-1/2 bg-transparent border-none ${
                                     isEditable ? '' : 'cursor-not-allowed opacity-50'
                                 }`} 
                                 onClick={() => {
@@ -170,49 +223,28 @@ export default function ProfilePage() {
                                         value={newPassword}
                                         onChange={(e) => setNewPassword(e.target.value)}
                                     />
-                                    {error && <p className="text-red-500 mt-2">{error}</p>}
-                                    <button 
-                                        className="btn mt-3 text-xl"
-                                        onClick={handlePasswordChange}
-                                    >
-                                        Change
-                                    </button>
+                                    {error && <p className="text-red-600">{error}</p>}
+                                    <div className="modal-action">
+                                        <button 
+                                            className={`btn ${isEditable ? 'btn-primary' : 'btn-disabled'}`}
+                                            onClick={handlePasswordChange}
+                                        >
+                                            Confirm
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
                         </dialog>
                     </div>
-                    
-                    <div className="flex justify-center mt-10">
-                        <button 
-                            className="btn text-xl text-primary-content bg-secondary bg-opacity-50 hover:bg-secondary"
+
+                    <div className="flex justify-center">
+                        <button
+                            className="btn btn-primary mt-8"
                             onClick={handleToggleEdit}
                         >
-                            {isEditable ? 'Save' : 'Edit'}
+                            {isEditable ? "Save" : "Edit"}
                         </button>
                     </div>
-                </div>
-
-                {/* Other tabs */}
-                <input
-                    type="radio"
-                    name="my_tabs_2"
-                    role="tab"
-                    className="tab font-semibold text-2xl text-primary-content"
-                    aria-label="Rewards"
-                />
-                <div role="tabpanel" className="tab-content bg-base-100 border-base-300 rounded-box p-6 h-[255px]">
-                    {/* Rewards content */}
-                </div>
-
-                <input 
-                    type="radio" 
-                    name="my_tabs_2" 
-                    role="tab" 
-                    className="tab font-semibold text-2xl text-primary-content" 
-                    aria-label="Coupon" 
-                />
-                <div role="tabpanel" className="tab-content bg-base-100 border-base-300 rounded-box p-6 h-[255px]">
-                    {/* Coupon content */}
                 </div>
             </div>
         </>
