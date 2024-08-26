@@ -11,7 +11,7 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-func CreateJWT(userID, email, fullname, cartID, dob, address, phoneNumber string) (string, error) {
+func CreateJWT(userID, email, fullname, cartID, dob, address, phoneNumber, role string) (string, error) {
 	// Define the JWT claims
 	claims := jwt.MapClaims{
 		"userID":      userID,
@@ -21,6 +21,7 @@ func CreateJWT(userID, email, fullname, cartID, dob, address, phoneNumber string
 		"dob":         dob,
 		"address":     address,
 		"phoneNumber": phoneNumber,
+		"role":        role,
 		"exp":         time.Now().Add(2 * time.Hour).Unix(), // Set expiration to 2 hours
 	}
 
@@ -78,7 +79,7 @@ func InsertUser(db *sqlitecloud.SQCloud, fullname string, email string, password
 
 func AuthenticateUser(db *sqlitecloud.SQCloud, email string, password string) (string, error) {
 	// Query to get the user record by email
-	query := "SELECT userID, password FROM users WHERE email = ?"
+	query := "SELECT userID, password, role FROM users WHERE email = ?"
 	values := []interface{}{email}
 	rows, err := db.SelectArray(query, values)
 	if err != nil {
@@ -93,6 +94,7 @@ func AuthenticateUser(db *sqlitecloud.SQCloud, email string, password string) (s
 	// Get the userID and hashed password from the result
 	userID := rows.GetStringValue_(0, 0)
 	hashedPassword := rows.GetStringValue_(0, 1)
+	role := rows.GetStringValue_(0, 2)
 	// Compare the provided password with the stored hashed password
 	err = bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(password))
 	if err != nil {
@@ -121,7 +123,7 @@ func AuthenticateUser(db *sqlitecloud.SQCloud, email string, password string) (s
 	}
 	cartID := rows.GetStringValue_(0, 0)
 
-	token, err := CreateJWT(userID, email, fullname, cartID, dob, address, phoneNumber)
+	token, err := CreateJWT(userID, email, fullname, cartID, dob, address, phoneNumber, role)
 	if err != nil {
 		return "", err
 	}
