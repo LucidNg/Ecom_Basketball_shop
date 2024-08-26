@@ -38,7 +38,7 @@ export const OrdersProvider = ({ children }: { children: ReactNode }) => {
   const userID = "60629436-da35-401c-9bf8-6e8e3aed90ed"; // Replace with the actual user ID
 
   useEffect(() => {
-    const fetchOrdersItems = async () => {
+    const fetchOrders = async () => {
       try {
         const _orders = await FetchOrdersByUserID(userID);
         setOrders(_orders);
@@ -46,7 +46,7 @@ export const OrdersProvider = ({ children }: { children: ReactNode }) => {
         console.error("Failed to fetch cart items:", error);
       }
     };
-    fetchOrdersItems();
+    fetchOrders();
   }, [userID]);
 
   const addOrder = (order: Order) => {

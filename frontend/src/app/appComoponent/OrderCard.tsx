@@ -10,14 +10,35 @@ import {
   isOrderItem,
 } from "../../lib/productItem";
 import { useOrders } from "./OrdersContext";
-import { FetchOrdersByUserID, Order } from "@/lib/order";
+import { FetchOrdersByUserID, Order, ShippingStatus } from "@/lib/order";
 
-const OrderOverview = (order: Order) => {
+interface OrderCardProps {
+  order: Order;
+}
+
+const OrderCard: React.FC<OrderCardProps> = ({ order }) => {
+  const renderShippingStatusStamp = () => {
+    switch (order.shippingStatus) {
+      case ShippingStatus.Delivered:
+        return <p className="successful-delivery-stamp">Successful Delivery</p>;
+      case ShippingStatus.Delivering:
+        return <p className="ongoing-delivery-stamp">Delivering</p>;
+      case ShippingStatus.Canceled:
+        return <p className="canceled-order-stamp">Canceled</p>;
+      case ShippingStatus.Received:
+        return <p className="recieved-order-stamp">Recieved</p>;
+      case ShippingStatus.Pending:
+        return <p className="pending-order-stamp">Pending</p>;
+      default:
+        return null;
+    }
+  };
+
   return (
     <div className="p-4 bg-gray-100 rounded-md shadow-md">
       <div className="mb-4">
         <span className="font-semibold">Order date: </span>
-        <span className="ml-2">12/05/2024</span>
+        <span className="ml-2">{order.orderDate}</span>
       </div>
       <div className="border-t border-b border-gray-300 py-4">
         <div className="flex items-center mb-4">
@@ -59,7 +80,9 @@ const OrderOverview = (order: Order) => {
       <div className="flex items-center justify-between mt-4">
         <div>
           <span className="font-semibold">Order status :</span>
-          <span className="text-green-600 ml-2">Đã nhận hàng</span>
+          <span className="text-green-600 ml-2">
+            {renderShippingStatusStamp()}
+          </span>
         </div>
         <button className="bg-red-500 text-white py-1 px-4 rounded">
           View details
@@ -72,3 +95,5 @@ const OrderOverview = (order: Order) => {
     </div>
   );
 };
+
+export default OrderCard;

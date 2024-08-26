@@ -97,48 +97,48 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
 
   const [tokenAvailable, setTokenAvailable] = useState(false);
 
-  // useEffect(() => {
-  //   const token = localStorage.getItem("jwt"); // Check immediately if token is available
+  useEffect(() => {
+    const token = localStorage.getItem("jwt"); // Check immediately if token is available
 
-  //   if (token) {
-  //     setTokenAvailable(true);
-  //   } else {
-  //     // Set up an interval to keep checking for the token
-  //     const checkForToken = setInterval(() => {
-  //       const token = localStorage.getItem("jwt");
-  //       if (token) {
-  //         setTokenAvailable(true);
-  //         clearInterval(checkForToken);
-  //       }
-  //     }, 100); // Adjust interval as needed
+    if (token) {
+      setTokenAvailable(true);
+    } else {
+      // Set up an interval to keep checking for the token
+      const checkForToken = setInterval(() => {
+        const token = localStorage.getItem("jwt");
+        if (token) {
+          setTokenAvailable(true);
+          clearInterval(checkForToken);
+        }
+      }, 100); // Adjust interval as needed
 
-  //     return () => clearInterval(checkForToken); // Clear interval on component unmount
-  //   }
-  // }, []);
+      return () => clearInterval(checkForToken); // Clear interval on component unmount
+    }
+  }, []);
 
-  // useEffect(() => {
-  //   if (!tokenAvailable) return; // Only proceed if token is available
+  useEffect(() => {
+    if (!tokenAvailable) return; // Only proceed if token is available
 
-  //   const token = localStorage.getItem("jwt");
-  //   if (token) {
-  //     const decrypted = decryptToken(token);
-  //     const payload = JSON.parse(atob(decrypted.split(".")[1]));
-  //     const userID = payload.userID;
+    const token = localStorage.getItem("jwt");
+    if (token) {
+      const decrypted = decryptToken(token);
+      const payload = JSON.parse(atob(decrypted.split(".")[1]));
+      const userID = payload.userID;
 
-  //     const fetchCartItems = async () => {
-  //       try {
-  //         const cartItems = await FetchCartItemsByUserID(userID);
-  //         setCart(cartItems);
-  //       } catch (error) {
-  //         console.error("Failed to fetch cart items:", error);
-  //       }
-  //     };
+      const fetchCartItems = async () => {
+        try {
+          const cartItems = await FetchCartItemsByUserID(userID);
+          setCart(cartItems);
+        } catch (error) {
+          console.error("Failed to fetch cart items:", error);
+        }
+      };
 
-  //     fetchCartItems();
-  //   } else {
-  //     setCart([]);
-  //   }
-  // }, [tokenAvailable]); // Dependency array includes tokenAvailable
+      fetchCartItems();
+    } else {
+      setCart([]);
+    }
+  }, [tokenAvailable]); // Dependency array includes tokenAvailable
 
   const addToCart = (product: CartItem) => {
     setCart((prevCart) => {

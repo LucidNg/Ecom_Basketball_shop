@@ -99,7 +99,7 @@ export async function FetchOrdersByUserID(
       paymentMethod: "Cash on Delivery",
       paymentStatus: "Pending",
       shippingMethod: "Fast",
-      shippingStatus: ShippingStatus.Pending,
+      shippingStatus: ShippingStatus.Canceled,
       shippingAddress: "101 Pine St, City D, Country W",
       billingAddress: "101 Pine St, City D, Country W",
       coupon: "ABCD",
