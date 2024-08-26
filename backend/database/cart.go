@@ -31,7 +31,7 @@ func CreateCart(db *sqlitecloud.SQCloud, userID string) error {
 }
 
 func CreateCartItem(db *sqlitecloud.SQCloud, cartID string, productID string, size string, quantity string, price string) error {
-
+	// Convert price and quantity to appropriate types
 	priceValue, err := strconv.ParseFloat(price, 64)
 	if err != nil {
 		fmt.Println("Error:", err)
@@ -44,11 +44,40 @@ func CreateCartItem(db *sqlitecloud.SQCloud, cartID string, productID string, si
 		return err
 	}
 
-	createCartItemSQL := "INSERT INTO cartItem (cartID, productID, size, quantity, price) VALUES (?, ?, ?, ?, ?)"
-	values := []interface{}{cartID, productID, size, quantityValue, priceValue}
+	// Step 1: Check if the product already exists in the cart
+	var existingQuantity int
+	checkProductSQL := "SELECT quantity FROM cartItem WHERE cartID = ? AND productID = ? AND size = ?"
+	values := []interface{}{cartID, productID, size}
+	rows, err := db.SelectArray(checkProductSQL, values)
+	if err != nil {
+		fmt.Println("Error while checking existing cart item:", err)
+		return err
+	}
 
-	err = db.ExecuteArray(createCartItemSQL, values)
-	return err
+	if rows.GetNumberOfRows() == 0 {
+		createCartItemSQL := "INSERT INTO cartItem (cartID, productID, size, quantity, price) VALUES (?, ?, ?, ?, ?)"
+		values := []interface{}{cartID, productID, size, quantityValue, priceValue}
+		err = db.ExecuteArray(createCartItemSQL, values)
+		if err != nil {
+			fmt.Println("Error while inserting new cart item:", err)
+			return err
+		}
+
+	} else {
+		existingQuantity = int(rows.GetInt32Value_(0, 0))
+		// Step 3: If product exists, update the quantity
+		newQuantity := existingQuantity + quantityValue
+		updateCartItemSQL := "UPDATE cartItem SET quantity = ? WHERE cartID = ? AND productID = ? AND size = ?"
+		values := []interface{}{newQuantity, cartID, productID, size}
+
+		err = db.ExecuteArray(updateCartItemSQL, values)
+		if err != nil {
+			fmt.Println("Error while updating cart item:", err)
+			return err
+		}
+	}
+
+	return nil
 }
 
 func QueryCartItem(db *sqlitecloud.SQCloud, w http.ResponseWriter, r *http.Request) error {
