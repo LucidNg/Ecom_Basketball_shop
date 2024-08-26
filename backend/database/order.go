@@ -7,6 +7,7 @@ import (
 	"strconv"
 
 	"github.com/google/uuid"
+	"github.com/gorilla/mux"
 	sqlitecloud "github.com/sqlitecloud/sqlitecloud-go"
 )
 
@@ -147,4 +148,103 @@ func CreateShipping(db *sqlitecloud.SQCloud, orderID string, shippingMethod stri
 
 	err = db.ExecuteArray(createShippingSQL, values)
 	return err
+}
+
+type OrderItem struct {
+	ProductID string  `json:"productID"`
+	Size      string  `json:"size"`
+	Quantity  int     `json:"quantity"`
+	Price     float64 `json:"price"`
+}
+
+type Order struct {
+	OrderID         string      `json:"orderID"`
+	UserID          string      `json:"userID"`
+	Date            string      `json:"date"`
+	ShippingAddress string      `json:"shippingAddress"`
+	BillingAddress  string      `json:"billingAddress"`
+	Price           float64     `json:"price"`
+	Status          string      `json:"status"`
+	PayStatus       string      `json:"payStatus"`
+	Items           []OrderItem `json:"items"`
+}
+
+type Response struct {
+	Orders []Order `json:"orders"`
+}
+
+func QueryOrdersByUserID(db *sqlitecloud.SQCloud, w http.ResponseWriter, r *http.Request) error {
+	vars := mux.Vars(r)
+	userID := vars["userID"]
+
+	// Query to get orders for the user
+	orderQuery := `SELECT o.orderID, o.userID, o.date, o.shippingAddress, o.billingAddress, o.price, o.status, o.payStatus
+	FROM orders o
+	WHERE o.userID = ?;`
+	orderValues := []interface{}{userID}
+
+	orderRows, err := db.SelectArray(orderQuery, orderValues)
+	if err != nil {
+		return err
+	}
+
+	// Prepare to collect orders and their items
+	var orders []Order
+
+	numOrderRows := orderRows.GetNumberOfRows()
+
+	// Iterate over each row index
+	for i := uint64(0); i < numOrderRows; i++ {
+		orderID, err := orderRows.GetStringValue(i, 0)
+
+		// Query to get items for each order
+		itemQuery := `SELECT oi.productID, oi.size, oi.quantity, oi.price
+		FROM orderItem oi
+		WHERE oi.orderID = ?;`
+		itemValues := []interface{}{orderID}
+
+		itemRows, err := db.SelectArray(itemQuery, itemValues)
+		if err != nil {
+			return err
+		}
+
+		// Collect order items
+		var items []OrderItem
+		numItemRows := itemRows.GetNumberOfRows()
+		for j := uint64(0); j < numItemRows; j++ {
+
+			items = append(items, OrderItem{
+				ProductID: itemRows.GetStringValue_(j, 0),
+				Size:      itemRows.GetStringValue_(j, 1),
+				Quantity:  int(itemRows.GetInt32Value_(j, 2)),
+				Price:     itemRows.GetFloat64Value_(j, 3),
+			})
+		}
+
+		// Append order with items
+		orders = append(orders, Order{
+			OrderID:         orderRows.GetStringValue_(i, 0),
+			UserID:          orderRows.GetStringValue_(i, 1),
+			Date:            orderRows.GetStringValue_(i, 2),
+			ShippingAddress: orderRows.GetStringValue_(i, 3),
+			BillingAddress:  orderRows.GetStringValue_(i, 4),
+			Price:           orderRows.GetFloat64Value_(i, 5),
+			Status:          orderRows.GetStringValue_(i, 6),
+			PayStatus:       orderRows.GetStringValue_(i, 7),
+			Items:           items,
+		})
+	}
+
+	// Prepare and send response
+	response := Response{
+		Orders: orders,
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	if err := json.NewEncoder(w).Encode(response); err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return err
+	}
+
+	return nil
 }

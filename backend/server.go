@@ -330,6 +330,14 @@ func main() {
 		}
 	}))).Methods(http.MethodPost)
 
+	r.HandleFunc("/queryOrders/{userID}", rateLimiter(limiter, corsMiddleware(func(w http.ResponseWriter, r *http.Request) {
+		if r.Method == http.MethodGet {
+			database.QueryOrdersByUserID(db, w, r)
+		} else {
+			http.Error(w, "Unsupported method", http.StatusMethodNotAllowed)
+		}
+	}))).Methods(http.MethodGet)
+
 	r.HandleFunc("/updateStock", rateLimiter(limiter, corsMiddleware(func(w http.ResponseWriter, r *http.Request) {
 		if r.Method == http.MethodPut {
 			database.UpdateStock(db, w, r)
