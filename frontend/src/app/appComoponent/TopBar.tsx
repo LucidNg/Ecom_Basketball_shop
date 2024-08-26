@@ -122,10 +122,10 @@ export default function TopBar() {
       {isAuthenticated ? (
         <div className="afterLogined flex items-center">
           <div className="dropdown dropdown-hover">
-            <div tabIndex={0} role="button" className="text-base-content px-3 sm:px-5 2xl:px-10 userInfo hidden 2xl:inline 2xl:text-2xl">Hello, {username}</div>
-            <ul tabIndex={0} className="dropdown-content menu bg-base-100 rounded-box z-[1] w-52 p-2 shadow">
-              <Link href="/profile"><a className="whitespace-nowrap text-primary-content">Profile</a></Link>
-              <a role="button" className="whitespace-nowrap text-primary-content" onClick={handleLogout}>Logout</a>
+            <div tabIndex={0} role="button" className="text-base-content px-3 sm:px-5 2xl:px-10 userInfo hidden 2xl:inline 2xl:text-2xl underline">Hello, {username}</div>
+            <ul tabIndex={0} className="dropdown-content menu bg-base-100 rounded-box z-[1] w-52 p-2 shadow gap-y-2">
+              <Link href="/profile"><div className="whitespace-nowrap text-primary-content bg-primary h-12 flex justify-center items-center rounded-lg text-2xl hover:font-semibold bg-opacity-50 hover:bg-opacity-100">Profile</div></Link>
+              <div role="button" className="whitespace-nowrap text-primary-content bg-primary h-12 flex justify-center items-center rounded-lg text-2xl hover:font-semibold bg-opacity-50 hover:bg-opacity-100" onClick={handleLogout}>Logout</div>
             </ul>
           </div>
 
@@ -154,7 +154,7 @@ export default function TopBar() {
             <Link href="/auth/register">Sign up</Link>
           </button>
           <Link href="/shopping-cart">
-            <button className="Cart justify-end bg-base-100 h-[40px] sm:h-[50px] flex items-center rounded-lg mr-7">
+            <button className="Cart justify-end bg-base-100 h-[40px] sm:h-[50px] flex items-center rounded-lg mx-7  ">
               <div className="px-3 flex">
                 <ShoppingCart color="black" className="h-5 w-5 sm:h-8 sm:w-8" />
                 <span className="text-base-content hidden sm:text-2xl sm:inline px-4">
