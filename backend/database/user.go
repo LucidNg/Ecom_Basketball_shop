@@ -11,14 +11,17 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-func CreateJWT(userID, email, fullname, cartID string) (string, error) {
+func CreateJWT(userID, email, fullname, cartID, dob, address, phoneNumber string) (string, error) {
 	// Define the JWT claims
 	claims := jwt.MapClaims{
-		"userID":   userID,
-		"email":    email,
-		"fullname": fullname,
-		"cartID":   cartID,
-		"exp":      time.Now().Add(2 * time.Hour).Unix(), // Set expiration to 2 hours
+		"userID":      userID,
+		"email":       email,
+		"fullname":    fullname,
+		"cartID":      cartID,
+		"dob":         dob,
+		"address":     address,
+		"phoneNumber": phoneNumber,
+		"exp":         time.Now().Add(2 * time.Hour).Unix(), // Set expiration to 2 hours
 	}
 
 	// Create a new JWT token
@@ -96,7 +99,7 @@ func AuthenticateUser(db *sqlitecloud.SQCloud, email string, password string) (s
 		return "", errors.New("invalid password")
 	}
 
-	query = "SELECT fullName FROM userDetail WHERE userID = ?"
+	query = "SELECT fullName, dob, address, phoneNumber FROM userDetail WHERE userID = ?"
 	values = []interface{}{userID}
 
 	rows, err = db.SelectArray(query, values)
@@ -105,6 +108,9 @@ func AuthenticateUser(db *sqlitecloud.SQCloud, email string, password string) (s
 	}
 	defer rows.Dump()
 	fullname := rows.GetStringValue_(0, 0)
+	dob := rows.GetStringValue_(0, 1)
+	address := rows.GetStringValue_(0, 2)
+	phoneNumber := rows.GetStringValue_(0, 3)
 
 	query = "SELECT cartID FROM cart WHERE userID = ?"
 	values = []interface{}{userID}
@@ -113,10 +119,9 @@ func AuthenticateUser(db *sqlitecloud.SQCloud, email string, password string) (s
 	if err != nil {
 		return "", err
 	}
-	defer rows.Dump()
 	cartID := rows.GetStringValue_(0, 0)
 
-	token, err := CreateJWT(userID, email, fullname, cartID)
+	token, err := CreateJWT(userID, email, fullname, cartID, dob, address, phoneNumber)
 	if err != nil {
 		return "", err
 	}

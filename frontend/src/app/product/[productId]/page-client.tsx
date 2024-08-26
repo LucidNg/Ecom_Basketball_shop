@@ -276,7 +276,7 @@ const DetailedProductPageCli = ({ children1 }: DetailedProductPage) => {
         </div>
       </div>
 
-      <div className="w-11/12 mt-20 self-center grid-cols-2 gap-10 pt-20">
+      {/* <div className="w-11/12 mt-20 self-center grid-cols-2 gap-10 pt-20">
         {product && (
           <>
             <span className="font-semibold text-4xl text-base-content">
@@ -296,7 +296,7 @@ const DetailedProductPageCli = ({ children1 }: DetailedProductPage) => {
             </div>
           </>
         )}
-      </div>
+      </div> */}
     </div>
   );
 };

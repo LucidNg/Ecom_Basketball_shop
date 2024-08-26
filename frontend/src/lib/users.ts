@@ -70,3 +70,24 @@ export async function LoginUser(
 
     return jwt; // Returning the JWT token received from the server
 }
+
+
+export async function CheckPassword(
+    userData: UserLogin
+): Promise<boolean> {
+    const url = `${connectString}/authenticate?email=${encodeURIComponent(userData.email)}&password=${encodeURIComponent(userData.password)}`;
+
+    const response = await fetch(url, {
+        method: "POST",
+        credentials: "include",
+        mode: "cors",
+        cache: "no-cache",
+    });
+
+    if (!response.ok) {
+        return false;
+    }
+    
+
+    return true; // Returning the JWT token received from the server
+}

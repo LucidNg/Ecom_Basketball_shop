@@ -49,7 +49,7 @@ const OrderCard: React.FC<OrderCardProps> = ({ order }) => {
           />
           <div className="flex-1">
             <p className="font-semibold">
-              Air Jordan Jumpman Globe Kids T-Shirt "White"
+              Air Jordan Jumpman Globe Kids T-Shirt &quot;White&quot;
             </p>
             <p>x 1</p>
           </div>
@@ -65,7 +65,7 @@ const OrderCard: React.FC<OrderCardProps> = ({ order }) => {
           />
           <div className="flex-1">
             <p className="font-semibold">
-              Adidas Basketball Select Shirt "Cloud White"
+              Adidas Basketball Select Shirt &quot;Cloud White&quot;
             </p>
             <p>x 1</p>
           </div>
