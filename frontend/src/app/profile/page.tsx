@@ -2,7 +2,6 @@
 import { decryptToken } from "@/lib/decrypt";
 import React, { useEffect, useState } from "react";
 import { CheckPassword, UpdateUserDetail, UpdateUserPassword, QueryUserDetail  } from "@/lib/users";
-import { table } from "console";
 
 export default function ProfilePage() {
     const [isEditable, setIsEditable] = useState(false);

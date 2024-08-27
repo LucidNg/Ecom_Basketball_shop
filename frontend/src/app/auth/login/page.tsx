@@ -1,9 +1,14 @@
 'use client';
 
 import Link from 'next/link';
-import React, {useState} from 'react';
+import React, { useState } from 'react';
 import { LoginUser } from '@/lib/users';
 import { useRouter } from 'next/navigation';
+import { decryptToken } from '@/lib/decrypt'; // Import decryptToken
+
+interface DecodedToken {
+    role: string;
+}
 
 export default function Login() {
     const [email, setEmail] = useState('');
@@ -19,13 +24,22 @@ export default function Login() {
             const jwt = await LoginUser({ email, password });
             setSuccess('Login successful!');
             setError('');
-            localStorage.setItem('jwt', jwt); // Store the JWT token in localStorage
-            router.push('/'); // Redirect to the dashboard or another page
+            localStorage.setItem('jwt', jwt); 
+            const decrypted = decryptToken(jwt);
+            const payload = JSON.parse(atob(decrypted.split(".")[1]));
+            const { role } = payload as DecodedToken;
+
+            if (role === 'admin') {
+                router.push('/admin/orders');
+            } else {
+                router.push('/'); 
+            }
         } catch (err: any) {
             setError(err.message);
             setSuccess('');
         }
     };
+
     return (
         <div className="hero bg-base-200 min-h-screen">
             <div className="hero-content flex-col lg:flex-row-reverse">

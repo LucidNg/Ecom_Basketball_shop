@@ -9,8 +9,11 @@ export default function SideBar() {
     const [open, setOpen] = useState(false);
     const currentPath = usePathname();
     const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
+    const [userID, setUserID] = useState<string>("");
     const [username, setUsername] = useState<string>("");
+    const [email, setEmail] = useState<string>("");
     const router = useRouter();  // Use useRouter hook
+    
 
     const isCurrentPage = (path: string) => currentPath === path;
 
@@ -21,6 +24,8 @@ export default function SideBar() {
             const decrypted = decryptToken(token);
             const payload = JSON.parse(atob(decrypted.split('.')[1]));
             setUsername(payload.fullname);
+            setUserID(payload.userID);
+            setEmail(payload.email);
         } else {
             setIsAuthenticated(false);
         }
@@ -46,7 +51,7 @@ export default function SideBar() {
                     className={`absolute left-14 text-lg transition-transform duration-300 ${open ? "opacity-100 translate-x-0" : "opacity-0 translate-x-4"}`}
                 >
                     <span className="block line-clamp-2">
-                        Nguyen Loc An
+                        {email}
                     </span>
                 </h1>
             </div>
