@@ -93,7 +93,7 @@ export default function ProfilePage() {
                 return;
             }
 
-            await UpdateUserPassword(email, newPassword);
+            await UpdateUserPassword(userID, newPassword);
             setPassword(newPassword);
             setError('');
             alert("Password updated successfully");

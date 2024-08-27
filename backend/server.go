@@ -51,7 +51,6 @@ func rateLimiter(limiter *rate.Limiter, next http.HandlerFunc) http.HandlerFunc 
 }
 
 func main() {
-
 	// Initialize the database
 	db, err := sqlitecloud.Connect(connectionURL)
 	if err != nil {

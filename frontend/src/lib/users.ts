@@ -104,7 +104,11 @@ export interface UserDetailUpdate {
 export async function UpdateUserDetail(
     userDetailData: UserDetailUpdate
 ): Promise<string> {
-    const url = `${connectString}/updateUserDetail?userID=${encodeURIComponent(userDetailData.userID)}&fullName=${encodeURIComponent(userDetailData.fullName)}&phoneNumber=${encodeURIComponent(userDetailData.phoneNumber)}&address=${encodeURIComponent(userDetailData.address)}&dob=${encodeURIComponent(userDetailData.dob)}`;
+    const url = `${connectString}/updateUserDetail?userID=${encodeURIComponent(userDetailData.userID)}`
+                    +`&fullName=${encodeURIComponent(userDetailData.fullName)}`
+                    + `&phoneNumber=${encodeURIComponent(userDetailData.phoneNumber)}`
+                    + `&address=${encodeURIComponent(userDetailData.address)}`
+                    + `&dob=${encodeURIComponent(userDetailData.dob)}`;
     
     const response = await fetch(url, {
         method: "POST",
@@ -125,17 +129,12 @@ export async function UpdateUserPassword(
     userID: string,
     newPassword: string
 ): Promise<string> {
-    const url = `${connectString}/updateUserPassword?`;
+    const url = `${connectString}/updateUserPassword?userID=${encodeURIComponent(userID)}`
+                    +`&newPassword=${encodeURIComponent(newPassword)}`;
 
+    console.log(url)
     const response = await fetch(url, {
         method: "POST",
-        headers: {
-            "Content-Type": "application/x-www-form-urlencoded",
-        },
-        body: new URLSearchParams({
-            userID: userID,
-            newPassword: newPassword,
-        }),
         credentials: "include",
         mode: "cors",
         cache: "no-cache",
