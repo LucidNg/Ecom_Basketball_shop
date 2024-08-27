@@ -436,6 +436,18 @@ func main() {
 		}
 	}))).Methods(http.MethodPost)
 
+	r.HandleFunc("/queryShipping/{orderID}", rateLimiter(limiter, corsMiddleware(func(w http.ResponseWriter, r *http.Request) {
+		if r.Method == http.MethodGet {
+			err := database.QueryShippingByOrderID(db, w, r)
+			if err != nil {
+				http.Error(w, "Failed to query shipping details", http.StatusInternalServerError)
+				return
+			}
+		} else {
+			http.Error(w, "Unsupported method", http.StatusMethodNotAllowed)
+		}
+	}))).Methods(http.MethodGet)
+
 	port := getPort()
 	fmt.Printf("Server is listening on port %s\n", port)
 	log.Fatal(http.ListenAndServe(port, r))

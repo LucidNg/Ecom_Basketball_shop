@@ -58,6 +58,15 @@ function convertOrderItemRequestToOrderItem(
   };
 }
 
+interface ShippingRequest {
+  orderID: string;
+  shippingMethod: string;
+  cost: number;
+  startTime: string;
+  estimatedDeliveryTime: string;
+}
+
+
 export function convertToOrder(orderRequest: OrderRequest): Order {
   const shippingRequest: ShippingRequest = {
     orderID: orderRequest.orderID,
@@ -508,3 +517,34 @@ export async function FetchOrdersByUserID(
 
   // return exampleOrdersByUserID;
 }
+
+export async function FetchShippingByOrderID(
+  orderID: string
+): Promise<ShippingRequest | null> {
+  let url = process.env.API_ENDPOINT
+    ? `${process.env.API_ENDPOINT}/queryShipping/${orderID}`
+    : `${connectString}/queryShipping/${orderID}`;
+
+  try {
+    const response = await fetch(url, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    if (!response.ok) {
+      // Handle HTTP errors
+      console.error("Failed to fetch shipping details:", response.statusText);
+      return null;
+    }
+
+    const data: ShippingRequest = await response.json();
+    return data;
+  } catch (error) {
+    // Handle network or other errors
+    console.error("Error fetching shipping details:", error);
+    return null;
+  }
+}
+
