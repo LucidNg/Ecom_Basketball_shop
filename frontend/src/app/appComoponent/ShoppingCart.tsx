@@ -68,7 +68,9 @@ const ShoppingCart = () => {
     setSelectItems(selectCart);
     const newCheckedItems = cart.map((item) =>
       selectCart.some(
-        (selectedItem) => selectedItem.productID === item.productID
+        (selectedItem) =>
+          selectedItem.productID === item.productID &&
+          selectedItem.size === item.size
       )
     );
     setCheckedItems(newCheckedItems);
