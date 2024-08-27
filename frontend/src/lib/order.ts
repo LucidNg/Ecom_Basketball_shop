@@ -2,44 +2,44 @@ import { connectString } from "./constant";
 import { OrderItem } from "./productItem";
 import { v4 as uuidv4 } from "uuid";
 
-// export interface Order {
-//   orderID: string;
-//   userID: string;
-//   orderDate: string;
-//   shipDate: string;
-//   paymentMethod: string;
-//   paymentStatus: string;
-//   shippingMethod: string;
-//   shippingStatus: ShippingStatus;
-//   shippingAddress: string;
-//   billingAddress: string;
-//   coupon: string;
-//   totalBill: number;
-//   quantity: number;
-// }
+export interface Order {
+  orderID: string;
+  userID: string;
+  orderDate: string;
+  shipDate: string;
+  paymentMethod: string;
+  paymentStatus: string;
+  shippingMethod: string;
+  shippingStatus: ShippingStatus;
+  shippingAddress: string;
+  billingAddress: string;
+  coupon: string;
+  totalBill: number;
+  quantity: number;
+}
 
-// export enum ShippingStatus {
-//   Delivered = "delivered",
-//   Delivering = "delivering",
-//   Canceled = "canceled",
-//   Received = "received",
-//   Pending = "pending",
-// }
+export enum ShippingStatus {
+  Delivered = "delivered",
+  Delivering = "delivering",
+  Canceled = "canceled",
+  Received = "received",
+  Pending = "pending",
+}
 
-// export enum PaymentStatus {
-//   Paid = "paid",
-//   Unpaid = "unpaid",
-//   Refunded = "refunded",
-//   PartiallyRefunded = "partially_refunded",
-// }
+export enum PaymentStatus {
+  Paid = "paid",
+  Unpaid = "unpaid",
+  Refunded = "refunded",
+  PartiallyRefunded = "partially_refunded",
+}
 
-// export type OrderDetailsProps = {
-//   order: Order;
-// };
+export type OrderDetailsProps = {
+  order: Order;
+};
 
-// export function getNewOrderID(): string {
-//   return uuidv4();
-// }
+export function getNewOrderID(): string {
+  return uuidv4();
+}
 
 // export async function FetchOrdersByUserID(
 //   userID: string
@@ -283,7 +283,7 @@ export async function updateStock(order: RemoveCartItemRequest): Promise<void> {
   }
 }
 
-async function fetchOrdersByUserID(userID: string): Promise<OrdersByUserID | null> {
+export async function FetchOrdersByUserID(userID: string): Promise<OrdersByUserID | null> {
   let url = process.env.API_ENDPOINT
     ? `${process.env.API_ENDPOINT}/queryOrders/${userID}`
     : `${connectString}/queryOrders/${userID}`;

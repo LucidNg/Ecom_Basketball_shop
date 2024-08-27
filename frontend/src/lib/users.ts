@@ -104,7 +104,7 @@ export interface UserDetailUpdate {
 export async function UpdateUserDetail(
     userDetailData: UserDetailUpdate
 ): Promise<string> {
-    const url = `${connectString}/updateUserDetail`;
+    const url = `${connectString}/updateUserDetail?`;
     
     const response = await fetch(url, {
         method: "PUT",
@@ -135,7 +135,7 @@ export async function UpdateUserPassword(
     userID: string,
     newPassword: string
 ): Promise<string> {
-    const url = `${connectString}/updateUserPassword`;
+    const url = `${connectString}/updateUserPassword?`;
 
     const response = await fetch(url, {
         method: "PUT",

@@ -41,7 +41,7 @@ export const OrdersProvider = ({ children }: { children: ReactNode }) => {
     const fetchOrders = async () => {
       try {
         const _orders = await FetchOrdersByUserID(userID);
-        setOrders(_orders);
+        // setOrders(_orders);
       } catch (error) {
         console.error("Failed to fetch cart items:", error);
       }

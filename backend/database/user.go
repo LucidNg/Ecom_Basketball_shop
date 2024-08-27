@@ -165,7 +165,6 @@ func UpdateUserDetail(db *sqlitecloud.SQCloud, userID, fullName, phoneNumber, ad
 
 	// Prepare the values for the SQL statement
 	values := []interface{}{fullName, phoneNumber, address, dob, userID}
-
 	// Execute the SQL statement
 	err := db.ExecuteArray(updateUserDetailSQL, values)
 	if err != nil {
