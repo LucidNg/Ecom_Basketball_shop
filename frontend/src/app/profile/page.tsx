@@ -115,7 +115,7 @@ export default function ProfilePage() {
 
     return (
         <>
-            <div className="sm:p-10 p-2 mb-2 mt-10 mx-10 sm:mx-auto md:w-7/12 shadow-lg shadow-base-content/40">
+            <div className="sm:p-8 p-2 mb-4 mt-10 mx-10 sm:mx-auto md:w-7/12 shadow-lg shadow-base-content/40">
                 <h2 className="text-base-content text-4xl font-semibold pt-5">Account Details</h2>
                 <div className="bg-base-100 border-base-300 rounded-box p-6">
                 <div className="grid grid-cols-1 gap-x-4 gap-y-8 w-full place-items-start pt-4">
