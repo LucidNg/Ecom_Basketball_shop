@@ -130,11 +130,18 @@ export default function TopBar() {
             </ul>
           </div>
 
-          <div className="avatar 2xl:hidden px-5">
-            <div className="w-8 sm:w-12 rounded-full bg-secondary">
-              <Image src="" alt="user" />
+          <div className="dropdown dropdown-hover">
+            <div className="avatar 2xl:hidden px-5" tabIndex={0} role="button">
+              <div className="w-8 sm:w-12 rounded-full bg-secondary">
+                <Image src="" alt="" />
+              </div>
+              <ul tabIndex={0} className="dropdown-content menu bg-base-100 rounded-box z-[1] w-52 p-2 shadow gap-y-2">
+                <Link href="/profile"><div className="whitespace-nowrap text-primary-content bg-primary h-12 flex justify-center items-center rounded-lg text-2xl hover:font-semibold bg-opacity-50 hover:bg-opacity-100">Profile</div></Link>
+                <div role="button" className="whitespace-nowrap text-primary-content bg-primary h-12 flex justify-center items-center rounded-lg text-2xl hover:font-semibold bg-opacity-50 hover:bg-opacity-100" onClick={handleLogout}>Logout</div>
+              </ul>
             </div>
           </div>
+          
           <Link href="/shopping-cart">
             <button className="Cart justify-end bg-base-100 h-[40px] sm:h-[50px] flex items-center rounded-lg mr-5 sm:mr-10">
               <div className="px-3 flex">
