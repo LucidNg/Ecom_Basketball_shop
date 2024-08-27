@@ -1,5 +1,4 @@
 import { connectString } from "./constant";
-import { decryptToken } from "./decrypt";
 
 export interface UserRegistration {
     fullname: string;
@@ -146,4 +145,30 @@ export async function UpdateUserPassword(
     }
 
     return "Password updated successfully";
+}
+
+export interface UserDetail {
+    fullName: string;
+    phoneNumber: string;
+    address: string;
+    dob: string;
+}
+
+export async function QueryUserDetail(userID: string): Promise<UserDetail> {
+    const url = `${connectString}/userDetail?userID=${encodeURIComponent(userID)}`;
+  
+    const response = await fetch(url, {
+      method: "GET",
+      credentials: "include",
+      mode: "cors",
+      cache: "no-cache",
+    });
+  
+    if (!response.ok) {
+      const errorMsg = await response.text();
+      throw new Error(`Failed to fetch user details: ${errorMsg}`);
+    }
+  
+    const userDetails: UserDetail = await response.json();
+    return userDetails;
 }

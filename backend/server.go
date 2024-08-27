@@ -99,6 +99,17 @@ func main() {
 		}
 	}))).Methods(http.MethodGet, http.MethodPost)
 
+	r.HandleFunc("/userDetail", rateLimiter(limiter, corsMiddleware(func(w http.ResponseWriter, r *http.Request) {
+		if r.Method == http.MethodGet {
+			userID := r.FormValue("userID")
+			err := database.QueryUserDetail(db, userID, w)
+			if err != nil {
+				http.Error(w, "Failed to query user detail", http.StatusInternalServerError)
+				return
+			}
+		}
+	}))).Methods(http.MethodGet)
+
 	r.HandleFunc("/updateUserDetail", rateLimiter(limiter, corsMiddleware(func(w http.ResponseWriter, r *http.Request) {
 		if r.Method == http.MethodPost {
 			// Parse form values for the update
