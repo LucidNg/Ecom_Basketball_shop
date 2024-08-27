@@ -119,10 +119,11 @@ interface OrderRequest {
   price: number;
   status: string;
   payStatus: string;
+  items?: OrderItemRequest[];
 }
 
 interface OrderItemRequest {
-  orderID: string;
+  orderID?: string;
   productID: string;
   size: string;
   quantity: number;
@@ -137,17 +138,15 @@ interface ShippingRequest {
   estimatedDeliveryTime: string;
 }
 
-interface RemoveCartItem {
-  productID: string;
-  size: string;
-  quantity: number;
-  price: number;
-}
 
 interface RemoveCartItemRequest {
   orderID: string;
-  items: RemoveCartItem[];
+  items: OrderItemRequest[];
 }
+
+type OrdersByUserID = {
+  orders: OrderRequest[];
+};
 
 // Function to create an order
 export async function CreateOrder(order: OrderRequest): Promise<void> {
@@ -281,5 +280,33 @@ export async function updateStock(order: RemoveCartItemRequest): Promise<void> {
 
   if (!response.ok) {
     throw new Error("Failed to update stock");
+  }
+}
+
+async function fetchOrdersByUserID(userID: string): Promise<OrdersByUserID | null> {
+  let url = process.env.API_ENDPOINT
+    ? `${process.env.API_ENDPOINT}/queryOrders/${userID}`
+    : `${connectString}/queryOrders/${userID}`;
+
+  try {
+    const response = await fetch(url, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+
+    if (!response.ok) {
+      // Handle HTTP errors
+      console.error('Failed to fetch orders:', response.statusText);
+      return null;
+    }
+
+    const data: OrdersByUserID = await response.json();
+    return data;
+  } catch (error) {
+    // Handle network or other errors
+    console.error('Error fetching orders:', error);
+    return null;
   }
 }

@@ -161,7 +161,7 @@ export default function ProfilePage() {
                             type="email"
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
-                            disabled={!isEditable}
+                            disabled={true}
                         />
 
                         <div className="relative w-4/5">

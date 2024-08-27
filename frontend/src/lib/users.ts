@@ -91,3 +91,70 @@ export async function CheckPassword(
 
     return true; // Returning the JWT token received from the server
 }
+
+export interface UserDetailUpdate {
+    userID: string;
+    fullName: string;
+    phoneNumber: string;
+    address: string;
+    dob: string;
+}
+
+
+export async function UpdateUserDetail(
+    userDetailData: UserDetailUpdate
+): Promise<string> {
+    const url = `${connectString}/updateUserDetail`;
+    
+    const response = await fetch(url, {
+        method: "PUT",
+        headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
+        },
+        body: new URLSearchParams({
+            userID: userDetailData.userID,
+            fullName: userDetailData.fullName,
+            phoneNumber: userDetailData.phoneNumber,
+            address: userDetailData.address,
+            dob: userDetailData.dob,
+        }),
+        credentials: "include",
+        mode: "cors",
+        cache: "no-cache",
+    });
+
+    if (!response.ok) {
+        const errorMsg = await response.text();
+        throw new Error(`Failed to update user details: ${errorMsg}`);
+    }
+
+    return "User details updated successfully";
+}
+
+export async function UpdateUserPassword(
+    userID: string,
+    newPassword: string
+): Promise<string> {
+    const url = `${connectString}/updateUserPassword`;
+
+    const response = await fetch(url, {
+        method: "PUT",
+        headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
+        },
+        body: new URLSearchParams({
+            userID: userID,
+            newPassword: newPassword,
+        }),
+        credentials: "include",
+        mode: "cors",
+        cache: "no-cache",
+    });
+
+    if (!response.ok) {
+        const errorMsg = await response.text();
+        throw new Error(`Failed to update password: ${errorMsg}`);
+    }
+
+    return "Password updated successfully";
+}

@@ -2,6 +2,7 @@ package database
 
 import (
 	"errors"
+	"fmt"
 	"net/http"
 	"time"
 
@@ -148,5 +149,53 @@ func QueryUsers(db *sqlitecloud.SQCloud, w http.ResponseWriter) error {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return err
 	}
+	return nil
+}
+
+func UpdateUserDetail(db *sqlitecloud.SQCloud, userID, fullName, phoneNumber, address, dob string, w http.ResponseWriter) error {
+	// Construct the SQL statement to update user details
+	updateUserDetailSQL := `
+		UPDATE userDetail 
+		SET 
+			fullName = ?, 
+			phoneNumber = ?, 
+			address = ?, 
+			dob = ?
+		WHERE userID = ?`
+
+	// Prepare the values for the SQL statement
+	values := []interface{}{fullName, phoneNumber, address, dob, userID}
+
+	// Execute the SQL statement
+	err := db.ExecuteArray(updateUserDetailSQL, values)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return err
+	}
+
+	// If no error, return nil indicating success
+	return nil
+}
+
+func UpdateUserPassword(db *sqlitecloud.SQCloud, userID string, newPassword string) error {
+	// Generate a hashed password from the new password
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(newPassword), bcrypt.DefaultCost)
+	if err != nil {
+		return fmt.Errorf("failed to hash password: %w", err)
+	}
+
+	// SQL query to update the user's password
+	updatePasswordSQL := "UPDATE users SET password = ? WHERE userID = ?"
+
+	// Prepare the values for the SQL statement
+	values := []interface{}{string(hashedPassword), userID}
+
+	// Execute the SQL statement to update the password
+	err = db.ExecuteArray(updatePasswordSQL, values)
+	if err != nil {
+		return fmt.Errorf("failed to update password: %w", err)
+	}
+
+	// If no error, return nil indicating success
 	return nil
 }
