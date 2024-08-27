@@ -108,6 +108,35 @@ export async function convertToOrder(
   };
 }
 
+// Function to convert Order to OrderRequest
+export function convertOrderToOrderRequest(order: Order): OrderRequest {
+  return {
+    orderID: order.orderID,
+    userID: order.userID,
+    date: order.orderDate,
+    shippingAddress: order.shippingAddress,
+    billingAddress: order.billingAddress,
+    price: order.totalBill,
+    status: order.shippingStatus, // Assuming shippingStatus can be used as status
+    payStatus: order.paymentStatus,
+    payMethod: order.paymentMethod,
+    items: order.orderItems.map((item) => {
+      return convertOrderItemToOrderItemRequest(item);
+    }),
+  };
+}
+
+// Function to convert Order to ShippingRequest
+export function convertOrderToShippingRequest(order: Order): ShippingRequest {
+  return {
+    orderID: order.orderID,
+    shippingMethod: order.shippingMethod,
+    cost: 0, // Assuming cost is not provided by Order and needs to be set accordingly
+    startTime: order.orderDate, // You might need to format this if necessary
+    estimatedDeliveryTime: order.shipDate, // Assuming shipDate is used as the estimated delivery time
+  };
+}
+
 // export async function FetchOrdersByUserID(
 //   userID: string
 // ): Promise<Array<Order>> {

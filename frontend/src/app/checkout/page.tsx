@@ -6,13 +6,19 @@ import { useCart } from "../appComoponent/CartContext";
 import { useOrders } from "../appComoponent/OrdersContext";
 import {
   convertOrderItemToOrderItemRequest,
+  convertOrderToOrderRequest,
+  convertOrderToShippingRequest,
   getNewOrderID,
   PaymentStatus,
   removeCartItemsFromOrder,
   ShippingStatus,
   updateStock,
+  CreateOrder,
+  CreateOrderItems,
+  CreateShipping,
 } from "@/lib/order";
 import ProductCard from "../appComoponent/ProductCard";
+import { OrderItem } from "@/lib/productItem";
 
 export default function CheckoutPage() {
   const [selectedDelivery, setSelectedDelivery] = useState("standard");
@@ -21,7 +27,7 @@ export default function CheckoutPage() {
   const [totalPrice, setTotalPrice] = useState(0);
   const [couponPrice, setCouponPrice] = useState(0);
   const { cart, selectCart, removeCheckedOutItems } = useCart();
-  const { orders, getOrder } = useOrders();
+  const { orders, getOrder, addOrder } = useOrders();
 
   const orderID = getNewOrderID(); // Replace with actual generated orderID
 
@@ -227,29 +233,46 @@ export default function CheckoutPage() {
             <button
               className="btn font-semibold text-4xl h-20 w-96 self-center my-20 transition transition-duration-300 transition-property:scale,box-shadow,background-color hover:scale-105 hover:drop-shadow-xl hover:bg-secondary outline-none border-none"
               onClick={() => {
-                // addOrder({
-                //   orderID: orderID,
-                //   userID: "60629436-da35-401c-9bf8-6e8e3aed90ed", // Replace with the actual user ID
-                //   orderDate: getToday(),
-                //   shipDate: getNext5Days(),
-                //   paymentMethod: selectedPayment,
-                //   paymentStatus:
-                //     selectedPayment === "cod"
-                //       ? PaymentStatus.Unpaid
-                //       : PaymentStatus.Paid,
-                //   shippingMethod: selectedDelivery,
-                //   shippingStatus: ShippingStatus.Pending,
-                //   shippingAddress: "123 Main St, City A, Country X",
-                //   billingAddress: "123 Main St, City A, Country X",
-                //   coupon: "None",
-                //   totalBill: totalPrice,
-                //   quantity: selectCart.length,
-                // });
+                const newOrderItems: OrderItem[] | null = [];
+                const newOrder = {
+                  orderID: orderID,
+                  userID: "60629436-da35-401c-9bf8-6e8e3aed90ed", // Replace with the actual user ID
+                  orderDate: getToday(),
+                  shipDate: getNext5Days(),
+                  paymentMethod: selectedPayment,
+                  paymentStatus:
+                    selectedPayment === "cod"
+                      ? PaymentStatus.Unpaid
+                      : PaymentStatus.Paid,
+                  shippingMethod: selectedDelivery,
+                  shippingStatus: ShippingStatus.Pending,
+                  shippingAddress: "123 Main St, City A, Country X",
+                  billingAddress: "123 Main St, City A, Country X",
+                  coupon: "None",
+                  totalBill: totalPrice,
+                  quantity: selectCart.length,
+                  orderItems: newOrderItems,
+                };
+
+                // add the new order to order context
+                addOrder(newOrder);
+
+                const newOrderRequest = convertOrderToOrderRequest(newOrder);
+
+                const newOrderItemRequests = newOrderRequest.items
+                  ? newOrderRequest.items
+                  : [];
+
+                // create and add the new order to DB
+                CreateOrder(newOrderRequest);
+
+                // create and add the new order items to DB
+                CreateOrderItems(newOrderItemRequests);
 
                 // remove the items in cart context
-                removeCheckedOutItems(); // In CartContext
+                removeCheckedOutItems();
 
-                // remove the items in database
+                // remove the items in cart table in database
                 const _orderRemove = getOrder(orderID);
                 const _orderItemRequestsRemove = _orderRemove
                   ? _orderRemove.orderItems.map((item) => {
@@ -258,11 +281,13 @@ export default function CheckoutPage() {
                   : [];
                 removeCartItemsFromOrder({
                   orderID: orderID,
-                  items: _orderItemRequestsRemove,
+                  items: newOrderItemRequests,
                 });
+
+                // update products stock in DB
                 updateStock({
                   orderID: orderID,
-                  items: _orderItemRequestsRemove,
+                  items: newOrderItemRequests,
                 });
               }}
             >
@@ -273,4 +298,29 @@ export default function CheckoutPage() {
       </div>
     </main>
   );
+}
+
+function getToday() {
+  const today = new Date();
+  const year = today.getFullYear();
+  const month = String(today.getMonth() + 1).padStart(2, "0"); // Months are zero-indexed in JavaScript
+  const day = String(today.getDate()).padStart(2, "0");
+  const formattedDateDMY = `${day}-${month}-${year}`;
+
+  return formattedDateDMY;
+}
+
+function getNext5Days() {
+  const today = new Date();
+  const fiveDaysLater = new Date(today);
+
+  // Add 5 days to the current date
+  fiveDaysLater.setDate(today.getDate() + 5);
+
+  // Format date as 'DD-MM-YYYY'
+  const year = fiveDaysLater.getFullYear();
+  const month = String(fiveDaysLater.getMonth() + 1).padStart(2, "0");
+  const day = String(fiveDaysLater.getDate()).padStart(2, "0");
+
+  return `${day}-${month}-${year}`;
 }
