@@ -11,6 +11,7 @@ import {
 } from "../../lib/productItem";
 import { useOrders } from "./OrdersContext";
 import { FetchOrdersByUserID, Order, ShippingStatus } from "@/lib/order";
+import Link from "next/link";
 
 interface OrderCardProps {
   order: Order;
@@ -41,8 +42,8 @@ const OrderCard: React.FC<OrderCardProps> = ({ order }) => {
         <span className="ml-2">{order.orderDate}</span>
       </div>
       <div className="border-t border-b border-gray-300 py-4">
-        {order.orderItems.map((item, index) => (
-          <div className="flex items-center mb-4" key = {index}>
+        {order.orderItems.slice(0, 2).map((item, index) => (
+          <div className="flex items-center mb-4" key={index}>
             <img
               src={item.url}
               alt={item.productName}
@@ -53,14 +54,15 @@ const OrderCard: React.FC<OrderCardProps> = ({ order }) => {
               <p>x {item.quantity}</p>
             </div>
             <div className="text-right">
-              <p>{Intl.NumberFormat("vi-VN").format(item.price)}</p>
+              <p>${Intl.NumberFormat("vi-VN").format(item.price)}</p>
             </div>
           </div>
         ))}
-
-        <div className="text-center text-sm text-gray-500">
-          And 5 more items...
-        </div>
+        {order.orderItems.length > 2 && (
+          <div className="text-center text-sm text-gray-500">
+            And {order.orderItems.length - 2} more items...
+          </div>
+        )}
       </div>
       <div className="flex items-center justify-between mt-4">
         <div>
@@ -69,14 +71,21 @@ const OrderCard: React.FC<OrderCardProps> = ({ order }) => {
             {renderShippingStatusStamp()}
           </span>
         </div>
-        <button className="bg-red-500 text-white py-1 px-4 rounded">
-          View details
-        </button>
-        <div>
-          <span className="font-semibold">Total bill :</span>
-          <span className="text-red-500 ml-2">
-            ${Intl.NumberFormat("vi-VN").format(order.totalBill)}
-          </span>
+        <div className="flex items-center">
+          <Link
+            href={`/order-details/${order.orderID}`}
+            className="self-center"
+          >
+            <button className="bg-red-500 text-white py-1 px-4 rounded mr-2">
+              View details
+            </button>
+          </Link>
+          <div>
+            <span className="font-semibold">Total bill :</span>
+            <span className="text-red-500 ml-2">
+              ${Intl.NumberFormat("vi-VN").format(order.totalBill)}
+            </span>
+          </div>
         </div>
       </div>
     </div>
