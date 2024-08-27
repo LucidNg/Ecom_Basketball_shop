@@ -4,33 +4,14 @@ import Link from "next/link";
 import { useState, useCallback, useEffect } from "react";
 import { useCart } from "../appComoponent/CartContext";
 import { useOrders } from "../appComoponent/OrdersContext";
-import { getNewOrderID, PaymentStatus, ShippingStatus } from "@/lib/order";
+import {
+  convertOrderItemToOrderItemRequest,
+  getNewOrderID,
+  PaymentStatus,
+  removeCartItemsFromOrder,
+  ShippingStatus,
+} from "@/lib/order";
 import ProductCard from "../appComoponent/ProductCard";
-
-function getToday() {
-  const today = new Date();
-  const year = today.getFullYear();
-  const month = String(today.getMonth() + 1).padStart(2, "0"); // Months are zero-indexed in JavaScript
-  const day = String(today.getDate()).padStart(2, "0");
-  const formattedDateDMY = `${day}-${month}-${year}`;
-
-  return formattedDateDMY;
-}
-
-function getNext5Days() {
-  const today = new Date();
-  const fiveDaysLater = new Date(today);
-
-  // Add 5 days to the current date
-  fiveDaysLater.setDate(today.getDate() + 5);
-
-  // Format date as 'DD-MM-YYYY'
-  const year = fiveDaysLater.getFullYear();
-  const month = String(fiveDaysLater.getMonth() + 1).padStart(2, "0");
-  const day = String(fiveDaysLater.getDate()).padStart(2, "0");
-
-  return `${day}-${month}-${year}`;
-}
 
 export default function CheckoutPage() {
   const [selectedDelivery, setSelectedDelivery] = useState("standard");
@@ -39,7 +20,7 @@ export default function CheckoutPage() {
   const [totalPrice, setTotalPrice] = useState(0);
   const [couponPrice, setCouponPrice] = useState(0);
   const { cart, selectCart, removeCheckedOutItems } = useCart();
-  const { orders, addOrder } = useOrders();
+  const { orders, getOrder } = useOrders();
 
   const orderID = getNewOrderID(); // Replace with actual generated orderID
 
@@ -263,7 +244,22 @@ export default function CheckoutPage() {
                 //   totalBill: totalPrice,
                 //   quantity: selectCart.length,
                 // });
-                //removeCheckedOutItems;
+
+                // remove the items in cart context
+                removeCheckedOutItems(); // In CartContext
+
+                // remove the items in database
+                const _orderRemove = getOrder(orderID);
+                const _orderItemRequestsRemove = _orderRemove
+                  ? _orderRemove.orderItems.map((item) => {
+                      return convertOrderItemToOrderItemRequest(item);
+                    })
+                  : [];
+
+                removeCartItemsFromOrder({
+                  orderID: orderID,
+                  items: _orderItemRequestsRemove,
+                });
               }}
             >
               Check out

@@ -58,6 +58,22 @@ function convertOrderItemRequestToOrderItem(
   };
 }
 
+export function convertOrderItemToOrderItemRequest(
+  item: OrderItem
+): OrderItemRequest {
+  return {
+    orderID: item.orderID ?? "", // Provide a default empty string if orderID is undefined
+    productID: item.productID,
+    size: item.size,
+    quantity: item.quantity,
+    price: item.price,
+    // Need to be replace
+    productName: item.productName,
+    // Need to be replace
+    url: item.url,
+  };
+}
+
 export async function convertToOrder(
   orderRequest: OrderRequest
 ): Promise<Order> {
