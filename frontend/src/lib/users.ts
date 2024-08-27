@@ -154,21 +154,23 @@ export interface UserDetail {
     dob: string;
 }
 
-export async function QueryUserDetail(userID: string): Promise<UserDetail> {
+export async function QueryUserDetail(userID: string): Promise<UserDetail[]> {
     const url = `${connectString}/userDetail?userID=${encodeURIComponent(userID)}`;
   
     const response = await fetch(url, {
-      method: "GET",
-      credentials: "include",
-      mode: "cors",
-      cache: "no-cache",
+        method: "GET",
+        credentials: "include",
+        mode: "cors",
+        cache: "no-cache",
     });
+
+    console.log("loading user detail");
   
     if (!response.ok) {
-      const errorMsg = await response.text();
-      throw new Error(`Failed to fetch user details: ${errorMsg}`);
+        const errorMsg = await response.text();
+        throw new Error(`Failed to fetch user details: ${errorMsg}`);
     }
   
-    const userDetails: UserDetail = await response.json();
+    const userDetails: UserDetail[] = await response.json();
     return userDetails;
 }
