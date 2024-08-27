@@ -104,20 +104,10 @@ export interface UserDetailUpdate {
 export async function UpdateUserDetail(
     userDetailData: UserDetailUpdate
 ): Promise<string> {
-    const url = `${connectString}/updateUserDetail?`;
+    const url = `${connectString}/updateUserDetail?userID=${encodeURIComponent(userDetailData.userID)}&fullName=${encodeURIComponent(userDetailData.fullName)}&phoneNumber=${encodeURIComponent(userDetailData.phoneNumber)}&address=${encodeURIComponent(userDetailData.address)}&dob=${encodeURIComponent(userDetailData.dob)}`;
     
     const response = await fetch(url, {
         method: "PUT",
-        headers: {
-            "Content-Type": "application/x-www-form-urlencoded",
-        },
-        body: new URLSearchParams({
-            userID: userDetailData.userID,
-            fullName: userDetailData.fullName,
-            phoneNumber: userDetailData.phoneNumber,
-            address: userDetailData.address,
-            dob: userDetailData.dob,
-        }),
         credentials: "include",
         mode: "cors",
         cache: "no-cache",

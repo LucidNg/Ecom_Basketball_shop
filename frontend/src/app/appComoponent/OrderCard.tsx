@@ -42,7 +42,7 @@ const OrderCard: React.FC<OrderCardProps> = ({ order }) => {
       </div>
       <div className="border-t border-b border-gray-300 py-4">
         {order.orderItems.map((item, index) => (
-          <div className="flex items-center mb-4">
+          <div className="flex items-center mb-4" key = {index}>
             <img
               src={item.url}
               alt={item.productName}
