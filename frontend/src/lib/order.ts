@@ -7,7 +7,7 @@ export interface Order {
   userID: string; // OrderRequest
   orderDate: string; // OrderRequest
   shipDate: string; // ShippingRequest
-  paymentMethod: string; //Dont know where to get?
+  paymentMethod: string; // OrderRequest
   paymentStatus: string; // OrderRequest
   shippingMethod: string; //ShippingRequest
   shippingStatus: ShippingStatus; // OrderRequest
@@ -52,9 +52,9 @@ function convertOrderItemRequestToOrderItem(
     quantity: request.quantity,
     price: request.price,
     // Need to be replace
-    productName: "Need to be replace by the actual product name",
+    productName: request.productName,
     // Need to be replace
-    url: "https://www.google.com/url?sa=i&url=https%3A%2F%2Fwordpress.org%2Fplugins%2Freplace-image%2F&psig=AOvVaw0ZDAOT6ltAe0DSsHC3AdiR&ust=1724838119927000&source=images&cd=vfe&opi=89978449&ved=0CBEQjRxqFwoTCIjv1_HwlIgDFQAAAAAdAAAAABAE",
+    url: request.url,
   };
 }
 
@@ -372,13 +372,16 @@ export async function FetchOrdersByUserID(
   //       date: "2024-08-01",
   //       shippingAddress: "123 Maple St, Springfield, IL 62701",
   //       billingAddress: "123 Maple St, Springfield, IL 62701",
-  //       price: 299.98,
+  //       price: 359.98,
   //       status: "delivered",
   //       payStatus: "paid",
+  //       payMethod: "cod",
   //       items: [
   //         {
   //           orderID: "ORD001",
   //           productID: "PROD1001",
+  //           productName: "product 1",
+  //           url: "https://www.google.com/url?sa=i&url=https%3A%2F%2Fwordpress.org%2Fplugins%2Freplace-image%2F&psig=AOvVaw1wTBwS-oVIoEyIo-mcjhHX&ust=1724867330464000&source=images&cd=vfe&opi=89978449&ved=0CBEQjRxqFwoTCJC0hebdlYgDFQAAAAAdAAAAABAE",
   //           size: "M",
   //           quantity: 2,
   //           price: 79.99,
@@ -386,6 +389,8 @@ export async function FetchOrdersByUserID(
   //         {
   //           orderID: "ORD001",
   //           productID: "PROD1002",
+  //           productName: "product 2",
+  //           url: "https://www.google.com/url?sa=i&url=https%3A%2F%2Fwordpress.org%2Fplugins%2Freplace-image%2F&psig=AOvVaw1wTBwS-oVIoEyIo-mcjhHX&ust=1724867330464000&source=images&cd=vfe&opi=89978449&ved=0CBEQjRxqFwoTCJC0hebdlYgDFQAAAAAdAAAAABAE",
   //           size: "L",
   //           quantity: 1,
   //           price: 139.99,
@@ -393,9 +398,21 @@ export async function FetchOrdersByUserID(
   //         {
   //           orderID: "ORD001",
   //           productID: "PROD1003",
+  //           productName: "product 3",
+  //           url: "https://www.google.com/url?sa=i&url=https%3A%2F%2Fwordpress.org%2Fplugins%2Freplace-image%2F&psig=AOvVaw1wTBwS-oVIoEyIo-mcjhHX&ust=1724867330464000&source=images&cd=vfe&opi=89978449&ved=0CBEQjRxqFwoTCJC0hebdlYgDFQAAAAAdAAAAABAE",
   //           size: "S",
   //           quantity: 1,
   //           price: 59.99,
+  //         },
+
+  //         {
+  //           orderID: "ORD001",
+  //           productID: "PROD1003",
+  //           productName: "product 3",
+  //           url: "https://www.google.com/url?sa=i&url=https%3A%2F%2Fwordpress.org%2Fplugins%2Freplace-image%2F&psig=AOvVaw1wTBwS-oVIoEyIo-mcjhHX&ust=1724867330464000&source=images&cd=vfe&opi=89978449&ved=0CBEQjRxqFwoTCJC0hebdlYgDFQAAAAAdAAAAABAE",
+  //           size: "L",
+  //           quantity: 1,
+  //           price: 60.0,
   //         },
   //       ],
   //     },
@@ -408,10 +425,13 @@ export async function FetchOrdersByUserID(
   //       price: 189.97,
   //       status: "pending",
   //       payStatus: "unpaid",
+  //       payMethod: "cod",
   //       items: [
   //         {
   //           orderID: "ORD002",
   //           productID: "PROD2001",
+  //           productName: "product 1",
+  //           url: "https://www.google.com/url?sa=i&url=https%3A%2F%2Fwordpress.org%2Fplugins%2Freplace-image%2F&psig=AOvVaw1wTBwS-oVIoEyIo-mcjhHX&ust=1724867330464000&source=images&cd=vfe&opi=89978449&ved=0CBEQjRxqFwoTCJC0hebdlYgDFQAAAAAdAAAAABAE",
   //           size: "XL",
   //           quantity: 1,
   //           price: 99.99,
@@ -419,6 +439,8 @@ export async function FetchOrdersByUserID(
   //         {
   //           orderID: "ORD002",
   //           productID: "PROD2002",
+  //           productName: "product 2",
+  //           url: "https://www.google.com/url?sa=i&url=https%3A%2F%2Fwordpress.org%2Fplugins%2Freplace-image%2F&psig=AOvVaw1wTBwS-oVIoEyIo-mcjhHX&ust=1724867330464000&source=images&cd=vfe&opi=89978449&ved=0CBEQjRxqFwoTCJC0hebdlYgDFQAAAAAdAAAAABAE",
   //           size: "M",
   //           quantity: 2,
   //           price: 44.99,
@@ -432,12 +454,15 @@ export async function FetchOrdersByUserID(
   //       shippingAddress: "789 Pine St, Springfield, IL 62703",
   //       billingAddress: "789 Pine St, Springfield, IL 62703",
   //       price: 399.95,
-  //       status: "shipped",
+  //       status: "delivered",
   //       payStatus: "paid",
+  //       payMethod: "cod",
   //       items: [
   //         {
   //           orderID: "ORD003",
   //           productID: "PROD3001",
+  //           productName: "product 1",
+  //           url: "https://www.google.com/url?sa=i&url=https%3A%2F%2Fwordpress.org%2Fplugins%2Freplace-image%2F&psig=AOvVaw1wTBwS-oVIoEyIo-mcjhHX&ust=1724867330464000&source=images&cd=vfe&opi=89978449&ved=0CBEQjRxqFwoTCJC0hebdlYgDFQAAAAAdAAAAABAE",
   //           size: "L",
   //           quantity: 3,
   //           price: 89.99,
@@ -445,6 +470,8 @@ export async function FetchOrdersByUserID(
   //         {
   //           orderID: "ORD003",
   //           productID: "PROD3002",
+  //           productName: "product 2",
+  //           url: "https://www.google.com/url?sa=i&url=https%3A%2F%2Fwordpress.org%2Fplugins%2Freplace-image%2F&psig=AOvVaw1wTBwS-oVIoEyIo-mcjhHX&ust=1724867330464000&source=images&cd=vfe&opi=89978449&ved=0CBEQjRxqFwoTCJC0hebdlYgDFQAAAAAdAAAAABAE",
   //           size: "M",
   //           quantity: 2,
   //           price: 49.99,
@@ -452,6 +479,8 @@ export async function FetchOrdersByUserID(
   //         {
   //           orderID: "ORD003",
   //           productID: "PROD3003",
+  //           productName: "product 3",
+  //           url: "https://www.google.com/url?sa=i&url=https%3A%2F%2Fwordpress.org%2Fplugins%2Freplace-image%2F&psig=AOvVaw1wTBwS-oVIoEyIo-mcjhHX&ust=1724867330464000&source=images&cd=vfe&opi=89978449&ved=0CBEQjRxqFwoTCJC0hebdlYgDFQAAAAAdAAAAABAE",
   //           size: "S",
   //           quantity: 1,
   //           price: 69.99,
@@ -465,12 +494,15 @@ export async function FetchOrdersByUserID(
   //       shippingAddress: "101 Birch St, Springfield, IL 62704",
   //       billingAddress: "101 Birch St, Springfield, IL 62704",
   //       price: 239.96,
-  //       status: "returned",
+  //       status: "canceled",
   //       payStatus: "refunded",
+  //       payMethod: "cod",
   //       items: [
   //         {
   //           orderID: "ORD004",
   //           productID: "PROD4001",
+  //           productName: "product 1",
+  //           url: "https://www.google.com/url?sa=i&url=https%3A%2F%2Fwordpress.org%2Fplugins%2Freplace-image%2F&psig=AOvVaw1wTBwS-oVIoEyIo-mcjhHX&ust=1724867330464000&source=images&cd=vfe&opi=89978449&ved=0CBEQjRxqFwoTCJC0hebdlYgDFQAAAAAdAAAAABAE",
   //           size: "M",
   //           quantity: 1,
   //           price: 119.99,
@@ -478,6 +510,8 @@ export async function FetchOrdersByUserID(
   //         {
   //           orderID: "ORD004",
   //           productID: "PROD4002",
+  //           productName: "product 2",
+  //           url: "https://www.google.com/url?sa=i&url=https%3A%2F%2Fwordpress.org%2Fplugins%2Freplace-image%2F&psig=AOvVaw1wTBwS-oVIoEyIo-mcjhHX&ust=1724867330464000&source=images&cd=vfe&opi=89978449&ved=0CBEQjRxqFwoTCJC0hebdlYgDFQAAAAAdAAAAABAE",
   //           size: "L",
   //           quantity: 2,
   //           price: 59.99,
@@ -493,10 +527,13 @@ export async function FetchOrdersByUserID(
   //       price: 149.95,
   //       status: "canceled",
   //       payStatus: "partially_refunded",
+  //       payMethod: "cod",
   //       items: [
   //         {
   //           orderID: "ORD005",
   //           productID: "PROD5001",
+  //           productName: "product 1",
+  //           url: "https://www.google.com/url?sa=i&url=https%3A%2F%2Fwordpress.org%2Fplugins%2Freplace-image%2F&psig=AOvVaw1wTBwS-oVIoEyIo-mcjhHX&ust=1724867330464000&source=images&cd=vfe&opi=89978449&ved=0CBEQjRxqFwoTCJC0hebdlYgDFQAAAAAdAAAAABAE",
   //           size: "S",
   //           quantity: 2,
   //           price: 74.99,
@@ -504,6 +541,8 @@ export async function FetchOrdersByUserID(
   //         {
   //           orderID: "ORD005",
   //           productID: "PROD5002",
+  //           productName: "product 2",
+  //           url: "https://www.google.com/url?sa=i&url=https%3A%2F%2Fwordpress.org%2Fplugins%2Freplace-image%2F&psig=AOvVaw1wTBwS-oVIoEyIo-mcjhHX&ust=1724867330464000&source=images&cd=vfe&opi=89978449&ved=0CBEQjRxqFwoTCJC0hebdlYgDFQAAAAAdAAAAABAE",
   //           size: "M",
   //           quantity: 1,
   //           price: 49.99,

@@ -10,38 +10,25 @@ import { useOrders, OrdersProvider } from "../../appComoponent/OrdersContext";
 
 export default function OrderDetails() {
   const { orderId } = useParams();
-  const { getOrder, getOrderItems, updateShippingStatus } = useOrders();
+  const { getOrder, updateShippingStatus } = useOrders();
   const [order, setOrder] = useState<Order>();
-  const [orderItems, setOrderItems] = useState<OrderItem[]>([]);
   //const [order.shippingStatus, setShippingStatus] = useState("delivered");
 
   useEffect(() => {
-    const fetchOrderDetails = async () => {
+    const fetchOrder = async () => {
       try {
         const normalizedOrderId = Array.isArray(orderId) ? orderId[0] : orderId;
-        const details = await getOrder(normalizedOrderId);
-        setOrder(details);
+        const order = await getOrder(normalizedOrderId);
+        setOrder(order);
+        //alert(`get order ${orderId} successfully`);
       } catch (error) {
         console.error("Failed to fetch order details: ", error);
-        throw new Error();
+        //throw new Error();
       }
     };
 
-    fetchOrderDetails();
+    fetchOrder();
   }, [orderId, getOrder]);
-
-  useEffect(() => {
-    const fetchItems = async () => {
-      try {
-        const items = await getOrderItems(order ? order.orderID : "");
-        setOrderItems(items);
-      } catch (error) {
-        console.error("Failed to fetch order items: ", error);
-      }
-    };
-
-    fetchItems();
-  }, [order, getOrderItems]);
 
   if (order === undefined) {
     return (
@@ -134,7 +121,7 @@ export default function OrderDetails() {
         </h1>
         <div className="space-y-4"></div>
         <div className="flex flex-col gap-6">
-          {orderItems.map((item, index) => (
+          {order.orderItems.map((item, index) => (
             <div
               key={item.productID}
               className="flex flex-row items-center gap-20 px-16 py-6 bg-primary h-full"
@@ -160,7 +147,7 @@ export default function OrderDetails() {
 
           <div className="flex justify-between mt-2">
             <p className="font-medium text-xl">Estimated time of delivery :</p>
-            <p className="font-medium text-lg">17/05/2024</p>
+            <p className="font-medium text-lg">{order.shipDate}</p>
           </div>
 
           <div className="flex justify-between mt-2">

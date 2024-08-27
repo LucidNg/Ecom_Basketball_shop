@@ -24,7 +24,6 @@ interface OrdersContextType {
   orders: Order[];
   addOrder: (order: Order) => void;
   getOrder: (orderId: string) => Order | undefined;
-  getOrderItems: (orderID: string) => Promise<OrderItem[]>;
   updateShippingStatus: (orderID: string, status: ShippingStatus) => void;
 }
 
@@ -87,12 +86,6 @@ export const OrdersProvider = ({ children }: { children: ReactNode }) => {
     return order;
   };
 
-  const getOrderItems = (orderID: string) => {
-    if (orders.find((order) => order.orderID === orderID) !== undefined) {
-      return FetchOrderItemsByOrderID(orderID);
-    } else throw new Error(`Order with ID ${orderID} not found.`);
-  };
-
   const updateShippingStatus = (orderID: string, status: ShippingStatus) => {
     const orderIndex = orders.findIndex((order) => order.orderID === orderID);
 
@@ -113,7 +106,6 @@ export const OrdersProvider = ({ children }: { children: ReactNode }) => {
         orders,
         addOrder,
         getOrder,
-        getOrderItems,
         updateShippingStatus,
       }}
     >

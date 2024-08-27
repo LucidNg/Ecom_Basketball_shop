@@ -66,6 +66,15 @@ const mock_data = [
     productName: "Reebok Classic Leather Shoes",
     url: "https://image.hsv-tech.io/400x0/reebok/common/21773a4a-ebef-4346-aaba-47e1e04cd91f.webp",
   },
+  {
+    cartID: "ORDER001",
+    productID: "PROD006",
+    size: "45",
+    quantity: 1,
+    price: 2200000,
+    productName: "Reebok Classic Leather Shoes",
+    url: "https://image.hsv-tech.io/400x0/reebok/common/21773a4a-ebef-4346-aaba-47e1e04cd91f.webp",
+  },
 ];
 
 interface CartContextType {
