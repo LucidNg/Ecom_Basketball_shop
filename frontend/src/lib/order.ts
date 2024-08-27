@@ -3,19 +3,20 @@ import { OrderItem } from "./productItem";
 import { v4 as uuidv4 } from "uuid";
 
 export interface Order {
-  orderID: string;
-  userID: string;
-  orderDate: string;
-  shipDate: string;
-  paymentMethod: string;
-  paymentStatus: string;
-  shippingMethod: string;
-  shippingStatus: ShippingStatus;
-  shippingAddress: string;
-  billingAddress: string;
-  coupon: string;
-  totalBill: number;
+  orderID: string; // OrderRequest
+  userID: string; // OrderRequest
+  orderDate: string; // OrderRequest
+  shipDate: string; // ShippingRequest
+  paymentMethod: string; //Dont know where to get?
+  paymentStatus: string; // OrderRequest
+  shippingMethod: string; //ShippingRequest
+  shippingStatus: ShippingStatus; // OrderRequest
+  shippingAddress: string; // OrderRequest
+  billingAddress: string; // OrderRequest
+  coupon: string; // Not implemented yet
+  totalBill: number; // OrderRequest
   quantity: number;
+  orderItems: OrderItem[]; //OrderRequest
 }
 
 export enum ShippingStatus {
@@ -39,6 +40,52 @@ export type OrderDetailsProps = {
 
 export function getNewOrderID(): string {
   return uuidv4();
+}
+
+function convertOrderItemRequestToOrderItem(
+  request: OrderItemRequest
+): OrderItem {
+  return {
+    orderID: request.orderID ?? "", // Provide a default empty string if orderID is undefined
+    productID: request.productID,
+    size: request.size,
+    quantity: request.quantity,
+    price: request.price,
+    // Need to be replace
+    productName: "Need to be replace by the actual product name",
+    // Need to be replace
+    url: "https://www.google.com/url?sa=i&url=https%3A%2F%2Fwordpress.org%2Fplugins%2Freplace-image%2F&psig=AOvVaw0ZDAOT6ltAe0DSsHC3AdiR&ust=1724838119927000&source=images&cd=vfe&opi=89978449&ved=0CBEQjRxqFwoTCIjv1_HwlIgDFQAAAAAdAAAAABAE",
+  };
+}
+
+export function convertToOrder(orderRequest: OrderRequest): Order {
+  const shippingRequest: ShippingRequest = {
+    orderID: orderRequest.orderID,
+    shippingMethod: "Fast",
+    cost: 4.0,
+    startTime: "26-08-2024",
+    estimatedDeliveryTime: "30-08-2024",
+  }; // Need to be replaced with a FetchShippingByOrderID result
+
+  // Create a new Order object based on the provided OrderRequest and ShippingRequest
+  return {
+    orderID: orderRequest.orderID,
+    userID: orderRequest.userID,
+    orderDate: orderRequest.date,
+    shipDate: shippingRequest.estimatedDeliveryTime,
+    paymentMethod: "cod", // Need to be replaced
+    paymentStatus: orderRequest.payStatus,
+    shippingMethod: shippingRequest.shippingMethod,
+    shippingStatus: orderRequest.status as ShippingStatus, // Assuming the status in OrderRequest matches ShippingStatus enum
+    shippingAddress: orderRequest.shippingAddress,
+    billingAddress: orderRequest.billingAddress,
+    coupon: "None", // Not implemented yet
+    totalBill: orderRequest.price,
+    quantity: orderRequest.items ? orderRequest.items.length : 0,
+    orderItems: orderRequest.items
+      ? orderRequest.items.map(convertOrderItemRequestToOrderItem)
+      : [], // Convert each OrderItemRequest to OrderItem
+  };
 }
 
 // export async function FetchOrdersByUserID(
@@ -109,7 +156,6 @@ export function getNewOrderID(): string {
 //   ];
 // }
 
-
 interface OrderRequest {
   orderID: string;
   userID: string;
@@ -137,7 +183,6 @@ interface ShippingRequest {
   startTime: string;
   estimatedDeliveryTime: string;
 }
-
 
 interface RemoveCartItemRequest {
   orderID: string;
@@ -179,7 +224,9 @@ export async function CreateOrder(order: OrderRequest): Promise<void> {
 }
 
 // Function to create order items
-export async function CreateOrderItems(orderItems: OrderItemRequest[]): Promise<void> {
+export async function CreateOrderItems(
+  orderItems: OrderItemRequest[]
+): Promise<void> {
   let url = process.env.API_ENDPOINT
     ? `${process.env.API_ENDPOINT}/createOrderItem`
     : `${connectString}/createOrderItem`;
@@ -191,7 +238,7 @@ export async function CreateOrderItems(orderItems: OrderItemRequest[]): Promise<
     },
     body: JSON.stringify({
       orderID: orderItems[0].orderID, // Assumes all items share the same orderID
-      products: orderItems.map(item => ({
+      products: orderItems.map((item) => ({
         productID: item.productID,
         size: item.size,
         quantity: item.quantity,
@@ -207,8 +254,6 @@ export async function CreateOrderItems(orderItems: OrderItemRequest[]): Promise<
     throw new Error("Failed to create order items");
   }
 }
-
-
 
 // Function to create a shipping entry
 export async function CreateShipping(shipping: ShippingRequest): Promise<void> {
@@ -238,10 +283,10 @@ export async function CreateShipping(shipping: ShippingRequest): Promise<void> {
   }
 }
 
-
-
 // Function to remove items from the cart for a given order
-export async function removeCartItemsFromOrder(order: RemoveCartItemRequest): Promise<void> {
+export async function removeCartItemsFromOrder(
+  order: RemoveCartItemRequest
+): Promise<void> {
   let url = process.env.API_ENDPOINT
     ? `${process.env.API_ENDPOINT}/deleteCartItem`
     : `${connectString}/deleteCartItem`;
@@ -268,7 +313,7 @@ export async function updateStock(order: RemoveCartItemRequest): Promise<void> {
     : `${connectString}/updateStock`;
 
   const response = await fetch(url, {
-    method: "PUT",
+    method: "POST",
     headers: {
       "Content-Type": "application/json",
     },
@@ -283,22 +328,24 @@ export async function updateStock(order: RemoveCartItemRequest): Promise<void> {
   }
 }
 
-export async function FetchOrdersByUserID(userID: string): Promise<OrdersByUserID | null> {
+export async function FetchOrdersByUserID(
+  userID: string
+): Promise<OrdersByUserID | null> {
   let url = process.env.API_ENDPOINT
     ? `${process.env.API_ENDPOINT}/queryOrders/${userID}`
     : `${connectString}/queryOrders/${userID}`;
 
   try {
     const response = await fetch(url, {
-      method: 'GET',
+      method: "GET",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
     });
 
     if (!response.ok) {
       // Handle HTTP errors
-      console.error('Failed to fetch orders:', response.statusText);
+      console.error("Failed to fetch orders:", response.statusText);
       return null;
     }
 
@@ -306,7 +353,158 @@ export async function FetchOrdersByUserID(userID: string): Promise<OrdersByUserI
     return data;
   } catch (error) {
     // Handle network or other errors
-    console.error('Error fetching orders:', error);
+    console.error("Error fetching orders:", error);
     return null;
   }
+
+  // const exampleOrdersByUserID: OrdersByUserID = {
+  //   orders: [
+  //     {
+  //       orderID: "ORD001",
+  //       userID: "USER001",
+  //       date: "2024-08-01",
+  //       shippingAddress: "123 Maple St, Springfield, IL 62701",
+  //       billingAddress: "123 Maple St, Springfield, IL 62701",
+  //       price: 299.98,
+  //       status: "delivered",
+  //       payStatus: "paid",
+  //       items: [
+  //         {
+  //           orderID: "ORD001",
+  //           productID: "PROD1001",
+  //           size: "M",
+  //           quantity: 2,
+  //           price: 79.99,
+  //         },
+  //         {
+  //           orderID: "ORD001",
+  //           productID: "PROD1002",
+  //           size: "L",
+  //           quantity: 1,
+  //           price: 139.99,
+  //         },
+  //         {
+  //           orderID: "ORD001",
+  //           productID: "PROD1003",
+  //           size: "S",
+  //           quantity: 1,
+  //           price: 59.99,
+  //         },
+  //       ],
+  //     },
+  //     {
+  //       orderID: "ORD002",
+  //       userID: "USER002",
+  //       date: "2024-08-02",
+  //       shippingAddress: "456 Oak St, Springfield, IL 62702",
+  //       billingAddress: "456 Oak St, Springfield, IL 62702",
+  //       price: 189.97,
+  //       status: "pending",
+  //       payStatus: "unpaid",
+  //       items: [
+  //         {
+  //           orderID: "ORD002",
+  //           productID: "PROD2001",
+  //           size: "XL",
+  //           quantity: 1,
+  //           price: 99.99,
+  //         },
+  //         {
+  //           orderID: "ORD002",
+  //           productID: "PROD2002",
+  //           size: "M",
+  //           quantity: 2,
+  //           price: 44.99,
+  //         },
+  //       ],
+  //     },
+  //     {
+  //       orderID: "ORD003",
+  //       userID: "USER003",
+  //       date: "2024-08-03",
+  //       shippingAddress: "789 Pine St, Springfield, IL 62703",
+  //       billingAddress: "789 Pine St, Springfield, IL 62703",
+  //       price: 399.95,
+  //       status: "shipped",
+  //       payStatus: "paid",
+  //       items: [
+  //         {
+  //           orderID: "ORD003",
+  //           productID: "PROD3001",
+  //           size: "L",
+  //           quantity: 3,
+  //           price: 89.99,
+  //         },
+  //         {
+  //           orderID: "ORD003",
+  //           productID: "PROD3002",
+  //           size: "M",
+  //           quantity: 2,
+  //           price: 49.99,
+  //         },
+  //         {
+  //           orderID: "ORD003",
+  //           productID: "PROD3003",
+  //           size: "S",
+  //           quantity: 1,
+  //           price: 69.99,
+  //         },
+  //       ],
+  //     },
+  //     {
+  //       orderID: "ORD004",
+  //       userID: "USER004",
+  //       date: "2024-08-04",
+  //       shippingAddress: "101 Birch St, Springfield, IL 62704",
+  //       billingAddress: "101 Birch St, Springfield, IL 62704",
+  //       price: 239.96,
+  //       status: "returned",
+  //       payStatus: "refunded",
+  //       items: [
+  //         {
+  //           orderID: "ORD004",
+  //           productID: "PROD4001",
+  //           size: "M",
+  //           quantity: 1,
+  //           price: 119.99,
+  //         },
+  //         {
+  //           orderID: "ORD004",
+  //           productID: "PROD4002",
+  //           size: "L",
+  //           quantity: 2,
+  //           price: 59.99,
+  //         },
+  //       ],
+  //     },
+  //     {
+  //       orderID: "ORD005",
+  //       userID: "USER005",
+  //       date: "2024-08-05",
+  //       shippingAddress: "202 Cedar St, Springfield, IL 62705",
+  //       billingAddress: "202 Cedar St, Springfield, IL 62705",
+  //       price: 149.95,
+  //       status: "canceled",
+  //       payStatus: "partially_refunded",
+  //       items: [
+  //         {
+  //           orderID: "ORD005",
+  //           productID: "PROD5001",
+  //           size: "S",
+  //           quantity: 2,
+  //           price: 74.99,
+  //         },
+  //         {
+  //           orderID: "ORD005",
+  //           productID: "PROD5002",
+  //           size: "M",
+  //           quantity: 1,
+  //           price: 49.99,
+  //         },
+  //       ],
+  //     },
+  //   ],
+  // };
+
+  // return exampleOrdersByUserID;
 }

@@ -245,24 +245,24 @@ export default function CheckoutPage() {
             <button
               className="btn font-semibold text-4xl h-20 w-96 self-center my-20 transition transition-duration-300 transition-property:scale,box-shadow,background-color hover:scale-105 hover:drop-shadow-xl hover:bg-secondary outline-none border-none"
               onClick={() => {
-                addOrder({
-                  orderID: orderID,
-                  userID: "60629436-da35-401c-9bf8-6e8e3aed90ed", // Replace with the actual user ID
-                  orderDate: getToday(),
-                  shipDate: getNext5Days(),
-                  paymentMethod: selectedPayment,
-                  paymentStatus:
-                    selectedPayment === "cod"
-                      ? PaymentStatus.Unpaid
-                      : PaymentStatus.Paid,
-                  shippingMethod: selectedDelivery,
-                  shippingStatus: ShippingStatus.Pending,
-                  shippingAddress: "123 Main St, City A, Country X",
-                  billingAddress: "123 Main St, City A, Country X",
-                  coupon: "None",
-                  totalBill: totalPrice,
-                  quantity: selectCart.length,
-                });
+                // addOrder({
+                //   orderID: orderID,
+                //   userID: "60629436-da35-401c-9bf8-6e8e3aed90ed", // Replace with the actual user ID
+                //   orderDate: getToday(),
+                //   shipDate: getNext5Days(),
+                //   paymentMethod: selectedPayment,
+                //   paymentStatus:
+                //     selectedPayment === "cod"
+                //       ? PaymentStatus.Unpaid
+                //       : PaymentStatus.Paid,
+                //   shippingMethod: selectedDelivery,
+                //   shippingStatus: ShippingStatus.Pending,
+                //   shippingAddress: "123 Main St, City A, Country X",
+                //   billingAddress: "123 Main St, City A, Country X",
+                //   coupon: "None",
+                //   totalBill: totalPrice,
+                //   quantity: selectCart.length,
+                // });
                 //removeCheckedOutItems;
               }}
             >
