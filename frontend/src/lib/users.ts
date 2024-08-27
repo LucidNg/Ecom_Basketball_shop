@@ -128,7 +128,7 @@ export async function UpdateUserPassword(
     const url = `${connectString}/updateUserPassword?`;
 
     const response = await fetch(url, {
-        method: "PUT",
+        method: "POST",
         headers: {
             "Content-Type": "application/x-www-form-urlencoded",
         },

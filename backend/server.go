@@ -130,7 +130,7 @@ func main() {
 	}))).Methods(http.MethodPost)
 
 	r.HandleFunc("/updateUserPassword", rateLimiter(limiter, corsMiddleware(func(w http.ResponseWriter, r *http.Request) {
-		if r.Method == http.MethodPut {
+		if r.Method == http.MethodPost {
 			// Parse form values for the update
 			if err := r.ParseForm(); err != nil {
 				http.Error(w, "Invalid form data", http.StatusBadRequest)
@@ -153,7 +153,7 @@ func main() {
 		} else {
 			http.Error(w, "Unsupported method", http.StatusMethodNotAllowed)
 		}
-	}))).Methods(http.MethodPut)
+	}))).Methods(http.MethodPost)
 
 	r.HandleFunc("/authenticate", rateLimiter(limiter, corsMiddleware(func(w http.ResponseWriter, r *http.Request) {
 		if r.Method == http.MethodPost {
@@ -394,12 +394,12 @@ func main() {
 	}))).Methods(http.MethodGet)
 
 	r.HandleFunc("/updateStock", rateLimiter(limiter, corsMiddleware(func(w http.ResponseWriter, r *http.Request) {
-		if r.Method == http.MethodPut {
+		if r.Method == http.MethodPost {
 			database.UpdateStock(db, w, r)
 		} else {
 			http.Error(w, "Unsupported method", http.StatusMethodNotAllowed)
 		}
-	}))).Methods(http.MethodPut)
+	}))).Methods(http.MethodPost)
 
 	r.HandleFunc("/deleteCartItem", rateLimiter(limiter, corsMiddleware(func(w http.ResponseWriter, r *http.Request) {
 		if r.Method == http.MethodDelete {
