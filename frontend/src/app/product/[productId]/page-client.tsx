@@ -7,9 +7,10 @@ import Image from "next/image";
 import Rating from "./productPageComponent/rating";
 import CommentBox from "./productPageComponent/commentBox";
 import { FetchProduct } from "@/lib/product";
-import { IProduct } from "@/app/appComoponent/ProductCard.type";
 import { useCart } from "@/app/appComoponent/CartContext";
 import { add } from "lodash";
+import { AddCartItem } from "@/lib/cartItem";
+import { decryptToken } from "@/lib/decrypt";
 
 var categoryID = "";
 
@@ -111,25 +112,34 @@ const DetailedProductPageCli = ({ children1 }: DetailedProductPage) => {
     }
   };
 
-  const addToCartHandler = () => {
+  const addToCartHandler = async () => {
     if (productDetails && selectedSize) {
       const product = productDetails.productDetails[0];
-      console.log(
-        `Added ${quantity} ${
-          product.productName
-        } (size: ${selectedSize}) to cart. Total: ${
-          quantity * priceBySize[selectedSize]
-        }`
-      );
-      addToCart({
-        cartID: "",
+      const token = localStorage.getItem("jwt");
+      let cartID = "";
+      if (token) {
+        const decrypted = decryptToken(token);
+        const payload = JSON.parse(atob(decrypted.split(".")[1]));
+        cartID = payload.cartID;
+      } else {
+        console.error("No token found. Cannot add item to cart.");
+        return;
+      }
+      const cartItem = {
+        cartID: cartID, // You might need to fetch or generate the cartID if it's not available yet
         productID: product.productID,
-        productName: product.productName,
         size: selectedSize,
-        url: images[0],
-        quantity: quantity,
-        price: quantity * priceBySize[selectedSize],
-      });
+        quantity: quantity.toString(), // Ensure quantity is passed as a string
+        price: (quantity * priceBySize[selectedSize]).toFixed(2), // Convert price to a string with two decimals
+      };
+
+      try {
+        // Call the AddCartItem function with the constructed cartItem object
+        await AddCartItem(cartItem);
+        console.log("Item added to cart successfully.");
+      } catch (error) {
+        console.error("Failed to add item to cart:", error);
+      }
     }
   };
 
@@ -137,7 +147,6 @@ const DetailedProductPageCli = ({ children1 }: DetailedProductPage) => {
 
   const product = productDetails.productDetails[0];
   categoryID = product.categoryID;
-  console.log("CategoryID", categoryID);
 
   return (
     <div className="w-screen flex flex-col pt-20 bg-base-100">
@@ -267,7 +276,7 @@ const DetailedProductPageCli = ({ children1 }: DetailedProductPage) => {
         </div>
       </div>
 
-      <div className="w-11/12 mt-20 self-center grid-cols-2 gap-10 pt-20">
+      {/* <div className="w-11/12 mt-20 self-center grid-cols-2 gap-10 pt-20">
         {product && (
           <>
             <span className="font-semibold text-4xl text-base-content">
@@ -287,7 +296,7 @@ const DetailedProductPageCli = ({ children1 }: DetailedProductPage) => {
             </div>
           </>
         )}
-      </div>
+      </div> */}
     </div>
   );
 };

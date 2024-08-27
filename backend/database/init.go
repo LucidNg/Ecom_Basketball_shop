@@ -46,7 +46,7 @@ func CreateTable(db *sqlitecloud.SQCloud) error {
 		"orderID" TEXT NOT NULL PRIMARY KEY,
 		"userID" TEXT NOT NULL,
 		"date" TEXT NOT NULL,
-		"shippingAdress" TEXT NOT NULL,
+		"shippingAddress" TEXT NOT NULL,
 		"billingAddress" TEXT NOT NULL,
 		"price" REAL NOT NULL,
 		"status" TEXT NOT NULL,

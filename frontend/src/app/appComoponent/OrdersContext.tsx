@@ -38,7 +38,7 @@ export const OrdersProvider = ({ children }: { children: ReactNode }) => {
   const userID = "60629436-da35-401c-9bf8-6e8e3aed90ed"; // Replace with the actual user ID
 
   useEffect(() => {
-    const fetchOrdersItems = async () => {
+    const fetchOrders = async () => {
       try {
         const _orders = await FetchOrdersByUserID(userID);
         setOrders(_orders);
@@ -46,10 +46,22 @@ export const OrdersProvider = ({ children }: { children: ReactNode }) => {
         console.error("Failed to fetch cart items:", error);
       }
     };
-    fetchOrdersItems();
+    fetchOrders();
   }, [userID]);
 
   const addOrder = (order: Order) => {
+    setOrders((prevOrders) => {
+      const existingProductIndex = prevOrders.findIndex(
+        (item) => item.orderID === order.orderID
+      );
+      if (existingProductIndex !== -1) {
+        throw new Error(
+          `Server Error: the order with ID ${order.orderID} has already existed`
+        );
+      } else {
+        return [...prevOrders, order];
+      }
+    });
     alert(`Order ${order.orderID} is added to list of Orders`);
   };
 
@@ -66,10 +78,20 @@ export const OrdersProvider = ({ children }: { children: ReactNode }) => {
   const getOrderItems = (orderID: string) => {
     if (orders.find((order) => order.orderID === orderID) !== undefined) {
       return FetchOrderItemsByOrderID(orderID);
-    } else throw new Error("Order ID does not exist");
+    } else throw new Error(`Order with ID ${orderID} not found.`);
   };
 
   const updateShippingStatus = (orderID: string, status: ShippingStatus) => {
+    const orderIndex = orders.findIndex((order) => order.orderID === orderID);
+
+    if (orderIndex === -1) {
+      throw new Error(`Order with ID ${orderID} not found.`);
+    }
+
+    const updatedOrders = [...orders];
+    updatedOrders[orderIndex].shippingStatus = status;
+    setOrders(updatedOrders);
+
     alert(`Order ${orderID} is updated to ${status}`);
   };
 

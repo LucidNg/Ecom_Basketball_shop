@@ -3,7 +3,34 @@
 import Link from "next/link";
 import { useState, useCallback, useEffect } from "react";
 import { useCart } from "../appComoponent/CartContext";
+import { useOrders } from "../appComoponent/OrdersContext";
+import { getNewOrderID, PaymentStatus, ShippingStatus } from "@/lib/order";
 import ProductCard from "../appComoponent/ProductCard";
+
+function getToday() {
+  const today = new Date();
+  const year = today.getFullYear();
+  const month = String(today.getMonth() + 1).padStart(2, "0"); // Months are zero-indexed in JavaScript
+  const day = String(today.getDate()).padStart(2, "0");
+  const formattedDateDMY = `${day}-${month}-${year}`;
+
+  return formattedDateDMY;
+}
+
+function getNext5Days() {
+  const today = new Date();
+  const fiveDaysLater = new Date(today);
+
+  // Add 5 days to the current date
+  fiveDaysLater.setDate(today.getDate() + 5);
+
+  // Format date as 'DD-MM-YYYY'
+  const year = fiveDaysLater.getFullYear();
+  const month = String(fiveDaysLater.getMonth() + 1).padStart(2, "0");
+  const day = String(fiveDaysLater.getDate()).padStart(2, "0");
+
+  return `${day}-${month}-${year}`;
+}
 
 export default function CheckoutPage() {
   const [selectedDelivery, setSelectedDelivery] = useState("standard");
@@ -12,8 +39,9 @@ export default function CheckoutPage() {
   const [totalPrice, setTotalPrice] = useState(0);
   const [couponPrice, setCouponPrice] = useState(0);
   const { cart, selectCart, removeCheckedOutItems } = useCart();
+  const { orders, addOrder } = useOrders();
 
-  const orderID = "ORDER001"; // Replace with actual generated orderID
+  const orderID = getNewOrderID(); // Replace with actual generated orderID
 
   const handleCheckboxDeliChange = (
     event: React.ChangeEvent<HTMLInputElement>
@@ -217,6 +245,24 @@ export default function CheckoutPage() {
             <button
               className="btn font-semibold text-4xl h-20 w-96 self-center my-20 transition transition-duration-300 transition-property:scale,box-shadow,background-color hover:scale-105 hover:drop-shadow-xl hover:bg-secondary outline-none border-none"
               onClick={() => {
+                addOrder({
+                  orderID: orderID,
+                  userID: "60629436-da35-401c-9bf8-6e8e3aed90ed", // Replace with the actual user ID
+                  orderDate: getToday(),
+                  shipDate: getNext5Days(),
+                  paymentMethod: selectedPayment,
+                  paymentStatus:
+                    selectedPayment === "cod"
+                      ? PaymentStatus.Unpaid
+                      : PaymentStatus.Paid,
+                  shippingMethod: selectedDelivery,
+                  shippingStatus: ShippingStatus.Pending,
+                  shippingAddress: "123 Main St, City A, Country X",
+                  billingAddress: "123 Main St, City A, Country X",
+                  coupon: "None",
+                  totalBill: totalPrice,
+                  quantity: selectCart.length,
+                });
                 //removeCheckedOutItems;
               }}
             >

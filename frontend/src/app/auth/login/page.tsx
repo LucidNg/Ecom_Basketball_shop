@@ -20,7 +20,7 @@ export default function Login() {
             setSuccess('Login successful!');
             setError('');
             localStorage.setItem('jwt', jwt); // Store the JWT token in localStorage
-            router.push('/home'); // Redirect to the dashboard or another page
+            router.push('/'); // Redirect to the dashboard or another page
         } catch (err: any) {
             setError(err.message);
             setSuccess('');

@@ -2,11 +2,27 @@
 
 import React, { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
-import ProductCard from "../appComoponent/ProductCard";
-import { CartItem } from "../../lib/productItem";
-import { useCart } from "../appComoponent/CartContext";
+import OrderCard from "../appComoponent/OrderCard";
+import { useOrders } from "../appComoponent/OrdersContext";
+import { FetchOrdersByUserID, ShippingStatus } from "@/lib/order";
 
 export default function TrackingOrders() {
+  const userID = "60629436-da35-401c-9bf8-6e8e3aed90ed";
+  const { orders } = useOrders();
+
+  // Filter orders based on status
+  const successfulOrders = orders.filter(
+    (order) => order.shippingStatus === ShippingStatus.Delivered
+  );
+  const processingOrders = orders.filter(
+    (order) =>
+      order.shippingStatus === ShippingStatus.Delivering ||
+      order.shippingStatus === ShippingStatus.Pending
+  );
+  const canceledOrders = orders.filter(
+    (order) => order.shippingStatus === ShippingStatus.Canceled
+  );
+
   return (
     <div className="p-10">
       <div role="tablist" className="tabs tabs-lifted p-">
@@ -19,9 +35,11 @@ export default function TrackingOrders() {
         />
         <div
           role="tabpanel"
-          className="tab-content border-base-300 bg-primary rounded-box p-6"
+          className="tab-content border-base-300 bg-primary rounded-box p-6 space-y-4"
         >
-          Tab content 1
+          {successfulOrders.map((order) => (
+            <OrderCard key={order.orderID} order={order} />
+          ))}
         </div>
 
         <input
@@ -34,9 +52,11 @@ export default function TrackingOrders() {
         />
         <div
           role="tabpanel"
-          className="tab-content border-base-300 bg-primary rounded-box p-6"
+          className="tab-content border-base-300 bg-primary rounded-box p-6 space-y-4"
         >
-          Tab content 2
+          {processingOrders.map((order) => (
+            <OrderCard key={order.orderID} order={order} />
+          ))}
         </div>
 
         <input
@@ -48,9 +68,11 @@ export default function TrackingOrders() {
         />
         <div
           role="tabpanel"
-          className="tab-content border-base-300 bg-primary rounded-box p-6"
+          className="tab-content border-base-300 bg-primary rounded-box p-6 space-y-4"
         >
-          Tab content 3
+          {canceledOrders.map((order) => (
+            <OrderCard key={order.orderID} order={order} />
+          ))}
         </div>
       </div>
     </div>

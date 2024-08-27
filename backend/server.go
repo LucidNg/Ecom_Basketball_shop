@@ -89,30 +89,83 @@ func main() {
 			email := r.FormValue("email")
 			password := r.FormValue("password")
 			fullname := r.FormValue("fullname")
-			err := database.InsertUser(db, fullname, email, password)
+			id, err := database.InsertUser(db, fullname, email, password)
 			if err != nil {
 				http.Error(w, "Failed to create user: "+err.Error(), http.StatusInternalServerError)
 				return
 			}
-			w.Write([]byte("User inserted successfully"))
+			w.Write([]byte(id))
 		} else {
 			http.Error(w, "Unsupported method", http.StatusMethodNotAllowed)
 		}
 	}))).Methods(http.MethodGet, http.MethodPost)
 
-	r.HandleFunc("/auth/status", corsMiddleware(http.HandlerFunc(database.AuthStatusHandler))).Methods(http.MethodGet)
+	r.HandleFunc("/updateUserDetail", rateLimiter(limiter, corsMiddleware(func(w http.ResponseWriter, r *http.Request) {
+		if r.Method == http.MethodPut {
+			// Parse form values for the update
+			if err := r.ParseForm(); err != nil {
+				http.Error(w, "Invalid form data", http.StatusBadRequest)
+				return
+			}
+
+			userID := r.FormValue("userID")
+			fullName := r.FormValue("fullName")
+			phoneNumber := r.FormValue("phoneNumber")
+			address := r.FormValue("address")
+			dob := r.FormValue("dob")
+
+			// Call the function to update user details
+			err := database.UpdateUserDetail(db, userID, fullName, phoneNumber, address, dob, w)
+			if err != nil {
+				http.Error(w, "Failed to update user details: "+err.Error(), http.StatusInternalServerError)
+				return
+			}
+
+			// Success response
+			w.WriteHeader(http.StatusOK)
+			w.Write([]byte("User details updated successfully"))
+		} else {
+			http.Error(w, "Unsupported method", http.StatusMethodNotAllowed)
+		}
+	}))).Methods(http.MethodPut)
+
+	r.HandleFunc("/updateUserPassword", rateLimiter(limiter, corsMiddleware(func(w http.ResponseWriter, r *http.Request) {
+		if r.Method == http.MethodPut {
+			// Parse form values for the update
+			if err := r.ParseForm(); err != nil {
+				http.Error(w, "Invalid form data", http.StatusBadRequest)
+				return
+			}
+
+			userID := r.FormValue("userID")
+			newPassword := r.FormValue("newPassword")
+
+			// Call the function to update the user password
+			err := database.UpdateUserPassword(db, userID, newPassword)
+			if err != nil {
+				http.Error(w, "Failed to update password: "+err.Error(), http.StatusInternalServerError)
+				return
+			}
+
+			// Success response
+			w.WriteHeader(http.StatusOK)
+			w.Write([]byte("Password updated successfully"))
+		} else {
+			http.Error(w, "Unsupported method", http.StatusMethodNotAllowed)
+		}
+	}))).Methods(http.MethodPut)
 
 	r.HandleFunc("/authenticate", rateLimiter(limiter, corsMiddleware(func(w http.ResponseWriter, r *http.Request) {
 		if r.Method == http.MethodPost {
 			email := r.FormValue("email")
 			password := r.FormValue("password")
 
-			err := database.AuthenticateUser(db, email, password, w)
+			token, err := database.AuthenticateUser(db, email, password)
 			if err != nil {
 				http.Error(w, "Authentication failed: "+err.Error(), http.StatusUnauthorized)
 				return
 			}
-			w.Write([]byte("Authentication Success"))
+			w.Write([]byte(token))
 		} else {
 			http.Error(w, "Unsupported method", http.StatusMethodNotAllowed)
 		}
@@ -331,6 +384,14 @@ func main() {
 			http.Error(w, "Unsupported method", http.StatusMethodNotAllowed)
 		}
 	}))).Methods(http.MethodPost)
+
+	r.HandleFunc("/queryOrders/{userID}", rateLimiter(limiter, corsMiddleware(func(w http.ResponseWriter, r *http.Request) {
+		if r.Method == http.MethodGet {
+			database.QueryOrdersByUserID(db, w, r)
+		} else {
+			http.Error(w, "Unsupported method", http.StatusMethodNotAllowed)
+		}
+	}))).Methods(http.MethodGet)
 
 	r.HandleFunc("/updateStock", rateLimiter(limiter, corsMiddleware(func(w http.ResponseWriter, r *http.Request) {
 		if r.Method == http.MethodPut {
