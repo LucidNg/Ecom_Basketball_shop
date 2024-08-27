@@ -59,11 +59,11 @@ export default function ProfilePage() {
         if (isEditable) {
             try {
                 await UpdateUserDetail({
+                    userID: userID,
                     fullName: name,
                     dob: dateOfBirth,
                     phoneNumber: contactNumber,
                     address: address,
-                    userID: userID,
                 });
                 alert("User details updated successfully.");
             } catch (err) {
