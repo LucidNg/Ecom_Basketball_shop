@@ -448,6 +448,42 @@ func main() {
 		}
 	}))).Methods(http.MethodGet)
 
+	r.HandleFunc("/admin/product/{offset}", rateLimiter(limiter, corsMiddleware(func(w http.ResponseWriter, r *http.Request) {
+		if r.Method == http.MethodGet {
+			err := database.QueryAllProduct(db, w, r)
+			if err != nil {
+				http.Error(w, "Failed to query products", http.StatusInternalServerError)
+				return
+			}
+		} else {
+			http.Error(w, "Unsupported method", http.StatusMethodNotAllowed)
+		}
+	}))).Methods(http.MethodGet)
+
+	r.HandleFunc("/admin/order/{method}/{offset}", rateLimiter(limiter, corsMiddleware(func(w http.ResponseWriter, r *http.Request) {
+		if r.Method == http.MethodGet {
+			err := database.QueryAllOrders(db, w, r)
+			if err != nil {
+				http.Error(w, "Failed to query orders", http.StatusInternalServerError)
+				return
+			}
+		} else {
+			http.Error(w, "Unsupported method", http.StatusMethodNotAllowed)
+		}
+	}))).Methods(http.MethodGet)
+
+	r.HandleFunc("/admin/orderItem/{orderID}", rateLimiter(limiter, corsMiddleware(func(w http.ResponseWriter, r *http.Request) {
+		if r.Method == http.MethodGet {
+			err := database.QueryItemsByOrderID(db, w, r)
+			if err != nil {
+				http.Error(w, "Failed to query orders", http.StatusInternalServerError)
+				return
+			}
+		} else {
+			http.Error(w, "Unsupported method", http.StatusMethodNotAllowed)
+		}
+	}))).Methods(http.MethodGet)
+
 	port := getPort()
 	fmt.Printf("Server is listening on port %s\n", port)
 	log.Fatal(http.ListenAndServe(port, r))

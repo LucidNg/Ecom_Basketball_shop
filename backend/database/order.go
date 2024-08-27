@@ -43,7 +43,7 @@ func CreateOrder(db *sqlitecloud.SQCloud, userID string, date string, shippingAd
 		return err
 	}
 
-	createOrderSQL := "INSERT INTO orders (orderID, userID, date, shippingAdress, billingAddress, price, status, payStatus) VALUES (?, ?, ?, ?, ?, ?, ?, ?)"
+	createOrderSQL := "INSERT INTO orders (orderID, userID, date, shippingAddress, billingAddress, price, status, payStatus) VALUES (?, ?, ?, ?, ?, ?, ?, ?)"
 	values := []interface{}{id, userID, date, shippingAdress, billingAddress, priceValue, status, payStatus}
 
 	err = db.ExecuteArray(createOrderSQL, values)
