@@ -10,6 +10,7 @@ import {
   PaymentStatus,
   removeCartItemsFromOrder,
   ShippingStatus,
+  updateStock,
 } from "@/lib/order";
 import ProductCard from "../appComoponent/ProductCard";
 
@@ -255,8 +256,11 @@ export default function CheckoutPage() {
                       return convertOrderItemToOrderItemRequest(item);
                     })
                   : [];
-
                 removeCartItemsFromOrder({
+                  orderID: orderID,
+                  items: _orderItemRequestsRemove,
+                });
+                updateStock({
                   orderID: orderID,
                   items: _orderItemRequestsRemove,
                 });
