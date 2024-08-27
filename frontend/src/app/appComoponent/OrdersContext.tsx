@@ -13,7 +13,12 @@ import {
   FetchOrderItemsByOrderID,
 } from "../../lib/productItem";
 import { remove, update } from "lodash";
-import { Order, ShippingStatus, FetchOrdersByUserID } from "@/lib/order";
+import {
+  Order,
+  ShippingStatus,
+  FetchOrdersByUserID,
+  convertToOrder,
+} from "@/lib/order";
 
 interface OrdersContextType {
   orders: Order[];
@@ -40,8 +45,13 @@ export const OrdersProvider = ({ children }: { children: ReactNode }) => {
   useEffect(() => {
     const fetchOrders = async () => {
       try {
-        const _orders = await FetchOrdersByUserID(userID);
-        // setOrders(_orders);
+        const _ordersByUserID = await FetchOrdersByUserID(userID);
+        if (_ordersByUserID && _ordersByUserID.orders) {
+          const _orders = _ordersByUserID.orders.map((orderRequest) => {
+            return convertToOrder(orderRequest);
+          });
+          setOrders(_orders);
+        }
       } catch (error) {
         console.error("Failed to fetch cart items:", error);
       }
@@ -63,6 +73,7 @@ export const OrdersProvider = ({ children }: { children: ReactNode }) => {
       }
     });
     alert(`Order ${order.orderID} is added to list of Orders`);
+    console.log("New orders: ", orders);
   };
 
   const getOrder = (orderId: string): Order | undefined => {
