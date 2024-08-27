@@ -107,7 +107,7 @@ export async function UpdateUserDetail(
     const url = `${connectString}/updateUserDetail?userID=${encodeURIComponent(userDetailData.userID)}&fullName=${encodeURIComponent(userDetailData.fullName)}&phoneNumber=${encodeURIComponent(userDetailData.phoneNumber)}&address=${encodeURIComponent(userDetailData.address)}&dob=${encodeURIComponent(userDetailData.dob)}`;
     
     const response = await fetch(url, {
-        method: "PUT",
+        method: "POST",
         credentials: "include",
         mode: "cors",
         cache: "no-cache",
