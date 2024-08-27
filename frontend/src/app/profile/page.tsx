@@ -115,21 +115,16 @@ export default function ProfilePage() {
 
     return (
         <>
-            <div role="tablist" className="tabs tabs-lifted p-24 mt-2 mx-auto md:w-7/12">
-                {/* Profile Tab */}
-                <input  
-                    type="radio" 
-                    name="my_tabs_2" 
-                    role="tab" 
-                    className="tab font-semibold text-2xl text-primary-content" 
-                    aria-label="Profile" 
-                    defaultChecked
-                />
-                <div role="tabpanel" className="tab-content bg-base-100 border-base-300 rounded-box p-6">
-                    <div className="grid grid-cols-2 gap-x-4 gap-y-8 w-full place-items-center pt-8">
+            <div className="sm:p-10 p-2 mb-2 mt-10 mx-10 sm:mx-auto md:w-7/12 shadow-lg shadow-base-content/40">
+                <h2 className="text-base-content text-4xl font-semibold pt-5">Account Details</h2>
+                <div className="bg-base-100 border-base-300 rounded-box p-6">
+                <div className="grid grid-cols-1 gap-x-4 gap-y-8 w-full place-items-start pt-4">
+                    <div className="flex items-center w-full">
+                        <label htmlFor="name" className="text-xl text-primary-content w-1/3 mb-2">Name</label>
                         <input 
-                            className={`border border-primary-content text-primary-content placeholder:text-opacity-50 placeholder:text-primary-content 
-                                p-2 text-xl rounded-lg w-4/5 caret-transparent focus:caret-black focus:border-b-4 ${
+                            id="name"
+                            className={`border-b-2 border-b-primary-content text-primary-content placeholder:text-opacity-50 placeholder:text-primary-content 
+                                p-2 text-xl w-2/3 caret-transparent focus:caret-black focus:border-b-4 ${
                                 isEditable ? 'bg-white' : 'bg-gray-200 cursor-not-allowed'
                             }`}
                             placeholder="Name"
@@ -138,25 +133,29 @@ export default function ProfilePage() {
                             onChange={(e) => setName(e.target.value)}
                             disabled={!isEditable}
                         />
+                    </div>
 
-                        <div className="flex items-center justify-center">
-                            <span className="text-2xl text-primary-content cursor-not-allowed xl:inline hidden">Date of birth :</span>
-                            <input 
-                                className={`border border-primary-content text-primary-content placeholder:text-opacity-50 placeholder:text-primary-content 
-                                    p-2 text-xl rounded-lg w-4/5 caret-transparent focus:caret-black focus:border-b-4 ml-2 ${
-                                    isEditable ? 'bg-white' : 'bg-gray-200 cursor-not-allowed'
-                                }`}
-                                type="date"
-                                value={dateOfBirth}
-                                onChange={(e) => setDateOfBirth(e.target.value)}
-                                disabled={!isEditable}
-                                placeholder="Date of Birth"
-                            />
-                        </div>
-
+                    <div className="flex items-center w-full">
+                        <label htmlFor="dateOfBirth" className="text-xl text-primary-content w-1/3 mb-2">Date of Birth</label>
                         <input 
-                            className={`border border-primary-content text-primary-content placeholder:text-opacity-50 placeholder:text-primary-content 
-                                p-2 text-xl rounded-lg w-4/5 caret-transparent focus:caret-black focus:border-b-4 ${
+                            id="dateOfBirth"
+                            className={`border-b-2 border-b-primary-content text-primary-content placeholder:text-opacity-50 placeholder:text-primary-content 
+                                p-2 text-xl w-2/3 caret-transparent focus:caret-black focus:border-b-4 ${
+                                isEditable ? 'bg-white' : 'bg-gray-200 cursor-not-allowed'
+                            }`}
+                            type="date"
+                            value={dateOfBirth}
+                            onChange={(e) => setDateOfBirth(e.target.value)}
+                            disabled={!isEditable}
+                        />
+                    </div>
+
+                    <div className="flex items-center w-full">
+                        <label htmlFor="contactNumber" className="text-xl text-primary-content w-1/3 mb-2">Contact Number</label>
+                        <input 
+                            id="contactNumber"
+                            className={`border-b-2 border-b-primary-content text-primary-content placeholder:text-opacity-50 placeholder:text-primary-content 
+                                p-2 text-xl w-2/3 caret-transparent focus:caret-black focus:border-b-4 ${
                                 isEditable ? 'bg-white' : 'bg-gray-200 cursor-not-allowed'
                             }`}
                             placeholder="Contact number"
@@ -165,10 +164,14 @@ export default function ProfilePage() {
                             onChange={(e) => setContactNumber(e.target.value)}
                             disabled={!isEditable}
                         />
+                    </div>
 
+                    <div className="flex items-center w-full">
+                        <label htmlFor="address" className="text-xl text-primary-content w-1/3 mb-2">Address</label>
                         <input 
-                            className={`border border-primary-content text-primary-content placeholder:text-opacity-50 placeholder:text-primary-content 
-                                p-2 text-xl rounded-lg w-4/5 caret-transparent focus:caret-black focus:border-b-4 ${
+                            id="address"
+                            className={`border-b-2 border-b-primary-content text-primary-content placeholder:text-opacity-50 placeholder:text-primary-content 
+                                p-2 text-xl w-2/3 caret-transparent focus:caret-black focus:border-b-4 ${
                                 isEditable ? 'bg-white' : 'bg-gray-200 cursor-not-allowed'
                             }`}
                             placeholder="Address"
@@ -177,10 +180,14 @@ export default function ProfilePage() {
                             onChange={(e) => setAddress(e.target.value)}
                             disabled={!isEditable}
                         />
+                    </div>
 
+                    <div className="flex items-center w-full">
+                        <label htmlFor="email" className="text-xl text-primary-content w-1/3 mb-2">Email</label>
                         <input 
-                            className={`border border-primary-content text-primary-content placeholder:text-opacity-50 placeholder:text-primary-content 
-                                p-2 text-xl rounded-lg w-4/5 caret-transparent focus:caret-black focus:border-b-4 ${
+                            id="email"
+                            className={`border-b-2 border-b-primary-content text-primary-content placeholder:text-opacity-50 placeholder:text-primary-content 
+                                p-2 text-xl w-2/3 caret-transparent focus:caret-black focus:border-b-4 ${
                                 isEditable ? 'bg-white' : 'bg-gray-200 cursor-not-allowed'
                             }`}
                             placeholder="Email"
@@ -189,18 +196,21 @@ export default function ProfilePage() {
                             onChange={(e) => setEmail(e.target.value)}
                             disabled={true}
                         />
+                    </div>
 
-                        <div className="relative w-4/5">
+                    <div className="flex items-center w-full">
+                        <label htmlFor="password" className="text-xl text-primary-content w-1/3 mb-2">Password</label>
+                        <div className="relative w-2/3">
                             <input 
-                                className={`border border-primary-content text-primary-content placeholder:text-opacity-50 placeholder:text-primary-content 
-                                    p-2 text-xl rounded-lg w-full caret-transparent focus:caret-black focus:border-b-4 ${
+                                id="password"
+                                className={`border-b-2 border-b-primary-content text-primary-content placeholder:text-opacity-50 placeholder:text-primary-content 
+                                    p-2 text-xl w-full caret-transparent focus:caret-black focus:border-b-4 ${
                                     isEditable ? 'bg-white' : 'bg-gray-200 cursor-not-allowed'
                                 }`}
                                 placeholder="●●●●●●●●"
                                 type="password"
                                 value={"●●●●●●●●"}
                                 disabled={true}
-                                id="visual-password"
                             />
                             <button 
                                 className={`text-base-content text-sm hover:underline absolute right-2 top-1/2 transform -translate-y-1/2 bg-transparent border-none ${
@@ -219,6 +229,7 @@ export default function ProfilePage() {
                                 Change
                             </button>
                         </div>
+                    </div>
 
                         <dialog id="my_modal_3" className="modal">
                             <div className="modal-box">
@@ -229,8 +240,8 @@ export default function ProfilePage() {
                                     <h2 className="text-2xl text-base-content font-medium self-center mb-3">Change password</h2>
                                     <h3 className="text-lg text-base-content font-medium">Current password</h3>
                                     <input 
-                                        className={`border border-primary-content text-primary-content placeholder:text-opacity-50 placeholder:text-primary-content 
-                                            p-2 text-xl rounded-lg w-full caret-transparent focus:caret-black focus:border-b-4 ${
+                                        className={`border-b-2 border-b-primary-content text-primary-content placeholder:text-opacity-50 placeholder:text-primary-content 
+                                            p-2 text-xl  w-full caret-transparent focus:caret-black focus:border-b-4 ${
                                             isEditable ? 'bg-white' : 'bg-gray-200 cursor-not-allowed'
                                         }`}
                                         placeholder="current password"
@@ -241,8 +252,8 @@ export default function ProfilePage() {
 
                                     <h3 className="text-lg text-base-content font-medium">New password</h3>
                                     <input 
-                                        className={`border border-primary-content text-primary-content placeholder:text-opacity-50 placeholder:text-primary-content 
-                                            p-2 text-xl rounded-lg w-full caret-transparent focus:caret-black focus:border-b-4 ${
+                                        className={`border-b-2 border-b-primary-content text-primary-content placeholder:text-opacity-50 placeholder:text-primary-content 
+                                            p-2 text-xl  w-full caret-transparent focus:caret-black focus:border-b-4 ${
                                             isEditable ? 'bg-white' : 'bg-gray-200 cursor-not-allowed'
                                         }`}
                                         placeholder="new password"
@@ -271,9 +282,9 @@ export default function ProfilePage() {
                             </div>
                         </dialog>
                     </div>
-                    <div className="flex justify-center gap-4 my-6">
+                    <div className="flex justify-center gap-4 my-6 pt-5">
                         <button
-                            className="btn text-xl text-primary-content bg-secondary bg-opacity-50 hover:bg-secondary"
+                            className="btn w-1/6 border-none shadow-lg hover:scale-105 hover:translate-y-0.5 duration-300 transition-transform text-xl text-base-100 bg-neutral bg-opacity-50 hover:bg-neutral"
                             onClick={handleToggleEdit}
                         >
                             {isEditable ? "Save" : "Edit"}
