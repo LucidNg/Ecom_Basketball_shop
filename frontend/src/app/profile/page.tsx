@@ -1,7 +1,8 @@
 "use client";
 import { decryptToken } from "@/lib/decrypt";
 import React, { useEffect, useState } from "react";
-import { CheckPassword, UpdateUserDetail, UpdateUserPassword } from "@/lib/users";
+import { CheckPassword, UpdateUserDetail, UpdateUserPassword, QueryUserDetail  } from "@/lib/users";
+import { table } from "console";
 
 export default function ProfilePage() {
     const [isEditable, setIsEditable] = useState(false);
@@ -37,22 +38,42 @@ export default function ProfilePage() {
 
     useEffect(() => {
         if (!tokenAvailable) return;
+    
+        const fetchUserDetails = async () => {
+            try {
+                const token = localStorage.getItem("jwt");
+                if (token) {
+                    const decrypted = decryptToken(token);
+                    const payload = JSON.parse(atob(decrypted.split(".")[1]));
+                    
+                    setUserID(payload.userID);
+                    setEmail(payload.email);
+                    console.log(payload.userID);
+                    console.log(payload.email);
+                    const userDetailsArray = await QueryUserDetail(payload.userID);
 
-        const token = localStorage.getItem("jwt");
-        if (token) {
-            const decrypted = decryptToken(token);
-            const payload = JSON.parse(atob(decrypted.split(".")[1]));
-            
-            setUserID(payload.userID);
-            setName(payload.fullname);
-            setEmail(payload.email);
-            setDateOfBirth(payload.dob);
-            setAddress(payload.address);
-            setContactNumber(payload.phoneNumber); 
-            console.log("User data loaded successfully.");
-        } else {
-            console.log("Error: User not found");
-        }
+                    if (userDetailsArray.length > 0) {
+                        const userDetails = userDetailsArray[0];
+                        setName(userDetails.fullName);
+                        setDateOfBirth(userDetails.dob);
+                        setAddress(userDetails.address);
+                        setContactNumber(userDetails.phoneNumber);
+        
+                        console.log("User data loaded successfully.");
+                    } else {
+                        console.log("Error: User details array is empty");
+                    }
+                } else {
+                    console.log("Error: User not found");
+                }
+            } catch (error) {
+                console.error(`Failed to fetch user details: ${(error as Error).message}`);
+            }
+        };
+        
+        
+    
+        fetchUserDetails();
     }, [tokenAvailable]);
 
     const handleToggleEdit = async () => {
