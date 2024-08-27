@@ -1,7 +1,10 @@
 'use client';
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import FilterBar from "./productComponent/FilteringBar";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
+import { validateCategory } from '@/lib/validation';
+import router from "next/router";
+
 
 interface ProductPageCliProps {
   children1: React.ReactNode;
@@ -9,6 +12,8 @@ interface ProductPageCliProps {
 
 export default function ProductPageCli({ children1 }: ProductPageCliProps) {
   const { category } = useParams();
+  const router = useRouter();
+  const [isValidCategory, setIsValidCategory] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
   const [hasMoreProducts, setHasMoreProducts] = useState(true);
   const itemsPerPage = 15;
@@ -16,6 +21,25 @@ export default function ProductPageCli({ children1 }: ProductPageCliProps) {
   const [sortBy, setSortBy] = useState("latest");
   const [minPrice, setMinPrice] = useState("0");
   const [maxPrice, setMaxPrice] = useState("1000");
+
+  useEffect(() => {
+    const validateCategoryAsync = async () => {
+      const categoryString = Array.isArray(category) ? category[0] : category;
+      
+      const valid = await validateCategory(categoryString);
+      if (!valid) {
+        router.push('/not-found');
+      }
+      setIsValidCategory(valid);
+    };
+
+    validateCategoryAsync();
+  }, [category, router]);
+
+  if (!isValidCategory) {
+    return null; 
+  }
+
 
   const handleNextPage = () => {
     setCurrentPage(prevPage => prevPage + 1);
