@@ -47,9 +47,10 @@ export const OrdersProvider = ({ children }: { children: ReactNode }) => {
       try {
         const _ordersByUserID = await FetchOrdersByUserID(userID);
         if (_ordersByUserID && _ordersByUserID.orders) {
-          const _orders = _ordersByUserID.orders.map((orderRequest) => {
+          const _ordersPromises = _ordersByUserID.orders.map((orderRequest) => {
             return convertToOrder(orderRequest);
           });
+          const _orders = await Promise.all(_ordersPromises);
           setOrders(_orders);
         }
       } catch (error) {

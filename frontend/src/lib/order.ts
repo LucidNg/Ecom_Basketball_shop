@@ -58,33 +58,28 @@ function convertOrderItemRequestToOrderItem(
   };
 }
 
-interface ShippingRequest {
-  orderID: string;
-  shippingMethod: string;
-  cost: number;
-  startTime: string;
-  estimatedDeliveryTime: string;
-}
-
-
-export function convertToOrder(orderRequest: OrderRequest): Order {
-  const shippingRequest: ShippingRequest = {
-    orderID: orderRequest.orderID,
-    shippingMethod: "Fast",
-    cost: 4.0,
-    startTime: "26-08-2024",
-    estimatedDeliveryTime: "30-08-2024",
-  }; // Need to be replaced with a FetchShippingByOrderID result
+export async function convertToOrder(
+  orderRequest: OrderRequest
+): Promise<Order> {
+  const shippingRequest: ShippingRequest | null =
+    // {
+    //   orderID: orderRequest.orderID,
+    //   shippingMethod: "Fast",
+    //   cost: 4.0,
+    //   startTime: "26-08-2024",
+    //   estimatedDeliveryTime: "30-08-2024",
+    // }; // Mock data
+    await FetchShippingByOrderID(orderRequest.orderID);
 
   // Create a new Order object based on the provided OrderRequest and ShippingRequest
   return {
     orderID: orderRequest.orderID,
     userID: orderRequest.userID,
     orderDate: orderRequest.date,
-    shipDate: shippingRequest.estimatedDeliveryTime,
-    paymentMethod: "cod", // Need to be replaced
+    shipDate: shippingRequest ? shippingRequest.estimatedDeliveryTime : "",
+    paymentMethod: orderRequest.payMethod,
     paymentStatus: orderRequest.payStatus,
-    shippingMethod: shippingRequest.shippingMethod,
+    shippingMethod: shippingRequest ? shippingRequest.shippingMethod : "",
     shippingStatus: orderRequest.status as ShippingStatus, // Assuming the status in OrderRequest matches ShippingStatus enum
     shippingAddress: orderRequest.shippingAddress,
     billingAddress: orderRequest.billingAddress,
@@ -165,6 +160,14 @@ export function convertToOrder(orderRequest: OrderRequest): Order {
 //   ];
 // }
 
+interface ShippingRequest {
+  orderID: string;
+  shippingMethod: string;
+  cost: number;
+  startTime: string;
+  estimatedDeliveryTime: string;
+}
+
 interface OrderRequest {
   orderID: string;
   userID: string;
@@ -174,6 +177,7 @@ interface OrderRequest {
   price: number;
   status: string;
   payStatus: string;
+  payMethod: string;
   items?: OrderItemRequest[];
 }
 
@@ -183,14 +187,8 @@ interface OrderItemRequest {
   size: string;
   quantity: number;
   price: number;
-}
-
-interface ShippingRequest {
-  orderID: string;
-  shippingMethod: string;
-  cost: number;
-  startTime: string;
-  estimatedDeliveryTime: string;
+  productName: string;
+  url: string;
 }
 
 interface RemoveCartItemRequest {
@@ -547,4 +545,3 @@ export async function FetchShippingByOrderID(
     return null;
   }
 }
-
