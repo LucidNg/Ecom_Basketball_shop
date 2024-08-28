@@ -21,6 +21,7 @@ import {
 import ProductCard from "../appComoponent/ProductCard";
 import { convertCartItemToOrderItem, OrderItem } from "@/lib/productItem";
 import { useRouter } from "next/navigation";
+import { decryptToken } from "@/lib/decrypt";
 
 export default function CheckoutPage() {
   const router = useRouter(); // Use useRouter hook
@@ -34,6 +35,26 @@ export default function CheckoutPage() {
   const [address, setAddress] = useState("");
   const { cart, selectCart, removeCheckedOutItems } = useCart();
   const { orders, getOrder, addOrder } = useOrders();
+  const [tokenAvailable, setTokenAvailable] = useState(false);
+
+  useEffect(() => {
+    const token = localStorage.getItem("jwt"); // Check immediately if token is available
+
+    if (token) {
+      setTokenAvailable(true);
+    } else {
+      // Set up an interval to keep checking for the token
+      const checkForToken = setInterval(() => {
+        const token = localStorage.getItem("jwt");
+        if (token) {
+          setTokenAvailable(true);
+          clearInterval(checkForToken);
+        }
+      }, 100); // Adjust interval as needed
+
+      return () => clearInterval(checkForToken); // Clear interval on component unmount
+    }
+  }, []);
 
   const handleFullNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setFullName(event.target.value);
@@ -81,78 +102,86 @@ export default function CheckoutPage() {
   }, [selectCart, getTotalPrice, cart]);
 
   const handleCheckoutClick = async () => {
-    let newOrder: Order = {
-      orderID: "",
-      userID: "60629436-da35-401c-9bf8-6e8e3aed90ed", // Replace with the actual user ID
-      orderDate: getToday(),
-      shipDate:
-        selectedDelivery === "Standard" ? getNext5Days() : getNext2Days(),
-      paymentMethod: selectedPayment,
-      paymentStatus:
-        selectedPayment === "cod" ? PaymentStatus.Unpaid : PaymentStatus.Paid,
-      shippingMethod: selectedDelivery,
-      shippingStatus: ShippingStatus.Pending,
-      shippingAddress: address,
-      billingAddress: "123 Main St, City A, Country X",
-      coupon: "None",
-      totalBill: totalPrice,
-      quantity: selectCart.length,
-      orderItems: [],
-    };
+    if (!tokenAvailable) return; // Only proceed if token is available
 
-    /* New order details handling - DB */
-    // convert Order to OrderRequest to fit the database
-    const newOrderRequest = convertOrderToOrderRequest(newOrder);
-    // create and add the new orderdetails to DB (return the new order ID)
-    const newOrderID = await CreateOrder(newOrderRequest);
-    //const newOrderID = getNewOrderID();
+    const token = localStorage.getItem("jwt");
+    if (token) {
+      const decrypted = decryptToken(token);
+      const payload = JSON.parse(atob(decrypted.split(".")[1]));
+      const userID = payload.userID;
 
-    // set the new order id for variable newOrder
-    newOrder.orderID = newOrderID;
+      let newOrder: Order = {
+        orderID: "",
+        userID: userID, // Replace with the actual user ID
+        orderDate: getToday(),
+        shipDate:
+          selectedDelivery === "Standard" ? getNext5Days() : getNext2Days(),
+        paymentMethod: selectedPayment,
+        paymentStatus:
+          selectedPayment === "cod" ? PaymentStatus.Unpaid : PaymentStatus.Paid,
+        shippingMethod: selectedDelivery,
+        shippingStatus: ShippingStatus.Pending,
+        shippingAddress: address,
+        billingAddress: "123 Main St, City A, Country X",
+        coupon: "None",
+        totalBill: totalPrice,
+        quantity: selectCart.length,
+        orderItems: [],
+      };
 
-    /* New shipping details handling - DB */
-    // convert order to shipping request to fit the database
-    const newShippingRequest = convertOrderToShippingRequest(
-      newOrder,
-      deliveryPrice
-    );
-    // create and add the new shipping request in database
-    CreateShipping(newShippingRequest);
+      /* New order details handling - DB */
+      // convert Order to OrderRequest to fit the database
+      const newOrderRequest = convertOrderToOrderRequest(newOrder);
+      // create and add the new orderdetails to DB (return the new order ID)
+      const newOrderID = await CreateOrder(newOrderRequest);
+      //const newOrderID = getNewOrderID();
 
-    /* New order items handling - DB */
-    // convert from selected cart items to order items
-    const newOrderItems: OrderItem[] = selectCart.map((selectedItem) => {
-      return convertCartItemToOrderItem(selectedItem, newOrderID);
-    });
-    // set the new order items for variable newOrder
-    newOrder.orderItems = newOrderItems;
-    // convert from order items to order item requests
-    const newOrderItemRequests = newOrderItems.map((item) => {
-      return convertOrderItemToOrderItemRequest(item);
-    });
-    // create and add the new order items to DB
-    CreateOrderItems(newOrderItemRequests);
+      // set the new order id for variable newOrder
+      newOrder.orderID = newOrderID;
 
-    /* Contexts handling */
-    console.log(orders);
-    addOrder(newOrder); // add the new order to order context
-    removeCheckedOutItems(); // remove the items in cart context
-    console.log(orders);
+      /* New shipping details handling - DB */
+      // convert order to shipping request to fit the database
+      const newShippingRequest = convertOrderToShippingRequest(
+        newOrder,
+        deliveryPrice
+      );
+      // create and add the new shipping request in database
+      CreateShipping(newShippingRequest);
 
-    /* Other handling in DB */
-    await removeCartItemsFromOrder({
-      orderID: newOrderID,
-      items: newOrderItemRequests,
-    }); // remove the items in cart table in database
-    await updateStock({
-      orderID: newOrderID,
-      items: newOrderItemRequests,
-    }); // update products stock in DB
+      /* New order items handling - DB */
+      // convert from selected cart items to order items
+      const newOrderItems: OrderItem[] = selectCart.map((selectedItem) => {
+        return convertCartItemToOrderItem(selectedItem, newOrderID);
+      });
+      // set the new order items for variable newOrder
+      newOrder.orderItems = newOrderItems;
+      // convert from order items to order item requests
+      const newOrderItemRequests = newOrderItems.map((item) => {
+        return convertOrderItemToOrderItemRequest(item);
+      });
+      // create and add the new order items to DB
+      CreateOrderItems(newOrderItemRequests);
 
-    // Redirect to the success page with the new order ID
-    router.push(`/checkout/success/${newOrderID}`);
+      /* Contexts handling */
+      console.log(orders);
+      addOrder(newOrder); // add the new order to order context
+      removeCheckedOutItems(); // remove the items in cart context
+      console.log(orders);
+
+      /* Other handling in DB */
+      await removeCartItemsFromOrder({
+        orderID: newOrderID,
+        items: newOrderItemRequests,
+      }); // remove the items in cart table in database
+      await updateStock({
+        orderID: newOrderID,
+        items: newOrderItemRequests,
+      }); // update products stock in DB
+
+      // Redirect to the success page with the new order ID
+      router.push(`/checkout/success/${newOrderID}`);
+    }
   };
-
   return (
     <main>
       <div className="w-full p-10 flex flex-row">
