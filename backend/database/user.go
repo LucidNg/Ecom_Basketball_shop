@@ -41,7 +41,8 @@ func CreateJWT(userID, email, fullname, cartID, dob, address, phoneNumber, role 
 	return signedToken, nil
 }
 
-func InsertUser(db *sqlitecloud.SQCloud, fullname string, email string, password string) (string, error) {
+func InsertUser(db *sqlitecloud.SQCloud, fullname, email, password string) (string, error) {
+	// Generate a new user ID
 	var id string
 	for {
 		id = uuid.New().String()
@@ -54,11 +55,13 @@ func InsertUser(db *sqlitecloud.SQCloud, fullname string, email string, password
 		}
 	}
 
+	// Hash the user's password
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 	if err != nil {
 		return "", err
 	}
 
+	// Insert the user into the users table
 	insertUserSQL := "INSERT INTO users (userID, email, password) VALUES (?, ?, ?)"
 	values := []interface{}{id, email, string(hashedPassword)}
 
@@ -67,8 +70,12 @@ func InsertUser(db *sqlitecloud.SQCloud, fullname string, email string, password
 		return "", err
 	}
 
-	insertUserDetailSQL := "INSERT INTO userDetail (userID, fullName) VALUES (?, ?)"
-	values = []interface{}{id, fullname}
+	// Get the current date in yyyy-mm-dd format
+	currentDate := time.Now().Format("2006-01-02")
+
+	// Insert the user's details into the userDetail table
+	insertUserDetailSQL := "INSERT INTO userDetail (userID, fullName, memberSince) VALUES (?, ?, ?)"
+	values = []interface{}{id, fullname, currentDate}
 
 	err = db.ExecuteArray(insertUserDetailSQL, values)
 	if err != nil {

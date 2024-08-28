@@ -124,3 +124,40 @@ func QueryItemsByOrderID(db *sqlitecloud.SQCloud, w http.ResponseWriter, r *http
 
 	return nil
 }
+
+func QueryAllCustomers(db *sqlitecloud.SQCloud, w http.ResponseWriter, r *http.Request) error {
+	vars := mux.Vars(r)
+	offsetStr := vars["offset"]
+
+	// Convert offset to integer
+	offset, err := strconv.Atoi(offsetStr)
+	if err != nil {
+		http.Error(w, "Invalid offset value", http.StatusBadRequest)
+		return err
+	}
+
+	// SQL query to retrieve customer information where the role is 'customer'
+	sql := `SELECT u.email, ud.fullName, COALESCE(ud.phoneNumber, 'null') AS phoneNumber, 
+                   COALESCE(ud.dob, 'null') AS dob, COALESCE(ud.memberSince, 'null') AS memberSince 
+            FROM users u
+            JOIN userDetail ud ON u.userID = ud.userID
+            WHERE u.role = 'customer'
+            LIMIT 5 OFFSET ?`
+
+	values := []interface{}{offset * 5}
+
+	// Execute the query
+	rows, err := db.SelectArray(sql, values)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return err
+	}
+
+	_, err = w.Write([]byte(rows.ToJSON()))
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return err
+	}
+
+	return nil
+}
