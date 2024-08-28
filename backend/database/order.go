@@ -30,7 +30,7 @@ func CreateOrder(db *sqlitecloud.SQCloud, userID string, date string, shippingAd
 		id = uuid.New().String()
 		exists, err := recordExists(db, "orders", "orderID", id)
 		if err != nil {
-			return "",err
+			return "", err
 		}
 		if !exists {
 			break
@@ -40,7 +40,7 @@ func CreateOrder(db *sqlitecloud.SQCloud, userID string, date string, shippingAd
 	priceValue, err := strconv.ParseFloat(price, 64)
 	if err != nil {
 		fmt.Println("Error:", err)
-		return "",err
+		return "", err
 	}
 
 	createOrderSQL := "INSERT INTO orders (orderID, userID, date, shippingAddress, billingAddress, price, status, payStatus) VALUES (?, ?, ?, ?, ?, ?, ?, ?)"

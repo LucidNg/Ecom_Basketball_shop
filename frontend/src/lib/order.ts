@@ -294,7 +294,7 @@ export async function CreateOrderItems(
   const response = await fetch(url, {
     method: "POST",
     headers: {
-      "Content-Type": "application/json",
+      "Content-Type": "application/x-www-form-urlencoded",
     },
     body: JSON.stringify({
       orderID: orderItems[0].orderID, // Assumes all items share the same orderID
@@ -352,7 +352,7 @@ export async function removeCartItemsFromOrder(
     : `${connectString}/deleteCartItem`;
 
   const response = await fetch(url, {
-    method: "POST",
+    method: "DELETE",
     headers: {
       "Content-Type": "application/x-www-form-urlencoded",
     },
