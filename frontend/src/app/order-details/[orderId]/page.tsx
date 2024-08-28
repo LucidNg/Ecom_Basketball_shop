@@ -44,31 +44,33 @@ export default function OrderDetails() {
   const renderShippingStatusStamp = () => {
     switch (order.shippingStatus) {
       case ShippingStatus.Delivered:
-        return <p className="successful-delivery-stamp">Successful Delivery</p>;
+        return (
+          <p className="successful-delivery-stamp">
+            {ShippingStatus.Delivered}
+          </p>
+        );
       case ShippingStatus.Delivering:
-        return <p className="ongoing-delivery-stamp">Delivering</p>;
-      case ShippingStatus.Canceled:
-        return <p className="canceled-order-stamp">Canceled</p>;
+        return (
+          <p className="ongoing-delivery-stamp">{ShippingStatus.Delivering}</p>
+        );
       case ShippingStatus.Received:
-        return <p className="recieved-order-stamp">Recieved</p>;
+        return (
+          <p className="recieved-order-stamp">{ShippingStatus.Received}</p>
+        );
       case ShippingStatus.Pending:
-        return <p className="pending-order-stamp">Pending</p>;
+        return <p className="pending-order-stamp">{ShippingStatus.Pending}</p>;
       default:
         return null;
     }
   };
 
   const renderUserButtons = () => {
-    if (
-      order.shippingStatus === ShippingStatus.Canceled ||
-      order.shippingStatus === ShippingStatus.Received
-    )
-      return null;
+    if (order.shippingStatus === ShippingStatus.Received) return null;
 
     return (
       <div className="mt-6 flex justify-between gap-4">
         {/* Cancel button container */}
-        {(order.shippingStatus === ShippingStatus.Delivering ||
+        {/* {(order.shippingStatus === ShippingStatus.Delivering ||
           order.shippingStatus === ShippingStatus.Pending) && (
           <div className="flex-grow">
             <button
@@ -85,10 +87,11 @@ export default function OrderDetails() {
               Cancel order
             </button>
           </div>
-        )}
+        )} */}
 
         {/* Confirm button container */}
-        {order.shippingStatus === ShippingStatus.Delivered && (
+        {
+          /* {order.shippingStatus === ShippingStatus.Delivered &&  }*/
           <div className="ml-auto">
             <button
               className="bg-secondary text-primary-content text-xl font-semibold py-2 px-4
@@ -100,7 +103,7 @@ export default function OrderDetails() {
               I have received it!
             </button>
           </div>
-        )}
+        }
       </div>
     );
   };
@@ -108,9 +111,9 @@ export default function OrderDetails() {
   const handleConfirmButton = () => {
     updateShippingStatus(order.orderID, ShippingStatus.Received);
   };
-  const handleCancelButton = () => {
-    updateShippingStatus(order.orderID, ShippingStatus.Canceled);
-  };
+  // const handleCancelButton = () => {
+  //   updateShippingStatus(order.orderID, ShippingStatus.Canceled);
+  // };
 
   return (
     <div className="p-10">
