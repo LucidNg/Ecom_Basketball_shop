@@ -16,6 +16,7 @@ import {
   CreateOrderItems,
   CreateShipping,
   Order,
+  getNewOrderID,
 } from "@/lib/order";
 import ProductCard from "../appComoponent/ProductCard";
 import { convertCartItemToOrderItem, OrderItem } from "@/lib/productItem";
@@ -104,6 +105,8 @@ export default function CheckoutPage() {
     const newOrderRequest = convertOrderToOrderRequest(newOrder);
     // create and add the new orderdetails to DB (return the new order ID)
     const newOrderID = await CreateOrder(newOrderRequest);
+    //const newOrderID = getNewOrderID();
+
     // set the new order id for variable newOrder
     newOrder.orderID = newOrderID;
 
