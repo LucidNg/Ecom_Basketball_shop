@@ -107,14 +107,19 @@ export const OrdersProvider = ({ children }: { children: ReactNode }) => {
       }
     });
     alert(`Order ${order.orderID} is added to list of Orders`);
-    console.log("New orders: ", orders);
   };
 
+  useEffect(() => {
+    console.log("Updated orders: ", orders);
+  }, [orders]); // This useEffect will run every time 'cart' changes
+
   const getOrder = (orderId: string): Order | undefined => {
-    const order = orders.find((order) => order.orderID === orderId);
+    const order = orders.find(
+      (order) => String(order.orderID) === String(orderId)
+    );
 
     if (!order) {
-      throw new Error(`Order with ID ${orderId} not found.`);
+      console.log(`Order with ID ${orderId} not found.`);
     }
 
     return order;

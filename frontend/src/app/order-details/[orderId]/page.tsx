@@ -5,29 +5,84 @@ import Link from "next/link";
 import { useParams } from "next/navigation";
 import ProductCard from "../../appComoponent/ProductCard";
 import { OrderItem } from "../../../lib/productItem";
-import { Order, OrderDetailsProps, ShippingStatus } from "@/lib/order";
+import {
+  convertToOrder,
+  FetchOrdersByUserID,
+  Order,
+  OrderDetailsProps,
+  ShippingStatus,
+} from "@/lib/order";
 import { useOrders, OrdersProvider } from "../../appComoponent/OrdersContext";
+import { decryptToken } from "@/lib/decrypt";
 
 export default function OrderDetails() {
   const { orderId } = useParams();
   const { getOrder, updateShippingStatus } = useOrders();
   const [order, setOrder] = useState<Order>();
   //const [order.shippingStatus, setShippingStatus] = useState("delivered");
+  const [tokenAvailable, setTokenAvailable] = useState(false);
 
   useEffect(() => {
-    const fetchOrder = async () => {
-      try {
-        const normalizedOrderId = Array.isArray(orderId) ? orderId[0] : orderId;
-        const order = await getOrder(normalizedOrderId);
-        setOrder(order);
-        //alert(`get order ${orderId} successfully`);
-      } catch (error) {
-        console.error("Failed to fetch order details: ", error);
-        //throw new Error();
-      }
-    };
+    const token = localStorage.getItem("jwt"); // Check immediately if token is available
 
-    fetchOrder();
+    if (token) {
+      setTokenAvailable(true);
+    } else {
+      // Set up an interval to keep checking for the token
+      const checkForToken = setInterval(() => {
+        const token = localStorage.getItem("jwt");
+        if (token) {
+          setTokenAvailable(true);
+          clearInterval(checkForToken);
+        }
+      }, 100); // Adjust interval as needed
+
+      return () => clearInterval(checkForToken); // Clear interval on component unmount
+    }
+  }, []);
+
+  useEffect(() => {
+    if (!tokenAvailable) return; // Only proceed if token is available
+
+    const token = localStorage.getItem("jwt");
+    if (token) {
+      const decrypted = decryptToken(token);
+      const payload = JSON.parse(atob(decrypted.split(".")[1]));
+      const userID = payload.userID;
+
+      const fetchOrder = async () => {
+        try {
+          const normalizedOrderId = Array.isArray(orderId)
+            ? orderId[0]
+            : orderId;
+          // const order = await getOrder(normalizedOrderId);
+
+          // Fetch orders by user ID
+          const orderRequests = await FetchOrdersByUserID(userID);
+
+          // Find the correct order request by order ID
+          const matchingOrderRequest = orderRequests
+            ? orderRequests.orders.find(
+                (orderRequest) => orderRequest.orderID === normalizedOrderId
+              )
+            : null;
+
+          if (matchingOrderRequest) {
+            // Convert the matching order request to Order
+            const order = await convertToOrder(matchingOrderRequest);
+            setOrder(order);
+            console.log("Fetched Order: ", order);
+          } else {
+            console.error("Order not found with ID: ", normalizedOrderId);
+          }
+        } catch (error) {
+          console.error("Failed to fetch order details: ", error);
+          //throw new Error();
+        }
+      };
+
+      fetchOrder();
+    }
   }, [orderId, getOrder]);
 
   if (order === undefined) {
