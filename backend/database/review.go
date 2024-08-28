@@ -1,8 +1,12 @@
 package database
 
 import (
+	"fmt"
 	"net/http"
+	"strconv"
+	"time"
 
+	"github.com/google/uuid"
 	"github.com/gorilla/mux"
 	sqlitecloud "github.com/sqlitecloud/sqlitecloud-go"
 )
@@ -83,5 +87,44 @@ func QueryRatingCount(db *sqlitecloud.SQCloud, w http.ResponseWriter, r *http.Re
 		return err
 	}
 	return nil
+}
 
+func InsertReview(db *sqlitecloud.SQCloud, userID string, productID string, rating string, comment string) error {
+	var reviewID string
+
+	// Generate a unique reviewID
+	for {
+		reviewID = uuid.New().String()
+		exists, err := recordExists(db, "review", "reviewID", reviewID)
+		if err != nil {
+			return err
+		}
+		if !exists {
+			break
+		}
+	}
+
+	// Convert rating to an integer
+	ratingInt, err := strconv.Atoi(rating)
+	if err != nil {
+		fmt.Println("Error converting rating to integer:", err)
+		return err
+	}
+
+	// Get the current date in format yyyy-mm-dd
+	currentDate := time.Now().Format("2006-01-02")
+
+	// SQL query to insert a new review
+	insertReviewSQL := "INSERT INTO review (reviewID, userID, productID, rating, comment, date) VALUES (?, ?, ?, ?, ?, ?)"
+	values := []interface{}{reviewID, userID, productID, ratingInt, comment, currentDate}
+
+	// Execute the insert query
+	err = db.ExecuteArray(insertReviewSQL, values)
+	if err != nil {
+		fmt.Println("Error inserting review:", err)
+		return err
+	}
+
+	fmt.Println("Review inserted successfully.")
+	return nil
 }

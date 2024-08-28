@@ -101,13 +101,6 @@ func CreateTable(db *sqlitecloud.SQCloud) error {
 		FOREIGN KEY(productID) REFERENCES product(productID)
 	);`
 
-	purchaseTable := `CREATE TABLE IF NOT EXISTS purchase (
-		"purchaseID" TEXT NOT NULL PRIMARY KEY,
-		"productID" TEXT NOT NULL,
-		"quantity" INTEGER NOT NULL,
-		FOREIGN KEY(productID) REFERENCES product(productID)
-	);`
-
 	cartItemTable := `CREATE TABLE IF NOT EXISTS cartItem (
 		"cartID" TEXT NOT NULL,
 		"productID" TEXT NOT NULL,
@@ -152,7 +145,7 @@ func CreateTable(db *sqlitecloud.SQCloud) error {
 		"size" TEXT NOT NULL,
 		"quantity" INTEGER NOT NULL,
 		"price" REAL NOT NULL,
-		PRIMARY KEY(orderID, productID),
+		PRIMARY KEY(orderID, productID, size),
 		FOREIGN KEY(orderID) REFERENCES orders(orderID),
 		FOREIGN KEY(productID) REFERENCES product(productID)
 	);`
@@ -194,10 +187,6 @@ func CreateTable(db *sqlitecloud.SQCloud) error {
 	}
 
 	if err := db.Execute(reviewTable); err != nil {
-		return err
-	}
-
-	if err := db.Execute(purchaseTable); err != nil {
 		return err
 	}
 

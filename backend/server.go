@@ -232,6 +232,18 @@ func main() {
 		}
 	}))).Methods(http.MethodGet)
 
+	r.HandleFunc("/product", rateLimiter(limiter, corsMiddleware(func(w http.ResponseWriter, r *http.Request) {
+		if r.Method == http.MethodGet {
+			err := database.QueryProduct(db, w)
+			if err != nil {
+				http.Error(w, "Failed to query product", http.StatusInternalServerError)
+				return
+			}
+		} else {
+			http.Error(w, "Unsupported method", http.StatusMethodNotAllowed)
+		}
+	}))).Methods(http.MethodGet)
+
 	r.HandleFunc("/product/{productID}", rateLimiter(limiter, corsMiddleware(func(w http.ResponseWriter, r *http.Request) {
 		if r.Method == http.MethodGet {
 			err := database.QueryProductByID(db, w, r)
@@ -279,6 +291,26 @@ func main() {
 			http.Error(w, "Unsupported method", http.StatusMethodNotAllowed)
 		}
 	}))).Methods(http.MethodGet)
+
+	r.HandleFunc("/insertReview", rateLimiter(limiter, corsMiddleware(func(w http.ResponseWriter, r *http.Request) {
+		if r.Method == http.MethodPost {
+			// Handle POST request to insert a new review
+			userID := r.FormValue("userID")
+			productID := r.FormValue("productID")
+			rating := r.FormValue("rating")
+			comment := r.FormValue("comment")
+
+			// Call the InsertReview function
+			err := database.InsertReview(db, userID, productID, rating, comment)
+			if err != nil {
+				http.Error(w, "Failed to insert review: "+err.Error(), http.StatusInternalServerError)
+				return
+			}
+			w.Write([]byte("Review inserted successfully"))
+		} else {
+			http.Error(w, "Unsupported method", http.StatusMethodNotAllowed)
+		}
+	}))).Methods(http.MethodPost)
 
 	r.HandleFunc("/averageRating/{productID}", rateLimiter(limiter, corsMiddleware(func(w http.ResponseWriter, r *http.Request) {
 		if r.Method == http.MethodGet {

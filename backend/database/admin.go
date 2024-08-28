@@ -24,6 +24,7 @@ func QueryAllProduct(db *sqlitecloud.SQCloud, w http.ResponseWriter, r *http.Req
 	sql := `SELECT s.productID, p.productName, s.size, s.stock, s.price
 		FROM size s
 		JOIN product p ON s.productID = p.productID
+		WHERE s.stock > 0
 		LIMIT 10 OFFSET ?`
 
 	values := []interface{}{offset * 10}
@@ -63,6 +64,7 @@ func QueryAllOrders(db *sqlitecloud.SQCloud, w http.ResponseWriter, r *http.Requ
 		       FROM orders o
 		       JOIN userDetail ud ON o.userID = ud.userID
 		       WHERE o.status = ?
+			   ORDER BY o.date DESC
 		       LIMIT 5 OFFSET ?`
 		values = []interface{}{method, offset * 5}
 	case "paid", "unpaid":
@@ -71,6 +73,7 @@ func QueryAllOrders(db *sqlitecloud.SQCloud, w http.ResponseWriter, r *http.Requ
 		       FROM orders o
 		       JOIN userDetail ud ON o.userID = ud.userID
 		       WHERE o.payStatus = ?
+			   ORDER BY o.date DESC
 		       LIMIT 5 OFFSET ?`
 		values = []interface{}{method, offset * 5}
 	case "all":
@@ -78,6 +81,7 @@ func QueryAllOrders(db *sqlitecloud.SQCloud, w http.ResponseWriter, r *http.Requ
 		              ud.fullName, COALESCE(ud.phoneNumber, 'null') AS phoneNumber
 		       FROM orders o
 		       JOIN userDetail ud ON o.userID = ud.userID
+			   ORDER BY o.date DESC
 		       LIMIT 5 OFFSET ?`
 		values = []interface{}{offset * 5}
 	default:
