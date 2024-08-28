@@ -418,12 +418,12 @@ func main() {
 	}))).Methods(http.MethodPost)
 
 	r.HandleFunc("/deleteCartItem", rateLimiter(limiter, corsMiddleware(func(w http.ResponseWriter, r *http.Request) {
-		if r.Method == http.MethodDelete {
+		if r.Method == http.MethodPost {
 			database.RemoveCartItemsFromOrder(db, w, r)
 		} else {
 			http.Error(w, "Unsupported method", http.StatusMethodNotAllowed)
 		}
-	}))).Methods(http.MethodDelete)
+	}))).Methods(http.MethodPost)
 
 	r.HandleFunc("/createShipping", rateLimiter(limiter, corsMiddleware(func(w http.ResponseWriter, r *http.Request) {
 		if r.Method == http.MethodPost {

@@ -352,7 +352,7 @@ export async function removeCartItemsFromOrder(
     : `${connectString}/deleteCartItem`;
 
   const response = await fetch(url, {
-    method: "DELETE",
+    method: "POST",
     headers: {
       "Content-Type": "application/json",
     },
