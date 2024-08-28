@@ -1,7 +1,8 @@
 'use client';
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useParams, useRouter } from "next/navigation";
+import { validateSubcategory } from '@/lib/validation';
 import FilterBar from "../productComponent/FilteringBar";
-import { useParams } from "next/navigation";
 
 interface ProductPageCliProps {
   children1: React.ReactNode;
@@ -9,6 +10,8 @@ interface ProductPageCliProps {
 
 export default function ProductPageCli({ children1 }: ProductPageCliProps) {
   const { category, subCategory } = useParams();
+  const router = useRouter();
+  const [isValidCategory, setIsValidCategory] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
   const [hasMoreProducts, setHasMoreProducts] = useState(true);
   const itemsPerPage = 15;
@@ -17,7 +20,27 @@ export default function ProductPageCli({ children1 }: ProductPageCliProps) {
   const [minPrice, setMinPrice] = useState("0");
   const [maxPrice, setMaxPrice] = useState("1000");
 
+  
   const normalizedSubCategory = subCategory === 'wm' ? 'women' : subCategory;
+
+  useEffect(() => {
+    const validateCategoryAsync = async () => {
+      const categoryString = Array.isArray(category) ? category[0] : category;
+      const subCategoryString = Array.isArray(subCategory) ? subCategory[0] : subCategory;
+
+      const valid = await validateSubcategory(categoryString, subCategoryString);
+      if (!valid) {
+        router.push('/not-found');
+      }
+      setIsValidCategory(valid);
+    };
+
+    validateCategoryAsync();
+  }, [category, subCategory, router]);
+
+  if (!isValidCategory) {
+    return null; 
+  }
 
   const handleNextPage = () => {
     setCurrentPage(prevPage => prevPage + 1);
@@ -31,12 +54,12 @@ export default function ProductPageCli({ children1 }: ProductPageCliProps) {
     setHasMoreProducts(hasMore);
   };
 
- 
-
   return (
     <div className="lg:pt-10 bg-base-100 w-screen">
       <div className="lg:px-16 py-10 text-center lg:text-left">
-      <span className="text-accent font-bold text-3xl sm:text-4xl capitalize">{normalizedSubCategory} {category}</span>
+        <span className="text-accent font-bold text-3xl sm:text-4xl capitalize">
+          {normalizedSubCategory} {category}
+        </span>
       </div>
       <FilterBar 
         sortBy={sortBy}
@@ -50,7 +73,7 @@ export default function ProductPageCli({ children1 }: ProductPageCliProps) {
         <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-10 p-2 max-w-full">
           {React.Children.map(children1, (child) => {
             return React.cloneElement(child as React.ReactElement<any>, { 
-              category: `${subCategory}'s ${category}`, 
+              category: `${normalizedSubCategory}'s ${category}`, 
               currentPage, 
               itemsPerPage, 
               checkHasMoreProducts,

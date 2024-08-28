@@ -16,6 +16,9 @@ export async function FetchProduct(): Promise<Array<Product>> {
   const response = await fetch(url, {
     method: "GET",
     credentials: "include",
+    headers: {
+      "Content-Type": "application/x-www-form-urlencoded",
+    },
     mode: "cors",
     cache: "no-cache",
   });
@@ -37,6 +40,9 @@ export async function FetchProductByCategory(
     : `${connectString}/categoryProduct/${category}/${method}/${minPrice}/${maxPrice}`;
   const response = await fetch(url, {
     method: "GET",
+    headers: {
+      "Content-Type": "application/x-www-form-urlencoded",
+    },
     credentials: "include",
     mode: "cors",
     cache: "no-cache",
@@ -58,6 +64,9 @@ export async function FetchProductByBrand(
     : `${connectString}/brand/${brand}/${method}/${minPrice}/${maxPrice}`;
   const response = await fetch(url, {
     method: "GET",
+    headers: {
+      "Content-Type": "application/x-www-form-urlencoded",
+    },
     credentials: "include",
     mode: "cors",
     cache: "no-cache",
@@ -82,6 +91,9 @@ export async function FetchProductByName(
   const response = await fetch(url, {
     method: "GET",
     credentials: "include",
+    headers: {
+      "Content-Type": "application/x-www-form-urlencoded",
+    },
     mode: "cors",
     cache: "no-cache",
   });

@@ -134,6 +134,15 @@ const DetailedProductPageCli = ({ children1 }: DetailedProductPage) => {
       };
 
       try {
+        addToCart({
+          cartID: cartID,
+          productID: product.productID,
+          size: selectedSize,
+          quantity: quantity,
+          price: Number((quantity * priceBySize[selectedSize]).toFixed(2)),
+          productName: product.productName,
+          url: product.url,
+        });
         // Call the AddCartItem function with the constructed cartItem object
         await AddCartItem(cartItem);
         console.log("Item added to cart successfully.");

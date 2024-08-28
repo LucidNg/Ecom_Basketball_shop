@@ -152,6 +152,23 @@ func QueryUsers(db *sqlitecloud.SQCloud, w http.ResponseWriter) error {
 	return nil
 }
 
+func QueryUserDetail(db *sqlitecloud.SQCloud, userID string, w http.ResponseWriter) error {
+
+	sql := "SELECT fullName, COALESCE(phoneNumber, 'null') AS phoneNumber, COALESCE(address, 'null') AS address, COALESCE(dob, 'null') AS dob FROM userDetail WHERE userID = ?"
+	values := []interface{}{userID}
+	rows, err := db.SelectArray(sql, values)
+	if err != nil {
+		return err
+	}
+
+	_, err = w.Write([]byte(rows.ToJSON()))
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return err
+	}
+	return nil
+}
+
 func UpdateUserDetail(db *sqlitecloud.SQCloud, userID, fullName, phoneNumber, address, dob string, w http.ResponseWriter) error {
 	// Construct the SQL statement to update user details
 	updateUserDetailSQL := `
@@ -165,7 +182,6 @@ func UpdateUserDetail(db *sqlitecloud.SQCloud, userID, fullName, phoneNumber, ad
 
 	// Prepare the values for the SQL statement
 	values := []interface{}{fullName, phoneNumber, address, dob, userID}
-
 	// Execute the SQL statement
 	err := db.ExecuteArray(updateUserDetailSQL, values)
 	if err != nil {

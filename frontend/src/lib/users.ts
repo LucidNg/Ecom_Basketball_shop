@@ -1,5 +1,4 @@
 import { connectString } from "./constant";
-import { decryptToken } from "./decrypt";
 
 export interface UserRegistration {
     fullname: string;
@@ -14,6 +13,9 @@ export async function RegisterUser(
 
     const response = await fetch(url, {
         method: "POST",
+        headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
+          },
         credentials: "include",
         mode: "cors",
         cache: "no-cache",
@@ -30,6 +32,9 @@ export async function RegisterUser(
 
     const createCartResponse = await fetch(createCartUrl, {
         method: "POST",
+        headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
+          },
         credentials: "include",
         mode: "cors",
         cache: "no-cache",
@@ -55,6 +60,9 @@ export async function LoginUser(
 
     const response = await fetch(url, {
         method: "POST",
+        headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
+          },
         credentials: "include",
         mode: "cors",
         cache: "no-cache",
@@ -79,6 +87,9 @@ export async function CheckPassword(
 
     const response = await fetch(url, {
         method: "POST",
+        headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
+          },
         credentials: "include",
         mode: "cors",
         cache: "no-cache",
@@ -104,20 +115,17 @@ export interface UserDetailUpdate {
 export async function UpdateUserDetail(
     userDetailData: UserDetailUpdate
 ): Promise<string> {
-    const url = `${connectString}/updateUserDetail`;
+    const url = `${connectString}/updateUserDetail?userID=${encodeURIComponent(userDetailData.userID)}`
+                    +`&fullName=${encodeURIComponent(userDetailData.fullName)}`
+                    + `&phoneNumber=${encodeURIComponent(userDetailData.phoneNumber)}`
+                    + `&address=${encodeURIComponent(userDetailData.address)}`
+                    + `&dob=${encodeURIComponent(userDetailData.dob)}`;
     
     const response = await fetch(url, {
-        method: "PUT",
+        method: "POST",
         headers: {
             "Content-Type": "application/x-www-form-urlencoded",
-        },
-        body: new URLSearchParams({
-            userID: userDetailData.userID,
-            fullName: userDetailData.fullName,
-            phoneNumber: userDetailData.phoneNumber,
-            address: userDetailData.address,
-            dob: userDetailData.dob,
-        }),
+          },
         credentials: "include",
         mode: "cors",
         cache: "no-cache",
@@ -135,17 +143,15 @@ export async function UpdateUserPassword(
     userID: string,
     newPassword: string
 ): Promise<string> {
-    const url = `${connectString}/updateUserPassword`;
+    const url = `${connectString}/updateUserPassword?userID=${encodeURIComponent(userID)}`
+                    +`&newPassword=${encodeURIComponent(newPassword)}`;
 
+    console.log(url)
     const response = await fetch(url, {
-        method: "PUT",
+        method: "POST",
         headers: {
             "Content-Type": "application/x-www-form-urlencoded",
-        },
-        body: new URLSearchParams({
-            userID: userID,
-            newPassword: newPassword,
-        }),
+          },
         credentials: "include",
         mode: "cors",
         cache: "no-cache",
@@ -157,4 +163,35 @@ export async function UpdateUserPassword(
     }
 
     return "Password updated successfully";
+}
+
+export interface UserDetail {
+    fullName: string;
+    phoneNumber: string;
+    address: string;
+    dob: string;
+}
+
+export async function QueryUserDetail(userID: string): Promise<UserDetail[]> {
+    const url = `${connectString}/userDetail?userID=${encodeURIComponent(userID)}`;
+  
+    const response = await fetch(url, {
+        method: "GET",
+        headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
+          },
+        credentials: "include",
+        mode: "cors",
+        cache: "no-cache",
+    });
+
+    console.log("loading user detail");
+  
+    if (!response.ok) {
+        const errorMsg = await response.text();
+        throw new Error(`Failed to fetch user details: ${errorMsg}`);
+    }
+  
+    const userDetails: UserDetail[] = await response.json();
+    return userDetails;
 }

@@ -51,6 +51,7 @@ func CreateTable(db *sqlitecloud.SQCloud) error {
 		"price" REAL NOT NULL,
 		"status" TEXT NOT NULL,
 		"payStatus" TEXT NOT NULL,
+		"method" TEXT NOT NULL,
 		FOREIGN KEY(userID) REFERENCES users(userID)
 	);`
 

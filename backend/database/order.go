@@ -24,13 +24,13 @@ type OrderRequest struct {
 	Products []OrderProduct `json:"products"`
 }
 
-func CreateOrder(db *sqlitecloud.SQCloud, userID string, date string, shippingAdress string, billingAddress string, price string, status string, payStatus string) error {
+func CreateOrder(db *sqlitecloud.SQCloud, userID string, date string, shippingAdress string, billingAddress string, price string, status string, payStatus string) (string, error) {
 	var id string
 	for {
 		id = uuid.New().String()
 		exists, err := recordExists(db, "orders", "orderID", id)
 		if err != nil {
-			return err
+			return "", err
 		}
 		if !exists {
 			break
@@ -40,14 +40,18 @@ func CreateOrder(db *sqlitecloud.SQCloud, userID string, date string, shippingAd
 	priceValue, err := strconv.ParseFloat(price, 64)
 	if err != nil {
 		fmt.Println("Error:", err)
-		return err
+		return "", err
 	}
 
-	createOrderSQL := "INSERT INTO orders (orderID, userID, date, shippingAdress, billingAddress, price, status, payStatus) VALUES (?, ?, ?, ?, ?, ?, ?, ?)"
+	createOrderSQL := "INSERT INTO orders (orderID, userID, date, shippingAddress, billingAddress, price, status, payStatus) VALUES (?, ?, ?, ?, ?, ?, ?, ?)"
 	values := []interface{}{id, userID, date, shippingAdress, billingAddress, priceValue, status, payStatus}
 
 	err = db.ExecuteArray(createOrderSQL, values)
-	return err
+	if err != nil {
+		return "", err
+	}
+
+	return id, nil
 }
 
 // CreateOrderItems handles the creation of order items in the database
@@ -79,7 +83,7 @@ func CreateOrderItems(db *sqlitecloud.SQCloud, w http.ResponseWriter, r *http.Re
 }
 
 func RemoveCartItemsFromOrder(db *sqlitecloud.SQCloud, w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodDelete {
+	if r.Method != http.MethodPost {
 		http.Error(w, "Unsupported method", http.StatusMethodNotAllowed)
 		return
 	}
@@ -150,11 +154,36 @@ func CreateShipping(db *sqlitecloud.SQCloud, orderID string, shippingMethod stri
 	return err
 }
 
+func QueryShippingByOrderID(db *sqlitecloud.SQCloud, w http.ResponseWriter, r *http.Request) error {
+	vars := mux.Vars(r)
+	orderID := vars["orderID"]
+
+	// Query to get shipping details for the order
+	shippingQuery := `SELECT orderID, shippingMethod, cost, startTime, estimatedDeliveryTime
+	FROM shipping
+	WHERE orderID = ?;`
+	shippingValues := []interface{}{orderID}
+
+	shippingRows, err := db.SelectArray(shippingQuery, shippingValues)
+	if err != nil {
+		return err
+	}
+
+	_, err = w.Write([]byte(shippingRows.ToJSON()))
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return err
+	}
+	return nil
+}
+
 type OrderItem struct {
-	ProductID string  `json:"productID"`
-	Size      string  `json:"size"`
-	Quantity  int     `json:"quantity"`
-	Price     float64 `json:"price"`
+	ProductID   string  `json:"productID"`
+	Size        string  `json:"size"`
+	Quantity    int     `json:"quantity"`
+	Price       float64 `json:"price"`
+	ProductName string  `json:"productName"`
+	URL         string  `json:"url"`
 }
 
 type Order struct {
@@ -166,6 +195,7 @@ type Order struct {
 	Price           float64     `json:"price"`
 	Status          string      `json:"status"`
 	PayStatus       string      `json:"payStatus"`
+	Method          string      `json:"method"`
 	Items           []OrderItem `json:"items"`
 }
 
@@ -177,8 +207,8 @@ func QueryOrdersByUserID(db *sqlitecloud.SQCloud, w http.ResponseWriter, r *http
 	vars := mux.Vars(r)
 	userID := vars["userID"]
 
-	// Query to get orders for the user
-	orderQuery := `SELECT o.orderID, o.userID, o.date, o.shippingAddress, o.billingAddress, o.price, o.status, o.payStatus
+	// Query to get orders for the user, including the new `method` field
+	orderQuery := `SELECT o.orderID, o.userID, o.date, o.shippingAddress, o.billingAddress, o.price, o.status, o.payStatus, o.method
 	FROM orders o
 	WHERE o.userID = ?;`
 	orderValues := []interface{}{userID}
@@ -197,9 +227,10 @@ func QueryOrdersByUserID(db *sqlitecloud.SQCloud, w http.ResponseWriter, r *http
 	for i := uint64(0); i < numOrderRows; i++ {
 		orderID, err := orderRows.GetStringValue(i, 0)
 
-		// Query to get items for each order
-		itemQuery := `SELECT oi.productID, oi.size, oi.quantity, oi.price
+		// Query to get items for each order, including productName and url
+		itemQuery := `SELECT oi.productID, oi.size, oi.quantity, oi.price, p.productName, p.url
 		FROM orderItem oi
+		JOIN product p ON oi.productID = p.productID
 		WHERE oi.orderID = ?;`
 		itemValues := []interface{}{orderID}
 
@@ -212,12 +243,13 @@ func QueryOrdersByUserID(db *sqlitecloud.SQCloud, w http.ResponseWriter, r *http
 		var items []OrderItem
 		numItemRows := itemRows.GetNumberOfRows()
 		for j := uint64(0); j < numItemRows; j++ {
-
 			items = append(items, OrderItem{
-				ProductID: itemRows.GetStringValue_(j, 0),
-				Size:      itemRows.GetStringValue_(j, 1),
-				Quantity:  int(itemRows.GetInt32Value_(j, 2)),
-				Price:     itemRows.GetFloat64Value_(j, 3),
+				ProductID:   itemRows.GetStringValue_(j, 0),
+				Size:        itemRows.GetStringValue_(j, 1),
+				Quantity:    int(itemRows.GetInt32Value_(j, 2)),
+				Price:       itemRows.GetFloat64Value_(j, 3),
+				ProductName: itemRows.GetStringValue_(j, 4),
+				URL:         itemRows.GetStringValue_(j, 5),
 			})
 		}
 
@@ -231,6 +263,7 @@ func QueryOrdersByUserID(db *sqlitecloud.SQCloud, w http.ResponseWriter, r *http
 			Price:           orderRows.GetFloat64Value_(i, 5),
 			Status:          orderRows.GetStringValue_(i, 6),
 			PayStatus:       orderRows.GetStringValue_(i, 7),
+			Method:          orderRows.GetStringValue_(i, 8),
 			Items:           items,
 		})
 	}

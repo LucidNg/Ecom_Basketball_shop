@@ -11,6 +11,7 @@ import {
 } from "../../lib/productItem";
 import { useOrders } from "./OrdersContext";
 import { FetchOrdersByUserID, Order, ShippingStatus } from "@/lib/order";
+import Link from "next/link";
 
 interface OrderCardProps {
   order: Order;
@@ -41,41 +42,27 @@ const OrderCard: React.FC<OrderCardProps> = ({ order }) => {
         <span className="ml-2">{order.orderDate}</span>
       </div>
       <div className="border-t border-b border-gray-300 py-4">
-        <div className="flex items-center mb-4">
-          <img
-            src="https://supersports.com.vn/cdn/shop/files/95A873-U1R-1.jpg?v=1715138351&width=1000"
-            alt="Air Jordan Jumpman Globe Kids T-Shirt"
-            className="w-16 h-16 object-cover mr-4"
-          />
-          <div className="flex-1">
-            <p className="font-semibold">
-              Air Jordan Jumpman Globe Kids T-Shirt &quot;White&quot;
-            </p>
-            <p>x 1</p>
+        {order.orderItems.slice(0, 2).map((item, index) => (
+          <div className="flex items-center mb-4" key={index}>
+            <img
+              src={item.url}
+              alt={item.productName}
+              className="w-16 h-16 object-cover mr-4"
+            />
+            <div className="flex-1">
+              <p className="font-semibold">{item.productName}</p>
+              <p>x {item.quantity}</p>
+            </div>
+            <div className="text-right">
+              <p>${Intl.NumberFormat("vi-VN").format(item.price)}</p>
+            </div>
           </div>
-          <div className="text-right">
-            <p>đ 587.000</p>
+        ))}
+        {order.orderItems.length > 2 && (
+          <div className="text-center text-sm text-gray-500">
+            And {order.orderItems.length - 2} more items...
           </div>
-        </div>
-        <div className="flex items-center">
-          <img
-            src="https://assets.adidas.com/images/h_840,f_auto,q_auto,fl_lossy,c_fill,g_auto/968316087fcc454e9b61c5b2106d44d0_9366/Basketball_Select_Tee_Black_IQ1038_21_model.jpg"
-            alt="Adidas Basketball Select Shirt"
-            className="w-16 h-16 object-cover mr-4"
-          />
-          <div className="flex-1">
-            <p className="font-semibold">
-              Adidas Basketball Select Shirt &quot;Cloud White&quot;
-            </p>
-            <p>x 1</p>
-          </div>
-          <div className="text-right">
-            <p>đ 1.096.000</p>
-          </div>
-        </div>
-        <div className="text-center text-sm text-gray-500">
-          And 5 more items...
-        </div>
+        )}
       </div>
       <div className="flex items-center justify-between mt-4">
         <div>
@@ -84,12 +71,21 @@ const OrderCard: React.FC<OrderCardProps> = ({ order }) => {
             {renderShippingStatusStamp()}
           </span>
         </div>
-        <button className="bg-red-500 text-white py-1 px-4 rounded">
-          View details
-        </button>
-        <div>
-          <span className="font-semibold">Totall bill :</span>
-          <span className="text-red-500 ml-2">đ 1.703.000</span>
+        <div className="flex items-center">
+          <Link
+            href={`/order-details/${order.orderID}`}
+            className="self-center"
+          >
+            <button className="bg-red-500 text-white py-1 px-4 rounded mr-2">
+              View details
+            </button>
+          </Link>
+          <div>
+            <span className="font-semibold">Total bill :</span>
+            <span className="text-red-500 ml-2">
+              ${Intl.NumberFormat("vi-VN").format(order.totalBill)}
+            </span>
+          </div>
         </div>
       </div>
     </div>

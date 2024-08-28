@@ -4,44 +4,49 @@ import Link from "next/link";
 import { useState, useCallback, useEffect } from "react";
 import { useCart } from "../appComoponent/CartContext";
 import { useOrders } from "../appComoponent/OrdersContext";
-import { getNewOrderID, PaymentStatus, ShippingStatus } from "@/lib/order";
+import {
+  convertOrderItemToOrderItemRequest,
+  convertOrderToOrderRequest,
+  convertOrderToShippingRequest,
+  PaymentStatus,
+  removeCartItemsFromOrder,
+  ShippingStatus,
+  updateStock,
+  CreateOrder,
+  CreateOrderItems,
+  CreateShipping,
+  Order,
+} from "@/lib/order";
 import ProductCard from "../appComoponent/ProductCard";
-
-function getToday() {
-  const today = new Date();
-  const year = today.getFullYear();
-  const month = String(today.getMonth() + 1).padStart(2, "0"); // Months are zero-indexed in JavaScript
-  const day = String(today.getDate()).padStart(2, "0");
-  const formattedDateDMY = `${day}-${month}-${year}`;
-
-  return formattedDateDMY;
-}
-
-function getNext5Days() {
-  const today = new Date();
-  const fiveDaysLater = new Date(today);
-
-  // Add 5 days to the current date
-  fiveDaysLater.setDate(today.getDate() + 5);
-
-  // Format date as 'DD-MM-YYYY'
-  const year = fiveDaysLater.getFullYear();
-  const month = String(fiveDaysLater.getMonth() + 1).padStart(2, "0");
-  const day = String(fiveDaysLater.getDate()).padStart(2, "0");
-
-  return `${day}-${month}-${year}`;
-}
+import { convertCartItemToOrderItem, OrderItem } from "@/lib/productItem";
+import { useRouter } from "next/navigation";
 
 export default function CheckoutPage() {
+  const router = useRouter(); // Use useRouter hook
   const [selectedDelivery, setSelectedDelivery] = useState("standard");
   const [selectedPayment, setSelectedPayment] = useState("cod");
   const [deliveryPrice, setDeliveryPrice] = useState(4);
   const [totalPrice, setTotalPrice] = useState(0);
   const [couponPrice, setCouponPrice] = useState(0);
+  const [fullName, setFullName] = useState("");
+  const [phoneNumber, setPhoneNumber] = useState("");
+  const [address, setAddress] = useState("");
   const { cart, selectCart, removeCheckedOutItems } = useCart();
-  const { orders, addOrder } = useOrders();
+  const { orders, getOrder, addOrder } = useOrders();
 
-  const orderID = getNewOrderID(); // Replace with actual generated orderID
+  const handleFullNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setFullName(event.target.value);
+  };
+
+  const handlePhoneNumberChange = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    setPhoneNumber(event.target.value);
+  };
+
+  const handleAddressChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setAddress(event.target.value);
+  };
 
   const handleCheckboxDeliChange = (
     event: React.ChangeEvent<HTMLInputElement>
@@ -74,6 +79,77 @@ export default function CheckoutPage() {
     setTotalPrice(getTotalPrice());
   }, [selectCart, getTotalPrice, cart]);
 
+  const handleCheckoutClick = async () => {
+    let newOrder: Order = {
+      orderID: "",
+      userID: "60629436-da35-401c-9bf8-6e8e3aed90ed", // Replace with the actual user ID
+      orderDate: getToday(),
+      shipDate:
+        selectedDelivery === "Standard" ? getNext5Days() : getNext2Days(),
+      paymentMethod: selectedPayment,
+      paymentStatus:
+        selectedPayment === "cod" ? PaymentStatus.Unpaid : PaymentStatus.Paid,
+      shippingMethod: selectedDelivery,
+      shippingStatus: ShippingStatus.Pending,
+      shippingAddress: address,
+      billingAddress: "123 Main St, City A, Country X",
+      coupon: "None",
+      totalBill: totalPrice,
+      quantity: selectCart.length,
+      orderItems: [],
+    };
+
+    /* New order details handling - DB */
+    // convert Order to OrderRequest to fit the database
+    const newOrderRequest = convertOrderToOrderRequest(newOrder);
+    // create and add the new orderdetails to DB (return the new order ID)
+    const newOrderID = await CreateOrder(newOrderRequest);
+    // set the new order id for variable newOrder
+    newOrder.orderID = newOrderID;
+
+    /* New shipping details handling - DB */
+    // convert order to shipping request to fit the database
+    const newShippingRequest = convertOrderToShippingRequest(
+      newOrder,
+      deliveryPrice
+    );
+    // create and add the new shipping request in database
+    CreateShipping(newShippingRequest);
+
+    /* New order items handling - DB */
+    // convert from selected cart items to order items
+    const newOrderItems: OrderItem[] = selectCart.map((selectedItem) => {
+      return convertCartItemToOrderItem(selectedItem, newOrderID);
+    });
+    // set the new order items for variable newOrder
+    newOrder.orderItems = newOrderItems;
+    // convert from order items to order item requests
+    const newOrderItemRequests = newOrderItems.map((item) => {
+      return convertOrderItemToOrderItemRequest(item);
+    });
+    // create and add the new order items to DB
+    CreateOrderItems(newOrderItemRequests);
+
+    /* Contexts handling */
+    console.log(orders);
+    addOrder(newOrder); // add the new order to order context
+    removeCheckedOutItems(); // remove the items in cart context
+    console.log(orders);
+
+    /* Other handling in DB */
+    await removeCartItemsFromOrder({
+      orderID: newOrderID,
+      items: newOrderItemRequests,
+    }); // remove the items in cart table in database
+    await updateStock({
+      orderID: newOrderID,
+      items: newOrderItemRequests,
+    }); // update products stock in DB
+
+    // Redirect to the success page with the new order ID
+    router.push(`/checkout/success/${newOrderID}`);
+  };
+
   return (
     <main>
       <div className="w-full p-10 flex flex-row">
@@ -85,16 +161,19 @@ export default function CheckoutPage() {
                 className="bg-transparent border-b-2 border-base-content text-2xl text-base-content w-10/12 mb-4 pl-5 
                 placeholder:text-base-content placeholder:text-opacity-30 focus:outline-none"
                 placeholder="Full name"
+                onChange={handleFullNameChange}
               />
               <input
                 className="bg-transparent border-b-2 border-base-content text-2xl text-base-content w-10/12 my-6 pl-5
                 placeholder:text-base-content placeholder:text-opacity-30 focus:outline-none"
                 placeholder="Phone's number"
+                onChange={handlePhoneNumberChange}
               />
               <input
                 className="bg-transparent border-b-2 border-base-content text-2xl text-base-content w-10/12 my-4 pl-5
                 placeholder:text-base-content placeholder:text-opacity-30 focus:outline-none"
                 placeholder="Address"
+                onChange={handleAddressChange}
               />
             </form>
           </div>
@@ -178,6 +257,7 @@ export default function CheckoutPage() {
                 id="paypal"
                 checked={selectedPayment === "paypal"}
                 onChange={handleCheckboxPayChange}
+                disabled={true}
               />
               <label
                 htmlFor="paypal"
@@ -241,36 +321,54 @@ export default function CheckoutPage() {
             </h4>
           </div>
 
-          <Link href={`/checkout/success/${orderID}`} className="self-center">
-            <button
-              className="btn font-semibold text-4xl h-20 w-96 self-center my-20 transition transition-duration-300 transition-property:scale,box-shadow,background-color hover:scale-105 hover:drop-shadow-xl hover:bg-secondary outline-none border-none"
-              onClick={() => {
-                addOrder({
-                  orderID: orderID,
-                  userID: "60629436-da35-401c-9bf8-6e8e3aed90ed", // Replace with the actual user ID
-                  orderDate: getToday(),
-                  shipDate: getNext5Days(),
-                  paymentMethod: selectedPayment,
-                  paymentStatus:
-                    selectedPayment === "cod"
-                      ? PaymentStatus.Unpaid
-                      : PaymentStatus.Paid,
-                  shippingMethod: selectedDelivery,
-                  shippingStatus: ShippingStatus.Pending,
-                  shippingAddress: "123 Main St, City A, Country X",
-                  billingAddress: "123 Main St, City A, Country X",
-                  coupon: "None",
-                  totalBill: totalPrice,
-                  quantity: selectCart.length,
-                });
-                //removeCheckedOutItems;
-              }}
-            >
-              Check out
-            </button>
-          </Link>
+          <button
+            className="btn font-semibold text-4xl h-20 w-96 self-center my-20 transition transition-duration-300 transition-property:scale,box-shadow,background-color hover:scale-105 hover:drop-shadow-xl hover:bg-secondary outline-none border-none"
+            onClick={handleCheckoutClick}
+          >
+            Check out
+          </button>
         </div>
       </div>
     </main>
   );
+}
+
+function getToday() {
+  const today = new Date();
+  const year = today.getFullYear();
+  const month = String(today.getMonth() + 1).padStart(2, "0"); // Months are zero-indexed in JavaScript
+  const day = String(today.getDate()).padStart(2, "0");
+  const formattedDateDMY = `${day}-${month}-${year}`;
+
+  return formattedDateDMY;
+}
+
+function getNext5Days() {
+  const today = new Date();
+  const fiveDaysLater = new Date(today);
+
+  // Add 5 days to the current date
+  fiveDaysLater.setDate(today.getDate() + 5);
+
+  // Format date as 'DD-MM-YYYY'
+  const year = fiveDaysLater.getFullYear();
+  const month = String(fiveDaysLater.getMonth() + 1).padStart(2, "0");
+  const day = String(fiveDaysLater.getDate()).padStart(2, "0");
+
+  return `${day}-${month}-${year}`;
+}
+
+function getNext2Days() {
+  const today = new Date();
+  const twoDaysLater = new Date(today);
+
+  // Add 2 days to the current date
+  twoDaysLater.setDate(today.getDate() + 2);
+
+  // Format date as 'DD-MM-YYYY'
+  const year = twoDaysLater.getFullYear();
+  const month = String(twoDaysLater.getMonth() + 1).padStart(2, "0");
+  const day = String(twoDaysLater.getDate()).padStart(2, "0");
+
+  return `${day}-${month}-${year}`;
 }

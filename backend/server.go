@@ -2,6 +2,7 @@ package main
 
 import (
 	"backend/database"
+	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
@@ -21,21 +22,26 @@ const (
 
 func corsMiddleware(next http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		// Allow any origin for demonstration; you may want to restrict this to specific origins
 		origin := r.Header.Get("Origin")
-
 		if origin != "" {
 			w.Header().Set("Access-Control-Allow-Origin", origin)
+		} else {
+			w.Header().Set("Access-Control-Allow-Origin", "*") // Allow all origins
 		}
 
+		// Set other CORS headers
 		w.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
-		w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
+		w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization, X-Requested-With")
 		w.Header().Set("Access-Control-Allow-Credentials", "true")
 
-		if r.Method == "OPTIONS" {
-			w.WriteHeader(http.StatusOK)
+		// Handle preflight requests
+		if r.Method == http.MethodOptions {
+			w.WriteHeader(http.StatusNoContent)
 			return
 		}
 
+		// Call next handler
 		next(w, r)
 	}
 }
@@ -51,7 +57,6 @@ func rateLimiter(limiter *rate.Limiter, next http.HandlerFunc) http.HandlerFunc 
 }
 
 func main() {
-
 	// Initialize the database
 	db, err := sqlitecloud.Connect(connectionURL)
 	if err != nil {
@@ -100,8 +105,19 @@ func main() {
 		}
 	}))).Methods(http.MethodGet, http.MethodPost)
 
+	r.HandleFunc("/userDetail", rateLimiter(limiter, corsMiddleware(func(w http.ResponseWriter, r *http.Request) {
+		if r.Method == http.MethodGet {
+			userID := r.FormValue("userID")
+			err := database.QueryUserDetail(db, userID, w)
+			if err != nil {
+				http.Error(w, "Failed to query user detail", http.StatusInternalServerError)
+				return
+			}
+		}
+	}))).Methods(http.MethodGet)
+
 	r.HandleFunc("/updateUserDetail", rateLimiter(limiter, corsMiddleware(func(w http.ResponseWriter, r *http.Request) {
-		if r.Method == http.MethodPut {
+		if r.Method == http.MethodPost {
 			// Parse form values for the update
 			if err := r.ParseForm(); err != nil {
 				http.Error(w, "Invalid form data", http.StatusBadRequest)
@@ -127,10 +143,10 @@ func main() {
 		} else {
 			http.Error(w, "Unsupported method", http.StatusMethodNotAllowed)
 		}
-	}))).Methods(http.MethodPut)
+	}))).Methods(http.MethodPost)
 
 	r.HandleFunc("/updateUserPassword", rateLimiter(limiter, corsMiddleware(func(w http.ResponseWriter, r *http.Request) {
-		if r.Method == http.MethodPut {
+		if r.Method == http.MethodPost {
 			// Parse form values for the update
 			if err := r.ParseForm(); err != nil {
 				http.Error(w, "Invalid form data", http.StatusBadRequest)
@@ -153,7 +169,7 @@ func main() {
 		} else {
 			http.Error(w, "Unsupported method", http.StatusMethodNotAllowed)
 		}
-	}))).Methods(http.MethodPut)
+	}))).Methods(http.MethodPost)
 
 	r.HandleFunc("/authenticate", rateLimiter(limiter, corsMiddleware(func(w http.ResponseWriter, r *http.Request) {
 		if r.Method == http.MethodPost {
@@ -367,11 +383,16 @@ func main() {
 			price := r.FormValue("price")
 			status := r.FormValue("status")
 			payStatus := r.FormValue("payStatus")
-			err := database.CreateOrder(db, userID, date, shippingAdress, billingAddress, price, status, payStatus)
+			orderID, err := database.CreateOrder(db, userID, date, shippingAdress, billingAddress, price, status, payStatus)
 			if err != nil {
 				http.Error(w, "Failed to create cart item", http.StatusInternalServerError)
 				return
 			}
+			w.Header().Set("Content-Type", "application/json")
+			w.WriteHeader(http.StatusCreated)
+			response := map[string]string{"orderID": orderID}
+			json.NewEncoder(w).Encode(response)
+
 		} else {
 			http.Error(w, "Unsupported method", http.StatusMethodNotAllowed)
 		}
@@ -394,20 +415,20 @@ func main() {
 	}))).Methods(http.MethodGet)
 
 	r.HandleFunc("/updateStock", rateLimiter(limiter, corsMiddleware(func(w http.ResponseWriter, r *http.Request) {
-		if r.Method == http.MethodPut {
+		if r.Method == http.MethodPost {
 			database.UpdateStock(db, w, r)
 		} else {
 			http.Error(w, "Unsupported method", http.StatusMethodNotAllowed)
 		}
-	}))).Methods(http.MethodPut)
+	}))).Methods(http.MethodPost)
 
 	r.HandleFunc("/deleteCartItem", rateLimiter(limiter, corsMiddleware(func(w http.ResponseWriter, r *http.Request) {
-		if r.Method == http.MethodDelete {
+		if r.Method == http.MethodPost {
 			database.RemoveCartItemsFromOrder(db, w, r)
 		} else {
 			http.Error(w, "Unsupported method", http.StatusMethodNotAllowed)
 		}
-	}))).Methods(http.MethodDelete)
+	}))).Methods(http.MethodPost)
 
 	r.HandleFunc("/createShipping", rateLimiter(limiter, corsMiddleware(func(w http.ResponseWriter, r *http.Request) {
 		if r.Method == http.MethodPost {
@@ -425,6 +446,54 @@ func main() {
 			http.Error(w, "Unsupported method", http.StatusMethodNotAllowed)
 		}
 	}))).Methods(http.MethodPost)
+
+	r.HandleFunc("/queryShipping/{orderID}", rateLimiter(limiter, corsMiddleware(func(w http.ResponseWriter, r *http.Request) {
+		if r.Method == http.MethodGet {
+			err := database.QueryShippingByOrderID(db, w, r)
+			if err != nil {
+				http.Error(w, "Failed to query shipping details", http.StatusInternalServerError)
+				return
+			}
+		} else {
+			http.Error(w, "Unsupported method", http.StatusMethodNotAllowed)
+		}
+	}))).Methods(http.MethodGet)
+
+	r.HandleFunc("/admin/product/{offset}", rateLimiter(limiter, corsMiddleware(func(w http.ResponseWriter, r *http.Request) {
+		if r.Method == http.MethodGet {
+			err := database.QueryAllProduct(db, w, r)
+			if err != nil {
+				http.Error(w, "Failed to query products", http.StatusInternalServerError)
+				return
+			}
+		} else {
+			http.Error(w, "Unsupported method", http.StatusMethodNotAllowed)
+		}
+	}))).Methods(http.MethodGet)
+
+	r.HandleFunc("/admin/order/{method}/{offset}", rateLimiter(limiter, corsMiddleware(func(w http.ResponseWriter, r *http.Request) {
+		if r.Method == http.MethodGet {
+			err := database.QueryAllOrders(db, w, r)
+			if err != nil {
+				http.Error(w, "Failed to query orders", http.StatusInternalServerError)
+				return
+			}
+		} else {
+			http.Error(w, "Unsupported method", http.StatusMethodNotAllowed)
+		}
+	}))).Methods(http.MethodGet)
+
+	r.HandleFunc("/admin/orderItem/{orderID}", rateLimiter(limiter, corsMiddleware(func(w http.ResponseWriter, r *http.Request) {
+		if r.Method == http.MethodGet {
+			err := database.QueryItemsByOrderID(db, w, r)
+			if err != nil {
+				http.Error(w, "Failed to query orders", http.StatusInternalServerError)
+				return
+			}
+		} else {
+			http.Error(w, "Unsupported method", http.StatusMethodNotAllowed)
+		}
+	}))).Methods(http.MethodGet)
 
 	port := getPort()
 	fmt.Printf("Server is listening on port %s\n", port)
