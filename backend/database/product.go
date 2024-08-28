@@ -150,7 +150,6 @@ func QueryProductByID(db *sqlitecloud.SQCloud, w http.ResponseWriter, r *http.Re
 		Sizes:          json.RawMessage(rows2.ToJSON()),
 	}
 
-	w.Header().Set("Content-Type", "application/json")
 	if err := json.NewEncoder(w).Encode(response); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return err
