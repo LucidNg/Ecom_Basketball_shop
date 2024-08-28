@@ -395,217 +395,217 @@ export async function FetchOrdersByUserID(
     ? `${process.env.API_ENDPOINT}/queryOrders/${userID}`
     : `${connectString}/queryOrders/${userID}`;
 
-  // try {
-  //   const response = await fetch(url, {
-  //     method: "GET",
-  //     headers: {
-  //       "Content-Type": "application/x-www-form-urlencoded",
+  try {
+    const response = await fetch(url, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+    });
+
+    if (!response.ok) {
+      // Handle HTTP errors
+      console.error("Failed to fetch orders:", response.statusText);
+      return null;
+    }
+
+    const data: OrdersByUserID = await response.json();
+    return data;
+  } catch (error) {
+    // Handle network or other errors
+    console.error("Error fetching orders:", error);
+    return null;
+  }
+
+  // const exampleOrdersByUserID: OrdersByUserID = {
+  //   orders: [
+  //     {
+  //       orderID: "ORD001",
+  //       userID: "USER001",
+  //       date: "2024-08-01",
+  //       shippingAddress: "123 Maple St, Springfield, IL 62701",
+  //       billingAddress: "123 Maple St, Springfield, IL 62701",
+  //       price: 359.98,
+  //       status: "delivered",
+  //       payStatus: "paid",
+  //       payMethod: "cod",
+  //       items: [
+  //         {
+  //           orderID: "ORD001",
+  //           productID: "PROD1001",
+  //           productName: "product 1",
+  //           url: "https://www.google.com/url?sa=i&url=https%3A%2F%2Fwordpress.org%2Fplugins%2Freplace-image%2F&psig=AOvVaw1wTBwS-oVIoEyIo-mcjhHX&ust=1724867330464000&source=images&cd=vfe&opi=89978449&ved=0CBEQjRxqFwoTCJC0hebdlYgDFQAAAAAdAAAAABAE",
+  //           size: "M",
+  //           quantity: 2,
+  //           price: 79.99,
+  //         },
+  //         {
+  //           orderID: "ORD001",
+  //           productID: "PROD1002",
+  //           productName: "product 2",
+  //           url: "https://www.google.com/url?sa=i&url=https%3A%2F%2Fwordpress.org%2Fplugins%2Freplace-image%2F&psig=AOvVaw1wTBwS-oVIoEyIo-mcjhHX&ust=1724867330464000&source=images&cd=vfe&opi=89978449&ved=0CBEQjRxqFwoTCJC0hebdlYgDFQAAAAAdAAAAABAE",
+  //           size: "L",
+  //           quantity: 1,
+  //           price: 139.99,
+  //         },
+  //         {
+  //           orderID: "ORD001",
+  //           productID: "PROD1003",
+  //           productName: "product 3",
+  //           url: "https://www.google.com/url?sa=i&url=https%3A%2F%2Fwordpress.org%2Fplugins%2Freplace-image%2F&psig=AOvVaw1wTBwS-oVIoEyIo-mcjhHX&ust=1724867330464000&source=images&cd=vfe&opi=89978449&ved=0CBEQjRxqFwoTCJC0hebdlYgDFQAAAAAdAAAAABAE",
+  //           size: "S",
+  //           quantity: 1,
+  //           price: 59.99,
+  //         },
+
+  //         {
+  //           orderID: "ORD001",
+  //           productID: "PROD1003",
+  //           productName: "product 3",
+  //           url: "https://www.google.com/url?sa=i&url=https%3A%2F%2Fwordpress.org%2Fplugins%2Freplace-image%2F&psig=AOvVaw1wTBwS-oVIoEyIo-mcjhHX&ust=1724867330464000&source=images&cd=vfe&opi=89978449&ved=0CBEQjRxqFwoTCJC0hebdlYgDFQAAAAAdAAAAABAE",
+  //           size: "L",
+  //           quantity: 1,
+  //           price: 60.0,
+  //         },
+  //       ],
   //     },
-  //   });
+  //     {
+  //       orderID: "ORD002",
+  //       userID: "USER002",
+  //       date: "2024-08-02",
+  //       shippingAddress: "456 Oak St, Springfield, IL 62702",
+  //       billingAddress: "456 Oak St, Springfield, IL 62702",
+  //       price: 189.97,
+  //       status: "pending",
+  //       payStatus: "unpaid",
+  //       payMethod: "cod",
+  //       items: [
+  //         {
+  //           orderID: "ORD002",
+  //           productID: "PROD2001",
+  //           productName: "product 1",
+  //           url: "https://www.google.com/url?sa=i&url=https%3A%2F%2Fwordpress.org%2Fplugins%2Freplace-image%2F&psig=AOvVaw1wTBwS-oVIoEyIo-mcjhHX&ust=1724867330464000&source=images&cd=vfe&opi=89978449&ved=0CBEQjRxqFwoTCJC0hebdlYgDFQAAAAAdAAAAABAE",
+  //           size: "XL",
+  //           quantity: 1,
+  //           price: 99.99,
+  //         },
+  //         {
+  //           orderID: "ORD002",
+  //           productID: "PROD2002",
+  //           productName: "product 2",
+  //           url: "https://www.google.com/url?sa=i&url=https%3A%2F%2Fwordpress.org%2Fplugins%2Freplace-image%2F&psig=AOvVaw1wTBwS-oVIoEyIo-mcjhHX&ust=1724867330464000&source=images&cd=vfe&opi=89978449&ved=0CBEQjRxqFwoTCJC0hebdlYgDFQAAAAAdAAAAABAE",
+  //           size: "M",
+  //           quantity: 2,
+  //           price: 44.99,
+  //         },
+  //       ],
+  //     },
+  //     {
+  //       orderID: "ORD003",
+  //       userID: "USER003",
+  //       date: "2024-08-03",
+  //       shippingAddress: "789 Pine St, Springfield, IL 62703",
+  //       billingAddress: "789 Pine St, Springfield, IL 62703",
+  //       price: 399.95,
+  //       status: "delivered",
+  //       payStatus: "paid",
+  //       payMethod: "cod",
+  //       items: [
+  //         {
+  //           orderID: "ORD003",
+  //           productID: "PROD3001",
+  //           productName: "product 1",
+  //           url: "https://www.google.com/url?sa=i&url=https%3A%2F%2Fwordpress.org%2Fplugins%2Freplace-image%2F&psig=AOvVaw1wTBwS-oVIoEyIo-mcjhHX&ust=1724867330464000&source=images&cd=vfe&opi=89978449&ved=0CBEQjRxqFwoTCJC0hebdlYgDFQAAAAAdAAAAABAE",
+  //           size: "L",
+  //           quantity: 3,
+  //           price: 89.99,
+  //         },
+  //         {
+  //           orderID: "ORD003",
+  //           productID: "PROD3002",
+  //           productName: "product 2",
+  //           url: "https://www.google.com/url?sa=i&url=https%3A%2F%2Fwordpress.org%2Fplugins%2Freplace-image%2F&psig=AOvVaw1wTBwS-oVIoEyIo-mcjhHX&ust=1724867330464000&source=images&cd=vfe&opi=89978449&ved=0CBEQjRxqFwoTCJC0hebdlYgDFQAAAAAdAAAAABAE",
+  //           size: "M",
+  //           quantity: 2,
+  //           price: 49.99,
+  //         },
+  //         {
+  //           orderID: "ORD003",
+  //           productID: "PROD3003",
+  //           productName: "product 3",
+  //           url: "https://www.google.com/url?sa=i&url=https%3A%2F%2Fwordpress.org%2Fplugins%2Freplace-image%2F&psig=AOvVaw1wTBwS-oVIoEyIo-mcjhHX&ust=1724867330464000&source=images&cd=vfe&opi=89978449&ved=0CBEQjRxqFwoTCJC0hebdlYgDFQAAAAAdAAAAABAE",
+  //           size: "S",
+  //           quantity: 1,
+  //           price: 69.99,
+  //         },
+  //       ],
+  //     },
+  //     {
+  //       orderID: "ORD004",
+  //       userID: "USER004",
+  //       date: "2024-08-04",
+  //       shippingAddress: "101 Birch St, Springfield, IL 62704",
+  //       billingAddress: "101 Birch St, Springfield, IL 62704",
+  //       price: 239.96,
+  //       status: "canceled",
+  //       payStatus: "refunded",
+  //       payMethod: "cod",
+  //       items: [
+  //         {
+  //           orderID: "ORD004",
+  //           productID: "PROD4001",
+  //           productName: "product 1",
+  //           url: "https://www.google.com/url?sa=i&url=https%3A%2F%2Fwordpress.org%2Fplugins%2Freplace-image%2F&psig=AOvVaw1wTBwS-oVIoEyIo-mcjhHX&ust=1724867330464000&source=images&cd=vfe&opi=89978449&ved=0CBEQjRxqFwoTCJC0hebdlYgDFQAAAAAdAAAAABAE",
+  //           size: "M",
+  //           quantity: 1,
+  //           price: 119.99,
+  //         },
+  //         {
+  //           orderID: "ORD004",
+  //           productID: "PROD4002",
+  //           productName: "product 2",
+  //           url: "https://www.google.com/url?sa=i&url=https%3A%2F%2Fwordpress.org%2Fplugins%2Freplace-image%2F&psig=AOvVaw1wTBwS-oVIoEyIo-mcjhHX&ust=1724867330464000&source=images&cd=vfe&opi=89978449&ved=0CBEQjRxqFwoTCJC0hebdlYgDFQAAAAAdAAAAABAE",
+  //           size: "L",
+  //           quantity: 2,
+  //           price: 59.99,
+  //         },
+  //       ],
+  //     },
+  //     {
+  //       orderID: "ORD005",
+  //       userID: "USER005",
+  //       date: "2024-08-05",
+  //       shippingAddress: "202 Cedar St, Springfield, IL 62705",
+  //       billingAddress: "202 Cedar St, Springfield, IL 62705",
+  //       price: 149.95,
+  //       status: "canceled",
+  //       payStatus: "partially_refunded",
+  //       payMethod: "cod",
+  //       items: [
+  //         {
+  //           orderID: "ORD005",
+  //           productID: "PROD5001",
+  //           productName: "product 1",
+  //           url: "https://www.google.com/url?sa=i&url=https%3A%2F%2Fwordpress.org%2Fplugins%2Freplace-image%2F&psig=AOvVaw1wTBwS-oVIoEyIo-mcjhHX&ust=1724867330464000&source=images&cd=vfe&opi=89978449&ved=0CBEQjRxqFwoTCJC0hebdlYgDFQAAAAAdAAAAABAE",
+  //           size: "S",
+  //           quantity: 2,
+  //           price: 74.99,
+  //         },
+  //         {
+  //           orderID: "ORD005",
+  //           productID: "PROD5002",
+  //           productName: "product 2",
+  //           url: "https://www.google.com/url?sa=i&url=https%3A%2F%2Fwordpress.org%2Fplugins%2Freplace-image%2F&psig=AOvVaw1wTBwS-oVIoEyIo-mcjhHX&ust=1724867330464000&source=images&cd=vfe&opi=89978449&ved=0CBEQjRxqFwoTCJC0hebdlYgDFQAAAAAdAAAAABAE",
+  //           size: "M",
+  //           quantity: 1,
+  //           price: 49.99,
+  //         },
+  //       ],
+  //     },
+  //   ],
+  // };
 
-  //   if (!response.ok) {
-  //     // Handle HTTP errors
-  //     console.error("Failed to fetch orders:", response.statusText);
-  //     return null;
-  //   }
-
-  //   const data: OrdersByUserID = await response.json();
-  //   return data;
-  // } catch (error) {
-  //   // Handle network or other errors
-  //   console.error("Error fetching orders:", error);
-  //   return null;
-  // }
-
-  const exampleOrdersByUserID: OrdersByUserID = {
-    orders: [
-      {
-        orderID: "ORD001",
-        userID: "USER001",
-        date: "2024-08-01",
-        shippingAddress: "123 Maple St, Springfield, IL 62701",
-        billingAddress: "123 Maple St, Springfield, IL 62701",
-        price: 359.98,
-        status: "delivered",
-        payStatus: "paid",
-        payMethod: "cod",
-        items: [
-          {
-            orderID: "ORD001",
-            productID: "PROD1001",
-            productName: "product 1",
-            url: "https://www.google.com/url?sa=i&url=https%3A%2F%2Fwordpress.org%2Fplugins%2Freplace-image%2F&psig=AOvVaw1wTBwS-oVIoEyIo-mcjhHX&ust=1724867330464000&source=images&cd=vfe&opi=89978449&ved=0CBEQjRxqFwoTCJC0hebdlYgDFQAAAAAdAAAAABAE",
-            size: "M",
-            quantity: 2,
-            price: 79.99,
-          },
-          {
-            orderID: "ORD001",
-            productID: "PROD1002",
-            productName: "product 2",
-            url: "https://www.google.com/url?sa=i&url=https%3A%2F%2Fwordpress.org%2Fplugins%2Freplace-image%2F&psig=AOvVaw1wTBwS-oVIoEyIo-mcjhHX&ust=1724867330464000&source=images&cd=vfe&opi=89978449&ved=0CBEQjRxqFwoTCJC0hebdlYgDFQAAAAAdAAAAABAE",
-            size: "L",
-            quantity: 1,
-            price: 139.99,
-          },
-          {
-            orderID: "ORD001",
-            productID: "PROD1003",
-            productName: "product 3",
-            url: "https://www.google.com/url?sa=i&url=https%3A%2F%2Fwordpress.org%2Fplugins%2Freplace-image%2F&psig=AOvVaw1wTBwS-oVIoEyIo-mcjhHX&ust=1724867330464000&source=images&cd=vfe&opi=89978449&ved=0CBEQjRxqFwoTCJC0hebdlYgDFQAAAAAdAAAAABAE",
-            size: "S",
-            quantity: 1,
-            price: 59.99,
-          },
-
-          {
-            orderID: "ORD001",
-            productID: "PROD1003",
-            productName: "product 3",
-            url: "https://www.google.com/url?sa=i&url=https%3A%2F%2Fwordpress.org%2Fplugins%2Freplace-image%2F&psig=AOvVaw1wTBwS-oVIoEyIo-mcjhHX&ust=1724867330464000&source=images&cd=vfe&opi=89978449&ved=0CBEQjRxqFwoTCJC0hebdlYgDFQAAAAAdAAAAABAE",
-            size: "L",
-            quantity: 1,
-            price: 60.0,
-          },
-        ],
-      },
-      {
-        orderID: "ORD002",
-        userID: "USER002",
-        date: "2024-08-02",
-        shippingAddress: "456 Oak St, Springfield, IL 62702",
-        billingAddress: "456 Oak St, Springfield, IL 62702",
-        price: 189.97,
-        status: "pending",
-        payStatus: "unpaid",
-        payMethod: "cod",
-        items: [
-          {
-            orderID: "ORD002",
-            productID: "PROD2001",
-            productName: "product 1",
-            url: "https://www.google.com/url?sa=i&url=https%3A%2F%2Fwordpress.org%2Fplugins%2Freplace-image%2F&psig=AOvVaw1wTBwS-oVIoEyIo-mcjhHX&ust=1724867330464000&source=images&cd=vfe&opi=89978449&ved=0CBEQjRxqFwoTCJC0hebdlYgDFQAAAAAdAAAAABAE",
-            size: "XL",
-            quantity: 1,
-            price: 99.99,
-          },
-          {
-            orderID: "ORD002",
-            productID: "PROD2002",
-            productName: "product 2",
-            url: "https://www.google.com/url?sa=i&url=https%3A%2F%2Fwordpress.org%2Fplugins%2Freplace-image%2F&psig=AOvVaw1wTBwS-oVIoEyIo-mcjhHX&ust=1724867330464000&source=images&cd=vfe&opi=89978449&ved=0CBEQjRxqFwoTCJC0hebdlYgDFQAAAAAdAAAAABAE",
-            size: "M",
-            quantity: 2,
-            price: 44.99,
-          },
-        ],
-      },
-      {
-        orderID: "ORD003",
-        userID: "USER003",
-        date: "2024-08-03",
-        shippingAddress: "789 Pine St, Springfield, IL 62703",
-        billingAddress: "789 Pine St, Springfield, IL 62703",
-        price: 399.95,
-        status: "delivered",
-        payStatus: "paid",
-        payMethod: "cod",
-        items: [
-          {
-            orderID: "ORD003",
-            productID: "PROD3001",
-            productName: "product 1",
-            url: "https://www.google.com/url?sa=i&url=https%3A%2F%2Fwordpress.org%2Fplugins%2Freplace-image%2F&psig=AOvVaw1wTBwS-oVIoEyIo-mcjhHX&ust=1724867330464000&source=images&cd=vfe&opi=89978449&ved=0CBEQjRxqFwoTCJC0hebdlYgDFQAAAAAdAAAAABAE",
-            size: "L",
-            quantity: 3,
-            price: 89.99,
-          },
-          {
-            orderID: "ORD003",
-            productID: "PROD3002",
-            productName: "product 2",
-            url: "https://www.google.com/url?sa=i&url=https%3A%2F%2Fwordpress.org%2Fplugins%2Freplace-image%2F&psig=AOvVaw1wTBwS-oVIoEyIo-mcjhHX&ust=1724867330464000&source=images&cd=vfe&opi=89978449&ved=0CBEQjRxqFwoTCJC0hebdlYgDFQAAAAAdAAAAABAE",
-            size: "M",
-            quantity: 2,
-            price: 49.99,
-          },
-          {
-            orderID: "ORD003",
-            productID: "PROD3003",
-            productName: "product 3",
-            url: "https://www.google.com/url?sa=i&url=https%3A%2F%2Fwordpress.org%2Fplugins%2Freplace-image%2F&psig=AOvVaw1wTBwS-oVIoEyIo-mcjhHX&ust=1724867330464000&source=images&cd=vfe&opi=89978449&ved=0CBEQjRxqFwoTCJC0hebdlYgDFQAAAAAdAAAAABAE",
-            size: "S",
-            quantity: 1,
-            price: 69.99,
-          },
-        ],
-      },
-      {
-        orderID: "ORD004",
-        userID: "USER004",
-        date: "2024-08-04",
-        shippingAddress: "101 Birch St, Springfield, IL 62704",
-        billingAddress: "101 Birch St, Springfield, IL 62704",
-        price: 239.96,
-        status: "canceled",
-        payStatus: "refunded",
-        payMethod: "cod",
-        items: [
-          {
-            orderID: "ORD004",
-            productID: "PROD4001",
-            productName: "product 1",
-            url: "https://www.google.com/url?sa=i&url=https%3A%2F%2Fwordpress.org%2Fplugins%2Freplace-image%2F&psig=AOvVaw1wTBwS-oVIoEyIo-mcjhHX&ust=1724867330464000&source=images&cd=vfe&opi=89978449&ved=0CBEQjRxqFwoTCJC0hebdlYgDFQAAAAAdAAAAABAE",
-            size: "M",
-            quantity: 1,
-            price: 119.99,
-          },
-          {
-            orderID: "ORD004",
-            productID: "PROD4002",
-            productName: "product 2",
-            url: "https://www.google.com/url?sa=i&url=https%3A%2F%2Fwordpress.org%2Fplugins%2Freplace-image%2F&psig=AOvVaw1wTBwS-oVIoEyIo-mcjhHX&ust=1724867330464000&source=images&cd=vfe&opi=89978449&ved=0CBEQjRxqFwoTCJC0hebdlYgDFQAAAAAdAAAAABAE",
-            size: "L",
-            quantity: 2,
-            price: 59.99,
-          },
-        ],
-      },
-      {
-        orderID: "ORD005",
-        userID: "USER005",
-        date: "2024-08-05",
-        shippingAddress: "202 Cedar St, Springfield, IL 62705",
-        billingAddress: "202 Cedar St, Springfield, IL 62705",
-        price: 149.95,
-        status: "canceled",
-        payStatus: "partially_refunded",
-        payMethod: "cod",
-        items: [
-          {
-            orderID: "ORD005",
-            productID: "PROD5001",
-            productName: "product 1",
-            url: "https://www.google.com/url?sa=i&url=https%3A%2F%2Fwordpress.org%2Fplugins%2Freplace-image%2F&psig=AOvVaw1wTBwS-oVIoEyIo-mcjhHX&ust=1724867330464000&source=images&cd=vfe&opi=89978449&ved=0CBEQjRxqFwoTCJC0hebdlYgDFQAAAAAdAAAAABAE",
-            size: "S",
-            quantity: 2,
-            price: 74.99,
-          },
-          {
-            orderID: "ORD005",
-            productID: "PROD5002",
-            productName: "product 2",
-            url: "https://www.google.com/url?sa=i&url=https%3A%2F%2Fwordpress.org%2Fplugins%2Freplace-image%2F&psig=AOvVaw1wTBwS-oVIoEyIo-mcjhHX&ust=1724867330464000&source=images&cd=vfe&opi=89978449&ved=0CBEQjRxqFwoTCJC0hebdlYgDFQAAAAAdAAAAABAE",
-            size: "M",
-            quantity: 1,
-            price: 49.99,
-          },
-        ],
-      },
-    ],
-  };
-
-  return exampleOrdersByUserID;
+  // return exampleOrdersByUserID;
 }
 
 export async function FetchShippingByOrderID(
