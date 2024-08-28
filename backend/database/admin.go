@@ -24,7 +24,7 @@ func QueryAllProduct(db *sqlitecloud.SQCloud, w http.ResponseWriter, r *http.Req
 	sql := `SELECT s.productID, p.productName, s.size, s.stock, s.price
 		FROM size s
 		JOIN product p ON s.productID = p.productID
-		LIMIT 30 OFFSET ?`
+		LIMIT 10 OFFSET ?`
 
 	values := []interface{}{offset * 30}
 	rows, err := db.SelectArray(sql, values)
