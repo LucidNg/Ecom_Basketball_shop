@@ -166,3 +166,91 @@ export async function FetchAllUsers(offset: number): Promise<Array<Admin_User>> 
     throw error;
   }
 }
+
+export async function InsertProduct(
+  categoryID: string,
+  name: string,
+  description: string,
+  brand: string,
+  price: string,
+  stock: string,
+  dateAdded: string,
+  size: string
+): Promise<void> {
+  // Construct the URL for the POST request
+  const url = process.env.API_ENDPOINT
+    ? `${process.env.API_ENDPOINT}/admin/insertProduct`
+    : `${connectString}/admin/insertProduct`;
+
+  // Prepare the data to be sent in the request body
+  const formData = new URLSearchParams();
+  formData.append("categoryID", categoryID);
+  formData.append("name", name);
+  formData.append("description", description);
+  formData.append("brand", brand);
+  formData.append("price", price);
+  formData.append("stock", stock);
+  formData.append("dateAdded", dateAdded);
+  formData.append("size", size);
+
+  try {
+    const response = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+      body: formData.toString(),
+      credentials: "include",
+      mode: "cors",
+      cache: "no-cache",
+    });
+
+    if (!response.ok) {
+      // Handle HTTP errors
+      throw new Error(`Failed to insert product: ${response.statusText}`);
+    }
+
+    // Optional: Handle successful insertion, such as by displaying a message
+    console.log("Product inserted successfully");
+  } catch (error) {
+    // Handle network or other errors
+    console.error("Error inserting product:", error);
+    throw error;
+  }
+}
+
+export async function DeleteProduct(productID: string): Promise<void> {
+  // Construct the URL for the DELETE request
+  const url = process.env.API_ENDPOINT
+    ? `${process.env.API_ENDPOINT}/admin/deleteProduct`
+    : `${connectString}/admin/deleteProduct`;
+
+  // Prepare the data to be sent in the request body
+  const formData = new URLSearchParams();
+  formData.append("productID", productID);
+
+  try {
+    const response = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+      body: formData.toString(),
+      credentials: "include",
+      mode: "cors",
+      cache: "no-cache",
+    });
+
+    if (!response.ok) {
+      // Handle HTTP errors
+      throw new Error(`Failed to delete product: ${response.statusText}`);
+    }
+
+    // Optional: Handle successful deletion, such as by displaying a message
+    console.log("Product deleted successfully");
+  } catch (error) {
+    // Handle network or other errors
+    console.error("Error deleting product:", error);
+    throw error;
+  }
+}
