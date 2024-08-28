@@ -72,6 +72,13 @@ func QueryAllOrders(db *sqlitecloud.SQCloud, w http.ResponseWriter, r *http.Requ
 		       WHERE o.payStatus = ?
 		       LIMIT 30 OFFSET ?`
 		values = []interface{}{method, offset * 30}
+	case "all":
+		sql = `SELECT o.orderID, o.userID, o.date, o.shippingAddress, o.billingAddress, o.price, o.status, o.payStatus, o.method,
+		              ud.fullName, ud.phoneNumber
+		       FROM orders o
+		       JOIN userDetail ud ON o.userID = ud.userID
+		       LIMIT 30 OFFSET ?`
+		values = []interface{}{offset * 30}
 	default:
 		http.Error(w, "Invalid method value", http.StatusBadRequest)
 		return fmt.Errorf("Invalid method value")

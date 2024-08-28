@@ -63,8 +63,8 @@ export async function FetchAllProducts(offset: number): Promise<Array<Admin_Prod
 export async function FetchAllOrders(method: string, offset: number): Promise<Array<Admin_Order>> {
   // Construct the URL with the method and offset parameters
   const url = process.env.API_ENDPOINT
-    ? `${process.env.API_ENDPOINT}/orders/${method}/${offset}`
-    : `${connectString}/orders/${method}/${offset}`;
+    ? `${process.env.API_ENDPOINT}/admin/order/${method}/${offset}`
+    : `${connectString}/admin/order/${method}/${offset}`;
 
   try {
     const response = await fetch(url, {
