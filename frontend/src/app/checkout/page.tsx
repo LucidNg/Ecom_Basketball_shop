@@ -146,7 +146,7 @@ export default function CheckoutPage() {
         deliveryPrice
       );
       // create and add the new shipping request in database
-      CreateShipping(newShippingRequest);
+      //CreateShipping(newShippingRequest);
 
       /* New order items handling - DB */
       // convert from selected cart items to order items
