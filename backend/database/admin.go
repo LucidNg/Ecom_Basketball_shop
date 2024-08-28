@@ -58,7 +58,7 @@ func QueryAllOrders(db *sqlitecloud.SQCloud, w http.ResponseWriter, r *http.Requ
 	switch method {
 	case "sent", "processed", "finished":
 		sql = `SELECT o.orderID, o.userID, o.date, o.shippingAddress, o.billingAddress, o.price, o.status, o.payStatus, o.method,
-		              ud.fullName, ud.phoneNumber
+		              ud.fullName, COALESCE(ud.phoneNumber, 'null') AS phoneNumber
 		       FROM orders o
 		       JOIN userDetail ud ON o.userID = ud.userID
 		       WHERE o.status = ?
@@ -66,7 +66,7 @@ func QueryAllOrders(db *sqlitecloud.SQCloud, w http.ResponseWriter, r *http.Requ
 		values = []interface{}{method, offset * 30}
 	case "paid", "unpaid":
 		sql = `SELECT o.orderID, o.userID, o.date, o.shippingAddress, o.billingAddress, o.price, o.status, o.payStatus, o.method,
-		              ud.fullName, ud.phoneNumber
+		              ud.fullName, COALESCE(ud.phoneNumber, 'null') AS phoneNumber
 		       FROM orders o
 		       JOIN userDetail ud ON o.userID = ud.userID
 		       WHERE o.payStatus = ?
@@ -74,7 +74,7 @@ func QueryAllOrders(db *sqlitecloud.SQCloud, w http.ResponseWriter, r *http.Requ
 		values = []interface{}{method, offset * 30}
 	case "all":
 		sql = `SELECT o.orderID, o.userID, o.date, o.shippingAddress, o.billingAddress, o.price, o.status, o.payStatus, o.method,
-		              ud.fullName, ud.phoneNumber
+		              ud.fullName, COALESCE(ud.phoneNumber, 'null') AS phoneNumber
 		       FROM orders o
 		       JOIN userDetail ud ON o.userID = ud.userID
 		       LIMIT 30 OFFSET ?`
