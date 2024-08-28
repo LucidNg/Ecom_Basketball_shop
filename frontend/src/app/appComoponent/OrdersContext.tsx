@@ -19,6 +19,7 @@ import {
   FetchOrdersByUserID,
   convertToOrder,
 } from "@/lib/order";
+import { decryptToken } from "@/lib/decrypt";
 
 interface OrdersContextType {
   orders: Order[];
@@ -39,25 +40,58 @@ export const useOrders = () => {
 
 export const OrdersProvider = ({ children }: { children: ReactNode }) => {
   const [orders, setOrders] = useState<Order[]>([]);
-  const userID = "60629436-da35-401c-9bf8-6e8e3aed90ed"; // Replace with the actual user ID
+  //const userID = "60629436-da35-401c-9bf8-6e8e3aed90ed"; // Replace with the actual user ID
+  const [tokenAvailable, setTokenAvailable] = useState(false);
 
   useEffect(() => {
-    const fetchOrders = async () => {
-      try {
-        const _ordersByUserID = await FetchOrdersByUserID(userID);
-        if (_ordersByUserID && _ordersByUserID.orders) {
-          const _ordersPromises = _ordersByUserID.orders.map((orderRequest) => {
-            return convertToOrder(orderRequest);
-          });
-          const _orders = await Promise.all(_ordersPromises);
-          setOrders(_orders);
+    const token = localStorage.getItem("jwt"); // Check immediately if token is available
+
+    if (token) {
+      setTokenAvailable(true);
+    } else {
+      // Set up an interval to keep checking for the token
+      const checkForToken = setInterval(() => {
+        const token = localStorage.getItem("jwt");
+        if (token) {
+          setTokenAvailable(true);
+          clearInterval(checkForToken);
         }
-      } catch (error) {
-        console.error("Failed to fetch cart items:", error);
-      }
-    };
-    fetchOrders();
-  }, [userID]);
+      }, 100); // Adjust interval as needed
+
+      return () => clearInterval(checkForToken); // Clear interval on component unmount
+    }
+  }, []);
+
+  useEffect(() => {
+    if (!tokenAvailable) return; // Only proceed if token is available
+
+    const token = localStorage.getItem("jwt");
+    if (token) {
+      const decrypted = decryptToken(token);
+      const payload = JSON.parse(atob(decrypted.split(".")[1]));
+      const userID = payload.userID;
+
+      const fetchOrders = async () => {
+        try {
+          const _ordersByUserID = await FetchOrdersByUserID(userID);
+          if (_ordersByUserID && _ordersByUserID.orders) {
+            const _ordersPromises = _ordersByUserID.orders.map(
+              (orderRequest) => {
+                return convertToOrder(orderRequest);
+              }
+            );
+            const _orders = await Promise.all(_ordersPromises);
+            setOrders(_orders);
+          }
+        } catch (error) {
+          console.error("Failed to fetch cart items:", error);
+        }
+      };
+      fetchOrders();
+    } else {
+      setOrders([]);
+    }
+  }, [tokenAvailable]);
 
   const addOrder = (order: Order) => {
     setOrders((prevOrders) => {

@@ -19,9 +19,10 @@ import {
 } from "@/lib/order";
 import ProductCard from "../appComoponent/ProductCard";
 import { convertCartItemToOrderItem, OrderItem } from "@/lib/productItem";
-import router from "next/router";
+import { useRouter } from "next/navigation";
 
 export default function CheckoutPage() {
+  const router = useRouter(); // Use useRouter hook
   const [selectedDelivery, setSelectedDelivery] = useState("standard");
   const [selectedPayment, setSelectedPayment] = useState("cod");
   const [deliveryPrice, setDeliveryPrice] = useState(4);
@@ -90,7 +91,7 @@ export default function CheckoutPage() {
         selectedPayment === "cod" ? PaymentStatus.Unpaid : PaymentStatus.Paid,
       shippingMethod: selectedDelivery,
       shippingStatus: ShippingStatus.Pending,
-      shippingAddress: "123 Main St, City A, Country X",
+      shippingAddress: address,
       billingAddress: "123 Main St, City A, Country X",
       coupon: "None",
       totalBill: totalPrice,
@@ -130,15 +131,17 @@ export default function CheckoutPage() {
     CreateOrderItems(newOrderItemRequests);
 
     /* Contexts handling */
+    console.log(orders);
     addOrder(newOrder); // add the new order to order context
     removeCheckedOutItems(); // remove the items in cart context
+    console.log(orders);
 
     /* Other handling in DB */
-    removeCartItemsFromOrder({
+    await removeCartItemsFromOrder({
       orderID: newOrderID,
       items: newOrderItemRequests,
     }); // remove the items in cart table in database
-    updateStock({
+    await updateStock({
       orderID: newOrderID,
       items: newOrderItemRequests,
     }); // update products stock in DB

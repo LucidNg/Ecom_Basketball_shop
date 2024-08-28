@@ -102,7 +102,7 @@ export const useCart = () => {
 
 export const CartProvider = ({ children }: { children: ReactNode }) => {
   const [selectCart, setSelectCart] = useState<CartItem[]>([]);
-  const [cart, setCart] = useState<CartItem[]>([]);
+  const [cart, setCart] = useState<CartItem[]>(mock_data);
 
   const [tokenAvailable, setTokenAvailable] = useState(false);
 
