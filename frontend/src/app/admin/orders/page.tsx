@@ -47,10 +47,10 @@ export default function AdminOrderPage() {
     };
 
     return (
-        <div className="DisplayArea w-full flex flex-col mb-10">
+        <div className="DisplayArea w-full h-screen flex flex-col">
             <h1 className="text-5xl text-base-content font-semibold mt-12 ml-20">Orders</h1>
             <div className="border-black w-full border-[0.5px] border-opacity-50 my-8"></div>
-            <div className="mx-auto overflow-auto w-[90%] rounded-lg mt-10 shadow-xl shadow-indigo-300/40">
+            <div className="mx-auto overflow-auto w-[90%] rounded-lg mt-4 shadow-xl shadow-indigo-300/40">
                 <div className="tabBar w-full flex justify-start relative">
                     {["all", "sent", "processed", "finished"].map((tab) => (
                         <button
@@ -112,7 +112,7 @@ export default function AdminOrderPage() {
                         </tbody>
                     </table>
                 ) : (
-                    <div className="text-center text-xl text-base-content py-10">
+                    <div className="text-center text-4xl font-semibold py-10 text-red-500">
                         No orders found.
                     </div>
                 )}
