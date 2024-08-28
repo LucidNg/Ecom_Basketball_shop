@@ -41,12 +41,12 @@ export default function SideBar() {
 
     return (
         <div
-            className={`SideBar bg-base-content h-screen flex flex-col py-20 px-6 transition-all duration-300 ${open ? "w-60" : "w-24"}`}
+            className={`SideBar bg-base-content h-auto flex flex-col py-20 px-6 transition-all duration-300 ${open ? "w-60" : "w-24"}`}
             onMouseEnter={() => setOpen(true)}
             onMouseLeave={() => setOpen(false)}
         >
             <div className="relative inline-flex items-center">
-                <div className="Avatar rounded-full bg-gray-500 w-10 h-10 flex-shrink-0"></div>
+                <div className="Avatar rounded-full bg-primary w-10 h-10 flex-shrink-0"></div>
                 <h1
                     className={`absolute left-14 text-lg transition-transform duration-300 ${open ? "opacity-100 translate-x-0" : "opacity-0 translate-x-4"}`}
                 >
