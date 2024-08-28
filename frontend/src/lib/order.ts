@@ -621,6 +621,9 @@ export async function FetchShippingByOrderID(
       headers: {
         "Content-Type": "application/json",
       },
+      credentials: "include",
+      mode: "cors",
+      cache: "no-cache",
     });
 
     if (!response.ok) {
