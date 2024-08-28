@@ -45,12 +45,12 @@ export default function AdminOrderPage() {
     };
 
     return (
-        <div className="DisplayArea w-full flex flex-col mb-10">
+        <div className="DisplayArea w-full flex flex-col">
             <h1 className="text-5xl text-base-content font-semibold mt-12 ml-20">Customers</h1>
             <div className="border-black w-full border-[0.5px] border-opacity-50 my-8"></div>
             <div className="mx-auto overflow-auto w-1/2 md:w-[90%] lg:w-[70%] px-10 rounded-lg mt-10 shadow-xl shadow-indigo-300/40">
                 {customers.length > 0 ? (
-                    <table className="w-full min-w-[90%]] mx-10 border-separate border-spacing-y-3">
+                    <table className="w-auto max-w-[90%] mx-10 border-separate border-spacing-y-3">
                         <thead>
                             <tr className="text-xl text-base-content text-opacity-50">
                                 <th className="tracking-wide text-left w-1/6 p-3">Fullname</th>
@@ -73,8 +73,8 @@ export default function AdminOrderPage() {
                         </tbody>
                     </table>
                 ) : (
-                    <div className="text-center text-xl text-base-content py-10">
-                        No orders found.
+                    <div className="text-center text-4xl font-semibold py-10 text-red-500">
+                        No customers found.
                     </div>
                 )}
 
