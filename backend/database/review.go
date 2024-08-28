@@ -11,9 +11,10 @@ func QueryAllReviews(db *sqlitecloud.SQCloud, w http.ResponseWriter, r *http.Req
 	vars := mux.Vars(r)
 	productID := vars["productID"]
 	query := `SELECT 
-    r.comment, r.rating, r.date
+    r.comment, r.rating, r.date, COALESCE(ud.fullName, 'null') AS fullName
 	FROM review r
 	JOIN product p ON r.productID = p.productID
+	JOIN userDetail ud ON ud.userID = r.userID
 	WHERE p.productID = ?
 	ORDER BY r.date DESC;`
 
