@@ -3,7 +3,6 @@ import React, { useState, useEffect } from "react";
 import FilterBar from "./productComponent/FilteringBar";
 import { useParams, useRouter } from "next/navigation";
 import { validateCategory } from '@/lib/validation';
-import router from "next/router";
 
 
 interface ProductPageCliProps {
