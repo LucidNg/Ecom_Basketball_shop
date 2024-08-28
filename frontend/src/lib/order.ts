@@ -254,33 +254,33 @@ export async function CreateOrder(order: OrderRequest): Promise<string> {
     ? `${process.env.API_ENDPOINT}/createOrder`
     : `${connectString}/createOrder`;
 
-  // const response = await fetch(url, {
-  //   method: "POST",
-  //   headers: {
-  //     "Content-Type": "application/x-www-form-urlencoded",
-  //   },
-  //   body: new URLSearchParams({
-  //     userID: order.userID,
-  //     date: order.date,
-  //     shippingAdress: order.shippingAddress,
-  //     billingAddress: order.billingAddress,
-  //     price: order.price.toString(),
-  //     status: order.status,
-  //     payStatus: order.payStatus,
-  //   }),
-  //   credentials: "include",
-  //   mode: "cors",
-  //   cache: "no-cache",
-  // });
+  const response = await fetch(url, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/x-www-form-urlencoded",
+    },
+    body: new URLSearchParams({
+      userID: order.userID,
+      date: order.date,
+      shippingAdress: order.shippingAddress,
+      billingAddress: order.billingAddress,
+      price: order.price.toString(),
+      status: order.status,
+      payStatus: order.payStatus,
+    }),
+    credentials: "include",
+    mode: "cors",
+    cache: "no-cache",
+  });
 
-  // if (!response.ok) {
-  //   throw new Error("Failed to create order");
-  // }
+  if (!response.ok) {
+    throw new Error("Failed to create order");
+  }
 
-  // const data = await response.json();
-  // return data.orderID;
+  const data = await response.json();
+  return data.orderID;
 
-  return getNewOrderID();
+  //return getNewOrderID();
 }
 
 // Function to create order items
