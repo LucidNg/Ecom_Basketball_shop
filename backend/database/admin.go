@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"strconv"
 
+	"github.com/google/uuid"
 	"github.com/gorilla/mux"
 	sqlitecloud "github.com/sqlitecloud/sqlitecloud-go"
 )
@@ -159,5 +160,60 @@ func QueryAllCustomers(db *sqlitecloud.SQCloud, w http.ResponseWriter, r *http.R
 		return err
 	}
 
+	return nil
+}
+
+func InsertProduct(db *sqlitecloud.SQCloud, categoryID string, name string, description string, brand string, price string, stock string, dateAdded string, size string) error {
+	var id string
+	for {
+		id = uuid.New().String()
+		exists, err := recordExists(db, "product", "productID", id)
+		if err != nil {
+			return err
+		}
+		if !exists {
+			break
+		}
+	}
+
+	priceValue, err := strconv.ParseFloat(price, 64)
+	if err != nil {
+		fmt.Println("Error:", err)
+		return err
+	}
+
+	stockInt, err := strconv.Atoi(stock)
+	if err != nil {
+		fmt.Println("Error:", err)
+		return err
+	}
+
+	insertProductSQL := "INSERT INTO product (productID, categoryID, productName, description, brand, dateAdded) VALUES (?, ?, ?, ?, ?, ?)"
+	values := []interface{}{id, categoryID, name, description, brand, dateAdded}
+	err = db.ExecuteArray(insertProductSQL, values)
+	if err != nil {
+		fmt.Println("Error:", err)
+		return err
+	}
+
+	insertSizeSQL := "INSERT INTO size (productID, size, stock, price) VALUES (?, ?, ?, ?)"
+	values2 := []interface{}{id, size, stockInt, priceValue}
+	err = db.ExecuteArray(insertSizeSQL, values2)
+	return err
+}
+
+func DeleteProduct(db *sqlitecloud.SQCloud, productID string) error {
+	// SQL statement to update all sizes of the specified product to set stock to 0
+	updateStockSQL := "UPDATE size SET stock = 0 WHERE productID = ?"
+
+	// Execute the SQL update statement
+	err := db.ExecuteArray(updateStockSQL, []interface{}{productID})
+	if err != nil {
+		fmt.Println("Error:", err)
+		return err
+	}
+
+	// Optionally, log or handle the success case
+	fmt.Println("All sizes of the product have been set to 0 stock successfully.")
 	return nil
 }

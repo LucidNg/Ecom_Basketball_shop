@@ -316,34 +316,6 @@ func main() {
 		}
 	}))).Methods(http.MethodGet)
 
-	r.HandleFunc("/product", rateLimiter(limiter, corsMiddleware(func(w http.ResponseWriter, r *http.Request) {
-		if r.Method == http.MethodGet {
-			err := database.QueryProduct(db, w)
-			if err != nil {
-				http.Error(w, "Failed to query product", http.StatusInternalServerError)
-				return
-			}
-		} else if r.Method == http.MethodPost {
-			categoryID := r.FormValue("categoryID")
-			name := r.FormValue("name")
-			description := r.FormValue("description")
-			brand := r.FormValue("brand")
-			price := r.FormValue("price")
-			stock := r.FormValue("stock")
-			dateAdded := r.FormValue("dateAdded")
-			size := r.FormValue("size")
-
-			err = database.InsertProduct(db, categoryID, name, description, brand, price, stock, dateAdded, size)
-			if err != nil {
-				http.Error(w, "Failed to create product: "+err.Error(), http.StatusInternalServerError)
-				return
-			}
-			w.Write([]byte("Product inserted successfully"))
-		} else {
-			http.Error(w, "Unsupported method", http.StatusMethodNotAllowed)
-		}
-	}))).Methods(http.MethodGet, http.MethodPost)
-
 	r.HandleFunc("/createCart", rateLimiter(limiter, corsMiddleware(func(w http.ResponseWriter, r *http.Request) {
 		if r.Method == http.MethodPost {
 			userID := r.FormValue("userID")
@@ -506,6 +478,49 @@ func main() {
 			http.Error(w, "Unsupported method", http.StatusMethodNotAllowed)
 		}
 	}))).Methods(http.MethodGet)
+
+	r.HandleFunc("/admin/insertProduct", rateLimiter(limiter, corsMiddleware(func(w http.ResponseWriter, r *http.Request) {
+		if r.Method == http.MethodGet {
+			err := database.QueryProduct(db, w)
+			if err != nil {
+				http.Error(w, "Failed to query product", http.StatusInternalServerError)
+				return
+			}
+		} else if r.Method == http.MethodPost {
+			categoryID := r.FormValue("categoryID")
+			name := r.FormValue("name")
+			description := r.FormValue("description")
+			brand := r.FormValue("brand")
+			price := r.FormValue("price")
+			stock := r.FormValue("stock")
+			dateAdded := r.FormValue("dateAdded")
+			size := r.FormValue("size")
+
+			err = database.InsertProduct(db, categoryID, name, description, brand, price, stock, dateAdded, size)
+			if err != nil {
+				http.Error(w, "Failed to create product: "+err.Error(), http.StatusInternalServerError)
+				return
+			}
+			w.Write([]byte("Product inserted successfully"))
+		} else {
+			http.Error(w, "Unsupported method", http.StatusMethodNotAllowed)
+		}
+	}))).Methods(http.MethodGet, http.MethodPost)
+
+	r.HandleFunc("/admin/deleteProduct", rateLimiter(limiter, corsMiddleware(func(w http.ResponseWriter, r *http.Request) {
+		if r.Method == http.MethodPost {
+			productID := r.FormValue("productID")
+
+			err = database.DeleteProduct(db, productID)
+			if err != nil {
+				http.Error(w, "Failed to create product: "+err.Error(), http.StatusInternalServerError)
+				return
+			}
+			w.Write([]byte("Product delete successfully"))
+		} else {
+			http.Error(w, "Unsupported method", http.StatusMethodNotAllowed)
+		}
+	}))).Methods(http.MethodGet, http.MethodPost)
 
 	port := getPort()
 	fmt.Printf("Server is listening on port %s\n", port)

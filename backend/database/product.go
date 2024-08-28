@@ -6,49 +6,9 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/google/uuid"
 	"github.com/gorilla/mux"
 	sqlitecloud "github.com/sqlitecloud/sqlitecloud-go"
 )
-
-func InsertProduct(db *sqlitecloud.SQCloud, categoryID string, name string, description string, brand string, price string, stock string, dateAdded string, size string) error {
-	var id string
-	for {
-		id = uuid.New().String()
-		exists, err := recordExists(db, "product", "productID", id)
-		if err != nil {
-			return err
-		}
-		if !exists {
-			break
-		}
-	}
-
-	priceValue, err := strconv.ParseFloat(price, 64)
-	if err != nil {
-		fmt.Println("Error:", err)
-		return err
-	}
-
-	stockInt, err := strconv.Atoi(stock)
-	if err != nil {
-		fmt.Println("Error:", err)
-		return err
-	}
-
-	insertProductSQL := "INSERT INTO product (productID, categoryID, productName, description, brand, dateAdded) VALUES (?, ?, ?, ?, ?, ?)"
-	values := []interface{}{id, categoryID, name, description, brand, dateAdded}
-	err = db.ExecuteArray(insertProductSQL, values)
-	if err != nil {
-		fmt.Println("Error:", err)
-		return err
-	}
-
-	insertSizeSQL := "INSERT INTO size (productID, size, stock, price) VALUES (?, ?, ?, ?)"
-	values2 := []interface{}{id, size, stockInt, priceValue}
-	err = db.ExecuteArray(insertSizeSQL, values2)
-	return err
-}
 
 func QueryProduct(db *sqlitecloud.SQCloud, w http.ResponseWriter) error {
 	rows, err := db.Select(
