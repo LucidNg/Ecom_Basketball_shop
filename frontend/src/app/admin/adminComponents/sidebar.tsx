@@ -41,7 +41,7 @@ export default function SideBar() {
 
     return (
         <div
-            className={`SideBar bg-base-content h-svh flex flex-col py-20 px-6 transition-all duration-300 ${open ? "w-60" : "w-24"}`}
+            className={`SideBar bg-base-content h-auto min-h-svh flex flex-col py-20 px-6 transition-all duration-300 ${open ? "w-60" : "w-24"}`}
             onMouseEnter={() => setOpen(true)}
             onMouseLeave={() => setOpen(false)}
         >

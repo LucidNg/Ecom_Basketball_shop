@@ -12,7 +12,7 @@ const RootLayout = async ({ children }: ProductPageLayout) => {
     <div className="w-full bg-base-100 overflow-x-hidden">
       <TopBar />
       <OrdersProvider>{children}</OrdersProvider>
-      <Footer />
+      {/* <Footer /> */}
     </div>
   );
 };
