@@ -254,3 +254,40 @@ export async function DeleteProduct(productID: string): Promise<void> {
     throw error;
   }
 }
+
+export async function UpdateOrderStatus(orderID: string, status: string): Promise<void> {
+  // Construct the URL for the DELETE request
+  const url = process.env.API_ENDPOINT
+    ? `${process.env.API_ENDPOINT}/admin/updateOrderStatus`
+    : `${connectString}/admin/updateOrderStatus`;
+
+  // Prepare the data to be sent in the request body
+  const formData = new URLSearchParams();
+  formData.append("orderID", orderID);
+  formData.append("status", status);
+
+  try {
+    const response = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+      body: formData.toString(),
+      credentials: "include",
+      mode: "cors",
+      cache: "no-cache",
+    });
+
+    if (!response.ok) {
+      // Handle HTTP errors
+      throw new Error(`Failed to update order status: ${response.statusText}`);
+    }
+
+    // Optional: Handle successful deletion, such as by displaying a message
+    console.log("Order status updated successfully");
+  } catch (error) {
+    // Handle network or other errors
+    console.error("Error updating order status:", error);
+    throw error;
+  }
+}

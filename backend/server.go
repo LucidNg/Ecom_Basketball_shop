@@ -520,7 +520,23 @@ func main() {
 		} else {
 			http.Error(w, "Unsupported method", http.StatusMethodNotAllowed)
 		}
-	}))).Methods(http.MethodGet, http.MethodPost)
+	}))).Methods(http.MethodPost)
+
+	r.HandleFunc("/admin/updateOrderStatus", rateLimiter(limiter, corsMiddleware(func(w http.ResponseWriter, r *http.Request) {
+		if r.Method == http.MethodPost {
+			orderID := r.FormValue("orderID")
+			status := r.FormValue("status")
+
+			err = database.UpdateOrderStatus(db, orderID, status)
+			if err != nil {
+				http.Error(w, "Failed to update order status: "+err.Error(), http.StatusInternalServerError)
+				return
+			}
+			w.Write([]byte("Order status updated successfully"))
+		} else {
+			http.Error(w, "Unsupported method", http.StatusMethodNotAllowed)
+		}
+	}))).Methods(http.MethodPost)
 
 	port := getPort()
 	fmt.Printf("Server is listening on port %s\n", port)
