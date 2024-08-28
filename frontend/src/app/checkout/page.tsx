@@ -257,6 +257,7 @@ export default function CheckoutPage() {
                 id="paypal"
                 checked={selectedPayment === "paypal"}
                 onChange={handleCheckboxPayChange}
+                disabled={true}
               />
               <label
                 htmlFor="paypal"
