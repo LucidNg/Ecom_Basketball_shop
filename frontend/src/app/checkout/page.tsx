@@ -16,9 +16,10 @@ import {
   CreateOrder,
   CreateOrderItems,
   CreateShipping,
+  Order,
 } from "@/lib/order";
 import ProductCard from "../appComoponent/ProductCard";
-import { OrderItem } from "@/lib/productItem";
+import { convertCartItemToOrderItem, OrderItem } from "@/lib/productItem";
 import router from "next/router";
 
 export default function CheckoutPage() {
@@ -233,8 +234,7 @@ export default function CheckoutPage() {
           <button
             className="btn font-semibold text-4xl h-20 w-96 self-center my-20 transition transition-duration-300 transition-property:scale,box-shadow,background-color hover:scale-105 hover:drop-shadow-xl hover:bg-secondary outline-none border-none"
             onClick={async () => {
-              const newOrderItems: OrderItem[] | null = [];
-              const newOrder = {
+              let newOrder: Order = {
                 orderID: "",
                 userID: "60629436-da35-401c-9bf8-6e8e3aed90ed", // Replace with the actual user ID
                 orderDate: getToday(),
@@ -251,19 +251,30 @@ export default function CheckoutPage() {
                 coupon: "None",
                 totalBill: totalPrice,
                 quantity: selectCart.length,
-                orderItems: newOrderItems,
+                orderItems: [],
               };
 
+              // convert Order to OrderRequest to fit the database
               const newOrderRequest = convertOrderToOrderRequest(newOrder);
 
-              // create and add the new order to DB (return the new order ID)
+              // create and add the new orderdetails to DB (return the new order ID)
               const newOrderID = await CreateOrder(newOrderRequest);
 
               // convert from selected cart items to order items
+              const newOrderItems: OrderItem[] = selectCart.map(
+                (selectedItem) => {
+                  return convertCartItemToOrderItem(selectedItem, newOrderID);
+                }
+              );
 
-              const newOrderItemRequests = newOrderRequest.items
-                ? newOrderRequest.items
-                : [];
+              // set the new order id and the converted order items for variable newOrder
+              newOrder.orderID = newOrderID;
+              newOrder.orderItems = newOrderItems;
+
+              // convert from order items to order item requests
+              const newOrderItemRequests = newOrderItems.map((item) => {
+                return convertOrderItemToOrderItemRequest(item);
+              });
 
               // create and add the new order items to DB
               CreateOrderItems(newOrderItemRequests);
@@ -275,7 +286,6 @@ export default function CheckoutPage() {
               removeCheckedOutItems();
 
               // remove the items in cart table in database
-
               removeCartItemsFromOrder({
                 orderID: newOrderID,
                 items: newOrderItemRequests,

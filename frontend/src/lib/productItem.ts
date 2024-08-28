@@ -30,6 +30,17 @@ export const isOrderItem = (item: CartItem | OrderItem): item is OrderItem => {
   return (item as CartItem).cartID !== undefined;
 };
 
+export function convertCartItemToOrderItem(
+  cartItem: CartItem,
+  orderID: string
+): OrderItem {
+  const { cartID, ...rest } = cartItem; // Destructure and exclude cartID
+  return {
+    ...rest, // Spread the remaining properties
+    orderID, // Add or overwrite orderID property
+  };
+}
+
 export async function FetchCartItemsByUserID(
   userID: string
 ): Promise<Array<CartItem>> {
