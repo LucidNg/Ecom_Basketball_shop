@@ -34,12 +34,12 @@ const OrderCard: React.FC<OrderCardProps> = ({ order }) => {
   };
 
   return (
-    <div className="p-4 bg-gray-100 rounded-md shadow-md">
+    <div className="p-4 bg-base-100 rounded-md shadow-md">
       <div className="mb-4">
         <span className="font-semibold">Order date: </span>
         <span className="ml-2">{order.orderDate}</span>
       </div>
-      <div className="border-t border-b border-gray-300 py-4">
+      <div className="border-t border-b border-base-300 py-4">
         {order.orderItems.slice(0, 2).map((item, index) => (
           <div className="flex items-center mb-4" key={index}>
             <img
@@ -65,7 +65,7 @@ const OrderCard: React.FC<OrderCardProps> = ({ order }) => {
       <div className="flex items-center justify-between mt-4">
         <div>
           <span className="font-semibold">Order status :</span>
-          <span className="text-green-600 ml-2">
+          <span className="text-success ml-2">
             {renderShippingStatusStamp()}
           </span>
         </div>
@@ -74,13 +74,13 @@ const OrderCard: React.FC<OrderCardProps> = ({ order }) => {
             href={`/order-details/${order.orderID}`}
             className="self-center"
           >
-            <button className="bg-red-500 text-white py-1 px-4 rounded mr-2">
+            <button className="bg-accent text-white py-1 px-4 rounded mr-2">
               View details
             </button>
           </Link>
           <div>
             <span className="font-semibold">Total bill :</span>
-            <span className="text-red-500 ml-2">
+            <span className="text-accent ml-2">
               ${Intl.NumberFormat("vi-VN").format(order.totalBill)}
             </span>
           </div>
