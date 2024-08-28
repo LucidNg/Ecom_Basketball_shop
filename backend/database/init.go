@@ -10,7 +10,8 @@ func CreateTable(db *sqlitecloud.SQCloud) error {
 	userTable := `CREATE TABLE IF NOT EXISTS users (
         "userID" TEXT NOT NULL PRIMARY KEY,        
         "email" TEXT UNIQUE NOT NULL,
-        "password" TEXT NOT NULL
+        "password" TEXT NOT NULL,
+		"role" TEXT NOT NULL DEFAULT 'customer'
     );`
 
 	userDetailTable := `CREATE TABLE IF NOT EXISTS userDetail (

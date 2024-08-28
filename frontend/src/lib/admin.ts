@@ -31,6 +31,14 @@ export interface Admin_OrderItem {
   price: number;
 }
 
+export interface Admin_User {
+  email: string;
+  fullName: string;
+  phoneNumber: string;
+  dob: string;
+  memberSince: number;
+}
+
 export async function FetchAllProducts(offset: number): Promise<Array<Admin_Product>> {
   // Construct the URL with the offset parameter
   const url = process.env.API_ENDPOINT
@@ -124,6 +132,39 @@ export async function FetchOrderItemsByOrderID(orderID: string): Promise<Array<A
   } catch (error) {
     // Handle network or other errors
     console.error("Error fetching order items:", error);
+    throw error;
+  }
+}
+
+export async function FetchAllUsers(offset: number): Promise<Array<Admin_User>> {
+  // Construct the URL with the method and offset parameters
+  const url = process.env.API_ENDPOINT
+    ? `${process.env.API_ENDPOINT}/admin/user/${offset}`
+    : `${connectString}/admin/user/${offset}`;
+
+  console.log(url);
+  try {
+    const response = await fetch(url, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+      credentials: "include",
+      mode: "cors",
+      cache: "no-cache",
+    });
+
+    if (!response.ok) {
+      // Handle HTTP errors
+      throw new Error(`Failed to fetch orders: ${response.statusText}`);
+    }
+
+    // Parse the response JSON
+    const data: Array<Admin_User> = await response.json();
+    return data;
+  } catch (error) {
+    // Handle network or other errors
+    console.error("Error fetching orders:", error);
     throw error;
   }
 }
