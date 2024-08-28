@@ -126,6 +126,7 @@ export default function TopBar() {
             <div tabIndex={0} role="button" className="text-base-content px-3 sm:px-5 2xl:px-10 userInfo hidden 2xl:inline 2xl:text-2xl underline">Hello, {username}</div>
             <ul tabIndex={0} className="dropdown-content menu bg-base-100 rounded-box z-[1] w-52 p-2 shadow gap-y-2">
               <Link href="/profile"><div className="whitespace-nowrap text-primary-content bg-primary h-12 flex justify-center items-center rounded-lg text-2xl hover:font-semibold bg-opacity-50 hover:bg-opacity-100">Profile</div></Link>
+              <Link href="/tracking-orders"><div className="whitespace-nowrap text-primary-content bg-primary h-12 flex justify-center items-center rounded-lg text-2xl hover:font-semibold bg-opacity-50 hover:bg-opacity-100">Orders</div></Link>
               <div role="button" className="whitespace-nowrap text-primary-content bg-primary h-12 flex justify-center items-center rounded-lg text-2xl hover:font-semibold bg-opacity-50 hover:bg-opacity-100" onClick={handleLogout}>Logout</div>
             </ul>
           </div>
@@ -137,6 +138,7 @@ export default function TopBar() {
               </div>
               <ul tabIndex={0} className="dropdown-content menu bg-base-100 rounded-box z-[1] w-52 p-2 shadow gap-y-2">
                 <Link href="/profile"><div className="whitespace-nowrap text-primary-content bg-primary h-12 flex justify-center items-center rounded-lg text-2xl hover:font-semibold bg-opacity-50 hover:bg-opacity-100">Profile</div></Link>
+                <Link href="/tracking-orders"><div className="whitespace-nowrap text-primary-content bg-primary h-12 flex justify-center items-center rounded-lg text-2xl hover:font-semibold bg-opacity-50 hover:bg-opacity-100">Orders</div></Link>
                 <div role="button" className="whitespace-nowrap text-primary-content bg-primary h-12 flex justify-center items-center rounded-lg text-2xl hover:font-semibold bg-opacity-50 hover:bg-opacity-100" onClick={handleLogout}>Logout</div>
               </ul>
             </div>

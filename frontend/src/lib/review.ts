@@ -4,6 +4,7 @@ export interface Review {
     comment: string;
     rating: number;
     date: string;
+    fullName: string;
   }
 
 export async function FetchReviewsByProductID(
@@ -86,4 +87,43 @@ export interface RatingCount {
   
     const data = await response.json();
     return data[0] as RatingCount;
+  }
+
+  export interface InsertReviewResponse {
+    success: boolean;
+    message: string;
+  }
+  
+  export async function InsertReview(
+    userID: string,
+    productID: string,
+    rating: number,
+    comment: string
+  ): Promise<InsertReviewResponse> {
+    let url = process.env.API_ENDPOINT
+      ? `${process.env.API_ENDPOINT}/insertReview`
+      : `${connectString}/insertReview`;
+  
+    const response = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+      body: new URLSearchParams({
+        userID: userID,
+        productID: productID,
+        rating: rating.toString(),
+        comment: comment,
+      }),
+      credentials: "include",
+      mode: "cors",
+      cache: "no-cache",
+    });
+  
+    if (!response.ok) {
+      throw new Error(`Failed to insert review for product with ID: ${productID}`);
+    }
+  
+    const data = await response.json();
+    return data as InsertReviewResponse;
   }

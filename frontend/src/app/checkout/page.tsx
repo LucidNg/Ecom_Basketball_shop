@@ -16,6 +16,7 @@ import {
   CreateOrderItems,
   CreateShipping,
   Order,
+  getNewOrderID,
 } from "@/lib/order";
 import ProductCard from "../appComoponent/ProductCard";
 import { convertCartItemToOrderItem, OrderItem } from "@/lib/productItem";
@@ -104,6 +105,8 @@ export default function CheckoutPage() {
     const newOrderRequest = convertOrderToOrderRequest(newOrder);
     // create and add the new orderdetails to DB (return the new order ID)
     const newOrderID = await CreateOrder(newOrderRequest);
+    //const newOrderID = getNewOrderID();
+
     // set the new order id for variable newOrder
     newOrder.orderID = newOrderID;
 
@@ -272,7 +275,7 @@ export default function CheckoutPage() {
         <div className="rightSide w-1/2 pl-20 flex flex-col">
           <h2 className="text-4xl font-bold text-base-content">Cart info</h2>
           <div
-            className="flex flex-col gap-6 flex-grow overflow-auto"
+            className="flex flex-col gap-6 flex-grow overflow-auto py-10"
             style={{ maxHeight: "45vh" }}
           >
             {selectCart.map((product, index) => (
@@ -289,7 +292,7 @@ export default function CheckoutPage() {
             ))}
           </div>
 
-          <div className="itemsBox border-b-2 border-black py-10 w-[90%]"></div>
+          <div className="itemsBox border-b-2 border-black py-5 w-[90%]"></div>
 
           <h3 className="text-3xl font-semibold text-base-content py-10 pl-5">
             Summary

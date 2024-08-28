@@ -196,7 +196,7 @@ type Order struct {
 	Status          string      `json:"status"`
 	PayStatus       string      `json:"payStatus"`
 	Method          string      `json:"method"`
-	Items           []OrderItem `json:"items"`
+	Items           interface{} `json:"items,omitempty"`
 }
 
 type Response struct {
@@ -209,8 +209,8 @@ func QueryOrdersByUserID(db *sqlitecloud.SQCloud, w http.ResponseWriter, r *http
 
 	// Query to get orders for the user, including the new `method` field
 	orderQuery := `SELECT o.orderID, o.userID, o.date, o.shippingAddress, o.billingAddress, o.price, o.status, o.payStatus, o.method
-	FROM orders o
-	WHERE o.userID = ?;`
+    FROM orders o
+    WHERE o.userID = ?;`
 	orderValues := []interface{}{userID}
 
 	orderRows, err := db.SelectArray(orderQuery, orderValues)
@@ -226,12 +226,15 @@ func QueryOrdersByUserID(db *sqlitecloud.SQCloud, w http.ResponseWriter, r *http
 	// Iterate over each row index
 	for i := uint64(0); i < numOrderRows; i++ {
 		orderID, err := orderRows.GetStringValue(i, 0)
+		if err != nil {
+			return err
+		}
 
 		// Query to get items for each order, including productName and url
 		itemQuery := `SELECT oi.productID, oi.size, oi.quantity, oi.price, p.productName, p.url
-		FROM orderItem oi
-		JOIN product p ON oi.productID = p.productID
-		WHERE oi.orderID = ?;`
+        FROM orderItem oi
+        JOIN product p ON oi.productID = p.productID
+        WHERE oi.orderID = ?;`
 		itemValues := []interface{}{orderID}
 
 		itemRows, err := db.SelectArray(itemQuery, itemValues)
@@ -253,6 +256,14 @@ func QueryOrdersByUserID(db *sqlitecloud.SQCloud, w http.ResponseWriter, r *http
 			})
 		}
 
+		// Use the string "null" if no items are present
+		var itemsField interface{}
+		if len(items) == 0 {
+			itemsField = "null"
+		} else {
+			itemsField = items
+		}
+
 		// Append order with items
 		orders = append(orders, Order{
 			OrderID:         orderRows.GetStringValue_(i, 0),
@@ -264,7 +275,7 @@ func QueryOrdersByUserID(db *sqlitecloud.SQCloud, w http.ResponseWriter, r *http
 			Status:          orderRows.GetStringValue_(i, 6),
 			PayStatus:       orderRows.GetStringValue_(i, 7),
 			Method:          orderRows.GetStringValue_(i, 8),
-			Items:           items,
+			Items:           itemsField,
 		})
 	}
 
@@ -273,7 +284,6 @@ func QueryOrdersByUserID(db *sqlitecloud.SQCloud, w http.ResponseWriter, r *http
 		Orders: orders,
 	}
 
-	w.Header().Set("Content-Type", "application/json")
 	if err := json.NewEncoder(w).Encode(response); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return err

@@ -41,7 +41,7 @@ export default function Comment() {
           className="w-full h-auto border-b-2 border-base-content text-base-content flex pb-5 pt-5 mx-auto"
         >
           <div className="commentInfo flex flex-col items-center">
-            <span className="UserName text-3xl font-semibold">User</span>
+            <span className="UserName text-3xl font-semibold">{review.fullName}</span>
             <span className="DateComment">
               {new Date(review.date).toLocaleDateString()}
             </span>

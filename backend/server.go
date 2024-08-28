@@ -232,6 +232,18 @@ func main() {
 		}
 	}))).Methods(http.MethodGet)
 
+	r.HandleFunc("/product", rateLimiter(limiter, corsMiddleware(func(w http.ResponseWriter, r *http.Request) {
+		if r.Method == http.MethodGet {
+			err := database.QueryProduct(db, w)
+			if err != nil {
+				http.Error(w, "Failed to query product", http.StatusInternalServerError)
+				return
+			}
+		} else {
+			http.Error(w, "Unsupported method", http.StatusMethodNotAllowed)
+		}
+	}))).Methods(http.MethodGet)
+
 	r.HandleFunc("/product/{productID}", rateLimiter(limiter, corsMiddleware(func(w http.ResponseWriter, r *http.Request) {
 		if r.Method == http.MethodGet {
 			err := database.QueryProductByID(db, w, r)
@@ -280,6 +292,26 @@ func main() {
 		}
 	}))).Methods(http.MethodGet)
 
+	r.HandleFunc("/insertReview", rateLimiter(limiter, corsMiddleware(func(w http.ResponseWriter, r *http.Request) {
+		if r.Method == http.MethodPost {
+			// Handle POST request to insert a new review
+			userID := r.FormValue("userID")
+			productID := r.FormValue("productID")
+			rating := r.FormValue("rating")
+			comment := r.FormValue("comment")
+
+			// Call the InsertReview function
+			err := database.InsertReview(db, userID, productID, rating, comment)
+			if err != nil {
+				http.Error(w, "Failed to insert review: "+err.Error(), http.StatusInternalServerError)
+				return
+			}
+			w.Write([]byte("Review inserted successfully"))
+		} else {
+			http.Error(w, "Unsupported method", http.StatusMethodNotAllowed)
+		}
+	}))).Methods(http.MethodPost)
+
 	r.HandleFunc("/averageRating/{productID}", rateLimiter(limiter, corsMiddleware(func(w http.ResponseWriter, r *http.Request) {
 		if r.Method == http.MethodGet {
 			err := database.QueryAverageRating(db, w, r)
@@ -315,34 +347,6 @@ func main() {
 			http.Error(w, "Unsupported method", http.StatusMethodNotAllowed)
 		}
 	}))).Methods(http.MethodGet)
-
-	r.HandleFunc("/product", rateLimiter(limiter, corsMiddleware(func(w http.ResponseWriter, r *http.Request) {
-		if r.Method == http.MethodGet {
-			err := database.QueryProduct(db, w)
-			if err != nil {
-				http.Error(w, "Failed to query product", http.StatusInternalServerError)
-				return
-			}
-		} else if r.Method == http.MethodPost {
-			categoryID := r.FormValue("categoryID")
-			name := r.FormValue("name")
-			description := r.FormValue("description")
-			brand := r.FormValue("brand")
-			price := r.FormValue("price")
-			stock := r.FormValue("stock")
-			dateAdded := r.FormValue("dateAdded")
-			size := r.FormValue("size")
-
-			err = database.InsertProduct(db, categoryID, name, description, brand, price, stock, dateAdded, size)
-			if err != nil {
-				http.Error(w, "Failed to create product: "+err.Error(), http.StatusInternalServerError)
-				return
-			}
-			w.Write([]byte("Product inserted successfully"))
-		} else {
-			http.Error(w, "Unsupported method", http.StatusMethodNotAllowed)
-		}
-	}))).Methods(http.MethodGet, http.MethodPost)
 
 	r.HandleFunc("/createCart", rateLimiter(limiter, corsMiddleware(func(w http.ResponseWriter, r *http.Request) {
 		if r.Method == http.MethodPost {
@@ -470,6 +474,18 @@ func main() {
 		}
 	}))).Methods(http.MethodGet)
 
+	r.HandleFunc("/admin/user/{offset}", rateLimiter(limiter, corsMiddleware(func(w http.ResponseWriter, r *http.Request) {
+		if r.Method == http.MethodGet {
+			err := database.QueryAllCustomers(db, w, r)
+			if err != nil {
+				http.Error(w, "Failed to query products", http.StatusInternalServerError)
+				return
+			}
+		} else {
+			http.Error(w, "Unsupported method", http.StatusMethodNotAllowed)
+		}
+	}))).Methods(http.MethodGet)
+
 	r.HandleFunc("/admin/order/{method}/{offset}", rateLimiter(limiter, corsMiddleware(func(w http.ResponseWriter, r *http.Request) {
 		if r.Method == http.MethodGet {
 			err := database.QueryAllOrders(db, w, r)
@@ -487,6 +503,77 @@ func main() {
 			err := database.QueryItemsByOrderID(db, w, r)
 			if err != nil {
 				http.Error(w, "Failed to query orders", http.StatusInternalServerError)
+				return
+			}
+		} else {
+			http.Error(w, "Unsupported method", http.StatusMethodNotAllowed)
+		}
+	}))).Methods(http.MethodGet)
+
+	r.HandleFunc("/admin/insertProduct", rateLimiter(limiter, corsMiddleware(func(w http.ResponseWriter, r *http.Request) {
+		if r.Method == http.MethodGet {
+			err := database.QueryProduct(db, w)
+			if err != nil {
+				http.Error(w, "Failed to query product", http.StatusInternalServerError)
+				return
+			}
+		} else if r.Method == http.MethodPost {
+			categoryID := r.FormValue("categoryID")
+			name := r.FormValue("name")
+			description := r.FormValue("description")
+			brand := r.FormValue("brand")
+			price := r.FormValue("price")
+			stock := r.FormValue("stock")
+			dateAdded := r.FormValue("dateAdded")
+			size := r.FormValue("size")
+
+			err = database.InsertProduct(db, categoryID, name, description, brand, price, stock, dateAdded, size)
+			if err != nil {
+				http.Error(w, "Failed to create product: "+err.Error(), http.StatusInternalServerError)
+				return
+			}
+			w.Write([]byte("Product inserted successfully"))
+		} else {
+			http.Error(w, "Unsupported method", http.StatusMethodNotAllowed)
+		}
+	}))).Methods(http.MethodGet, http.MethodPost)
+
+	r.HandleFunc("/admin/deleteProduct", rateLimiter(limiter, corsMiddleware(func(w http.ResponseWriter, r *http.Request) {
+		if r.Method == http.MethodPost {
+			productID := r.FormValue("productID")
+
+			err = database.DeleteProduct(db, productID)
+			if err != nil {
+				http.Error(w, "Failed to create product: "+err.Error(), http.StatusInternalServerError)
+				return
+			}
+			w.Write([]byte("Product delete successfully"))
+		} else {
+			http.Error(w, "Unsupported method", http.StatusMethodNotAllowed)
+		}
+	}))).Methods(http.MethodPost)
+
+	r.HandleFunc("/admin/updateOrderStatus", rateLimiter(limiter, corsMiddleware(func(w http.ResponseWriter, r *http.Request) {
+		if r.Method == http.MethodPost {
+			orderID := r.FormValue("orderID")
+			status := r.FormValue("status")
+
+			err = database.UpdateOrderStatus(db, orderID, status)
+			if err != nil {
+				http.Error(w, "Failed to update order status: "+err.Error(), http.StatusInternalServerError)
+				return
+			}
+			w.Write([]byte("Order status updated successfully"))
+		} else {
+			http.Error(w, "Unsupported method", http.StatusMethodNotAllowed)
+		}
+	}))).Methods(http.MethodPost)
+
+	r.HandleFunc("/admin/stat", rateLimiter(limiter, corsMiddleware(func(w http.ResponseWriter, r *http.Request) {
+		if r.Method == http.MethodGet {
+			err := database.QueryStat(db, w)
+			if err != nil {
+				http.Error(w, "Failed to query stat", http.StatusInternalServerError)
 				return
 			}
 		} else {

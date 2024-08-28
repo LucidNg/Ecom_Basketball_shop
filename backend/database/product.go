@@ -6,49 +6,9 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/google/uuid"
 	"github.com/gorilla/mux"
 	sqlitecloud "github.com/sqlitecloud/sqlitecloud-go"
 )
-
-func InsertProduct(db *sqlitecloud.SQCloud, categoryID string, name string, description string, brand string, price string, stock string, dateAdded string, size string) error {
-	var id string
-	for {
-		id = uuid.New().String()
-		exists, err := recordExists(db, "product", "productID", id)
-		if err != nil {
-			return err
-		}
-		if !exists {
-			break
-		}
-	}
-
-	priceValue, err := strconv.ParseFloat(price, 64)
-	if err != nil {
-		fmt.Println("Error:", err)
-		return err
-	}
-
-	stockInt, err := strconv.Atoi(stock)
-	if err != nil {
-		fmt.Println("Error:", err)
-		return err
-	}
-
-	insertProductSQL := "INSERT INTO product (productID, categoryID, productName, description, brand, dateAdded) VALUES (?, ?, ?, ?, ?, ?)"
-	values := []interface{}{id, categoryID, name, description, brand, dateAdded}
-	err = db.ExecuteArray(insertProductSQL, values)
-	if err != nil {
-		fmt.Println("Error:", err)
-		return err
-	}
-
-	insertSizeSQL := "INSERT INTO size (productID, size, stock, price) VALUES (?, ?, ?, ?)"
-	values2 := []interface{}{id, size, stockInt, priceValue}
-	err = db.ExecuteArray(insertSizeSQL, values2)
-	return err
-}
 
 func QueryProduct(db *sqlitecloud.SQCloud, w http.ResponseWriter) error {
 	rows, err := db.Select(
@@ -58,6 +18,7 @@ func QueryProduct(db *sqlitecloud.SQCloud, w http.ResponseWriter) error {
 		FROM product p
 		LEFT JOIN purchase pu ON p.productID = pu.productID
 		LEFT JOIN size s ON p.productID = s.productID
+		WHERE s.stock > 0
 		GROUP BY p.productID
 		ORDER BY totalQuantity DESC
 		LIMIT 5;`)
@@ -104,7 +65,7 @@ func QueryProductByCategory(db *sqlitecloud.SQCloud, w http.ResponseWriter, r *h
 		FROM product p
 		JOIN category c ON p.categoryID = c.categoryID
 		LEFT JOIN size s ON p.productID = s.productID
-		WHERE c.categoryName LIKE ?
+		WHERE c.categoryName LIKE ? AND s.stock > 0
 		GROUP BY p.productID
 		ORDER BY p.dateAdded DESC`
 	case "bestselling":
@@ -115,7 +76,7 @@ func QueryProductByCategory(db *sqlitecloud.SQCloud, w http.ResponseWriter, r *h
 		JOIN category c ON p.categoryID = c.categoryID
 		LEFT JOIN purchase pu ON p.productID = pu.productID
 		LEFT JOIN size s ON p.productID = s.productID
-		WHERE c.categoryName LIKE ?
+		WHERE c.categoryName LIKE ? AND s.stock > 0
 		GROUP BY p.productID
 		ORDER BY totalQuantity DESC`
 	case "max", "min":
@@ -124,7 +85,7 @@ func QueryProductByCategory(db *sqlitecloud.SQCloud, w http.ResponseWriter, r *h
 		FROM product p
 		JOIN category c ON p.categoryID = c.categoryID
 		JOIN size s ON p.productID = s.productID
-		WHERE c.categoryName LIKE ? AND s.price BETWEEN ? AND ?
+		WHERE s.stock > 0 AND c.categoryName LIKE ? AND s.price BETWEEN ? AND ? 
 		GROUP BY p.productID`
 		if method == "min" {
 			query += " ORDER BY price ASC"
@@ -189,7 +150,6 @@ func QueryProductByID(db *sqlitecloud.SQCloud, w http.ResponseWriter, r *http.Re
 		Sizes:          json.RawMessage(rows2.ToJSON()),
 	}
 
-	w.Header().Set("Content-Type", "application/json")
 	if err := json.NewEncoder(w).Encode(response); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return err
@@ -206,7 +166,7 @@ func QueryProductByName(db *sqlitecloud.SQCloud, w http.ResponseWriter, r *http.
 	query := `SELECT p.productID, p.productName, MIN(s.price) AS price
 	FROM product p 
 	LEFT JOIN size s ON p.productID = s.productID
-	WHERE p.productName LIKE ?
+	WHERE p.productName LIKE ? AND s.stock > 0
 	GROUP BY p.productID LIMIT 5`
 
 	values := []interface{}{value}
@@ -253,7 +213,7 @@ func QueryProductByBrand(db *sqlitecloud.SQCloud, w http.ResponseWriter, r *http
 		SELECT p.productID, p.productName, p.description, p.brand, p.dateAdded, MIN(s.price) AS price, COALESCE(p.url, 'null') AS url
 		FROM product p
 		JOIN size s ON p.productID = s.productID
-		WHERE p.brand LIKE ?
+		WHERE p.brand LIKE ? AND s.stock > 0
 		GROUP BY p.productID
 		ORDER BY p.dateAdded DESC`
 	case "bestselling":
@@ -262,7 +222,7 @@ func QueryProductByBrand(db *sqlitecloud.SQCloud, w http.ResponseWriter, r *http
 		FROM product p
 		LEFT JOIN purchase pu ON p.productID = pu.productID
 		LEFT JOIN size s ON p.productID = s.productID
-		WHERE p.brand LIKE ?
+		WHERE p.brand LIKE ? AND s.stock > 0
 		GROUP BY p.productID, p.productName, p.description, p.brand, p.dateAdded
 		ORDER BY totalQuantity DESC;`
 	case "max", "min":
@@ -270,7 +230,7 @@ func QueryProductByBrand(db *sqlitecloud.SQCloud, w http.ResponseWriter, r *http
 		SELECT p.productID, p.productName, p.description, p.brand, p.dateAdded, MIN(s.price) AS price, COALESCE(p.url, 'null') AS url
 		FROM product p
 		JOIN size s ON p.productID = s.productID
-		WHERE p.brand LIKE ? AND s.price BETWEEN ? AND ?
+		WHERE s.stock > 0 AND p.brand LIKE ? AND s.price BETWEEN ? AND ?
 		GROUP BY p.productID`
 		if method == "min" {
 			query += " ORDER BY price ASC"
