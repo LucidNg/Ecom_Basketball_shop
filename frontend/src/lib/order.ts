@@ -127,11 +127,14 @@ export function convertOrderToOrderRequest(order: Order): OrderRequest {
 }
 
 // Function to convert Order to ShippingRequest
-export function convertOrderToShippingRequest(order: Order): ShippingRequest {
+export function convertOrderToShippingRequest(
+  order: Order,
+  shipCost: number
+): ShippingRequest {
   return {
     orderID: order.orderID,
     shippingMethod: order.shippingMethod,
-    cost: 0, // Assuming cost is not provided by Order and needs to be set accordingly
+    cost: shipCost, // Assuming cost is not provided by Order and needs to be set accordingly
     startTime: order.orderDate, // You might need to format this if necessary
     estimatedDeliveryTime: order.shipDate, // Assuming shipDate is used as the estimated delivery time
   };

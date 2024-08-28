@@ -64,6 +64,79 @@ export default function CheckoutPage() {
     setTotalPrice(getTotalPrice());
   }, [selectCart, getTotalPrice, cart]);
 
+  const handleCheckoutClick = async () => {
+    let newOrder: Order = {
+      orderID: "",
+      userID: "60629436-da35-401c-9bf8-6e8e3aed90ed", // Replace with the actual user ID
+      orderDate: getToday(),
+      shipDate:
+        selectedDelivery === "Standard" ? getNext5Days() : getNext2Days(),
+      paymentMethod: selectedPayment,
+      paymentStatus:
+        selectedPayment === "cod" ? PaymentStatus.Unpaid : PaymentStatus.Paid,
+      shippingMethod: selectedDelivery,
+      shippingStatus: ShippingStatus.Pending,
+      shippingAddress: "123 Main St, City A, Country X",
+      billingAddress: "123 Main St, City A, Country X",
+      coupon: "None",
+      totalBill: totalPrice,
+      quantity: selectCart.length,
+      orderItems: [],
+    };
+
+    /* New order details handling - DB */
+    // convert Order to OrderRequest to fit the database
+    const newOrderRequest = convertOrderToOrderRequest(newOrder);
+    // create and add the new orderdetails to DB (return the new order ID)
+    const newOrderID = await CreateOrder(newOrderRequest);
+    // set the new order id for variable newOrder
+    newOrder.orderID = newOrderID;
+
+    /* New shipping details handling - DB */
+    // convert order to shipping request to fit the database
+    const newShippingRequest = convertOrderToShippingRequest(
+      newOrder,
+      deliveryPrice
+    );
+    // create and add the new shipping request in database
+    CreateShipping(newShippingRequest);
+
+    /* New order items handling - DB */
+    // convert from selected cart items to order items
+    const newOrderItems: OrderItem[] = selectCart.map((selectedItem) => {
+      return convertCartItemToOrderItem(selectedItem, newOrderID);
+    });
+    // set the new order items for variable newOrder
+    newOrder.orderItems = newOrderItems;
+    // convert from order items to order item requests
+    const newOrderItemRequests = newOrderItems.map((item) => {
+      return convertOrderItemToOrderItemRequest(item);
+    });
+    // create and add the new order items to DB
+    CreateOrderItems(newOrderItemRequests);
+
+    /* Contexts handling */
+    // add the new order to order context
+    addOrder(newOrder);
+    // remove the items in cart context
+    removeCheckedOutItems();
+
+    // remove the items in cart table in database
+    removeCartItemsFromOrder({
+      orderID: newOrderID,
+      items: newOrderItemRequests,
+    });
+
+    // update products stock in DB
+    updateStock({
+      orderID: newOrderID,
+      items: newOrderItemRequests,
+    });
+
+    // Redirect to the success page with the new order ID
+    router.push(`/checkout/success/${newOrderID}`);
+  };
+
   return (
     <main>
       <div className="w-full p-10 flex flex-row">
@@ -233,73 +306,7 @@ export default function CheckoutPage() {
 
           <button
             className="btn font-semibold text-4xl h-20 w-96 self-center my-20 transition transition-duration-300 transition-property:scale,box-shadow,background-color hover:scale-105 hover:drop-shadow-xl hover:bg-secondary outline-none border-none"
-            onClick={async () => {
-              let newOrder: Order = {
-                orderID: "",
-                userID: "60629436-da35-401c-9bf8-6e8e3aed90ed", // Replace with the actual user ID
-                orderDate: getToday(),
-                shipDate: getNext5Days(),
-                paymentMethod: selectedPayment,
-                paymentStatus:
-                  selectedPayment === "cod"
-                    ? PaymentStatus.Unpaid
-                    : PaymentStatus.Paid,
-                shippingMethod: selectedDelivery,
-                shippingStatus: ShippingStatus.Pending,
-                shippingAddress: "123 Main St, City A, Country X",
-                billingAddress: "123 Main St, City A, Country X",
-                coupon: "None",
-                totalBill: totalPrice,
-                quantity: selectCart.length,
-                orderItems: [],
-              };
-
-              // convert Order to OrderRequest to fit the database
-              const newOrderRequest = convertOrderToOrderRequest(newOrder);
-
-              // create and add the new orderdetails to DB (return the new order ID)
-              const newOrderID = await CreateOrder(newOrderRequest);
-
-              // convert from selected cart items to order items
-              const newOrderItems: OrderItem[] = selectCart.map(
-                (selectedItem) => {
-                  return convertCartItemToOrderItem(selectedItem, newOrderID);
-                }
-              );
-
-              // set the new order id and the converted order items for variable newOrder
-              newOrder.orderID = newOrderID;
-              newOrder.orderItems = newOrderItems;
-
-              // convert from order items to order item requests
-              const newOrderItemRequests = newOrderItems.map((item) => {
-                return convertOrderItemToOrderItemRequest(item);
-              });
-
-              // create and add the new order items to DB
-              CreateOrderItems(newOrderItemRequests);
-
-              // add the new order to order context
-              addOrder(newOrder);
-
-              // remove the items in cart context
-              removeCheckedOutItems();
-
-              // remove the items in cart table in database
-              removeCartItemsFromOrder({
-                orderID: newOrderID,
-                items: newOrderItemRequests,
-              });
-
-              // update products stock in DB
-              updateStock({
-                orderID: newOrderID,
-                items: newOrderItemRequests,
-              });
-
-              // Redirect to the success page with the new order ID
-              router.push(`/checkout/success/${newOrderID}`);
-            }}
+            onClick={handleCheckoutClick}
           >
             Check out
           </button>
@@ -330,6 +337,21 @@ function getNext5Days() {
   const year = fiveDaysLater.getFullYear();
   const month = String(fiveDaysLater.getMonth() + 1).padStart(2, "0");
   const day = String(fiveDaysLater.getDate()).padStart(2, "0");
+
+  return `${day}-${month}-${year}`;
+}
+
+function getNext2Days() {
+  const today = new Date();
+  const twoDaysLater = new Date(today);
+
+  // Add 2 days to the current date
+  twoDaysLater.setDate(today.getDate() + 2);
+
+  // Format date as 'DD-MM-YYYY'
+  const year = twoDaysLater.getFullYear();
+  const month = String(twoDaysLater.getMonth() + 1).padStart(2, "0");
+  const day = String(twoDaysLater.getDate()).padStart(2, "0");
 
   return `${day}-${month}-${year}`;
 }
