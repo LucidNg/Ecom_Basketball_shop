@@ -12,16 +12,17 @@ export default function TrackingOrders() {
 
   // Filter orders based on status
   const successfulOrders = orders.filter(
-    (order) => order.shippingStatus === ShippingStatus.Delivered
+    (order) => order.shippingStatus === ShippingStatus.Received
   );
   const processingOrders = orders.filter(
     (order) =>
+      order.shippingStatus === ShippingStatus.Delivered ||
       order.shippingStatus === ShippingStatus.Delivering ||
       order.shippingStatus === ShippingStatus.Pending
   );
-  const canceledOrders = orders.filter(
-    (order) => order.shippingStatus === ShippingStatus.Canceled
-  );
+  // const canceledOrders = orders.filter(
+  //   (order) => order.shippingStatus === ShippingStatus.Canceled
+  // );
 
   return (
     <div className="p-10">
@@ -55,22 +56,6 @@ export default function TrackingOrders() {
           className="tab-content border-base-300 bg-primary rounded-box p-6 space-y-4"
         >
           {processingOrders.map((order) => (
-            <OrderCard key={order.orderID} order={order} />
-          ))}
-        </div>
-
-        <input
-          type="radio"
-          name="my_tabs_2"
-          role="tab"
-          className="tab [--tab-bg:#ebebd3] font-semibold text-2xl"
-          aria-label="Canceled"
-        />
-        <div
-          role="tabpanel"
-          className="tab-content border-base-300 bg-primary rounded-box p-6 space-y-4"
-        >
-          {canceledOrders.map((order) => (
             <OrderCard key={order.orderID} order={order} />
           ))}
         </div>

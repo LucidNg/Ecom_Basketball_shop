@@ -1,22 +1,27 @@
-"use client"
+"use client";
 
-import React, { useState } from 'react';
-import { useRouter } from 'next/router';
+import React, { useEffect, useState } from "react";
+import { useRouter } from "next/router";
 
 const ResetPassword = () => {
   const router = useRouter();
   const { token } = router.query;
-  const [password, setPassword] = useState('');
-  const [message, setMessage] = useState('');
+  const [password, setPassword] = useState("");
+  const [message, setMessage] = useState("");
+
+  // Ensure that the component only renders after the router is ready
+  useEffect(() => {
+    if (!router.isReady) return;
+  }, [router.isReady]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     try {
-      const response = await fetch('/api/reset-password', {
-        method: 'POST',
+      const response = await fetch("/api/reset-password", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({ token, password }),
       });
@@ -26,10 +31,10 @@ const ResetPassword = () => {
       if (response.ok) {
         setMessage(data.message);
       } else {
-        setMessage('An error occurred. Please try again.');
+        setMessage("An error occurred. Please try again.");
       }
     } catch (error) {
-      setMessage('An error occurred. Please try again.');
+      setMessage("An error occurred. Please try again.");
     }
   };
 

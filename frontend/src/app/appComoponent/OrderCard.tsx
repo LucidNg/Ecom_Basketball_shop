@@ -24,8 +24,6 @@ const OrderCard: React.FC<OrderCardProps> = ({ order }) => {
         return <p className="successful-delivery-stamp">Successful Delivery</p>;
       case ShippingStatus.Delivering:
         return <p className="ongoing-delivery-stamp">Delivering</p>;
-      case ShippingStatus.Canceled:
-        return <p className="canceled-order-stamp">Canceled</p>;
       case ShippingStatus.Received:
         return <p className="recieved-order-stamp">Recieved</p>;
       case ShippingStatus.Pending:
