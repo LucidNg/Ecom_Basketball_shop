@@ -304,7 +304,7 @@ func QueryProductByBrand(db *sqlitecloud.SQCloud, w http.ResponseWriter, r *http
 }
 
 func UpdateStock(db *sqlitecloud.SQCloud, w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodPut {
+	if r.Method != http.MethodPost {
 		http.Error(w, "Unsupported method", http.StatusMethodNotAllowed)
 		return
 	}
