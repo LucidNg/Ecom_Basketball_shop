@@ -4,6 +4,7 @@ export interface Review {
     comment: string;
     rating: number;
     date: string;
+    fullName: string;
   }
 
 export async function FetchReviewsByProductID(
