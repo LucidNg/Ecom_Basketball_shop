@@ -1,6 +1,7 @@
 package database
 
 import (
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"strconv"
@@ -235,5 +236,107 @@ func UpdateOrderStatus(db *sqlitecloud.SQCloud, orderID string, status string) e
 
 	// Optionally, log or handle the success case
 	fmt.Println("Update order status successfully")
+	return nil
+}
+
+type StatResponse struct {
+	TotalOrder      int     `json:"totalOrder"`
+	TotalProduct    int     `json:"totalProduct"`
+	UnfinishedOrder int     `json:"unfinishedOrder"`
+	FinishedOrder   int     `json:"finishedOrder"`
+	TotalMonthMoney float64 `json:"totalMonthMoney"`
+	TotalMoney      float64 `json:"totalMoney"`
+	TotalCustomer   int     `json:"totalCustomer"`
+	TopProduct      struct {
+		ProductName   string  `json:"productName"`
+		TotalQuantity int     `json:"totalQuantity"`
+		TotalPrice    float64 `json:"totalPrice"`
+	} `json:"topProduct"`
+}
+
+func QueryStat(db *sqlitecloud.SQCloud, w http.ResponseWriter) error {
+	var result StatResponse
+
+	// Total orders
+	rows, err := db.Select(`SELECT count(orderID) as totalOrder FROM "orders";`)
+	if err != nil {
+		return err
+	}
+	result.TotalOrder = int(rows.GetInt32Value_(0, 0))
+
+	// Total products
+	rows, err = db.Select(`SELECT count(productID) AS totalProduct FROM "product";`)
+	if err != nil {
+		return err
+	}
+	result.TotalProduct = int(rows.GetInt32Value_(0, 0))
+
+	// Unfinished orders
+	rows, err = db.Select(`SELECT count(orderID) AS unfinishedOrder FROM "orders" WHERE status != 'finished';`)
+	if err != nil {
+		return err
+	}
+	result.UnfinishedOrder = int(rows.GetInt32Value_(0, 0))
+
+	// Finished orders
+	rows, err = db.Select(`SELECT count(orderID) AS finishedOrder FROM "orders" WHERE status = 'finished';`)
+	if err != nil {
+		return err
+	}
+	result.FinishedOrder = int(rows.GetInt32Value_(0, 0))
+
+	// Total money this month
+	rows, err = db.Select(`SELECT SUM(price) AS totalMonthMoney FROM orders WHERE strftime('%Y-%m', date) = strftime('%Y-%m', 'now');`)
+	if err != nil {
+		return err
+	}
+	result.TotalMonthMoney = rows.GetFloat64Value_(0, 0)
+
+	// Total money
+	rows, err = db.Select(`SELECT SUM(price) AS totalMoney FROM "orders";`)
+	if err != nil {
+		return err
+	}
+	result.TotalMoney = rows.GetFloat64Value_(0, 0)
+
+	// Total customers
+	rows, err = db.Select(`SELECT COUNT(userID) AS totalCustomer FROM "users" WHERE role = 'customer';`)
+	if err != nil {
+		return err
+	}
+	result.TotalCustomer = int(rows.GetInt32Value_(0, 0))
+
+	// Top product
+	rows, err = db.Select(`
+		SELECT p.productName,
+			SUM(oi.quantity) AS totalQuantity,
+			SUM(oi.quantity * oi.price) AS totalPrice
+		FROM orderItem oi
+		JOIN product p ON oi.productID = p.productID
+		GROUP BY p.productName
+		ORDER BY totalQuantity DESC
+		LIMIT 1;`)
+	if err != nil {
+		return err
+	}
+
+	result.TopProduct.ProductName = rows.GetStringValue_(0, 0)
+	result.TopProduct.TotalQuantity = int(rows.GetInt32Value_(0, 1))
+	result.TopProduct.TotalPrice = rows.GetFloat64Value_(0, 2)
+
+	// Set headers and encode the response
+	w.Header().Set("Content-Type", "application/json")
+	response, err := json.Marshal(result)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return err
+	}
+
+	_, err = w.Write(response)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return err
+	}
+
 	return nil
 }

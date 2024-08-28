@@ -570,6 +570,18 @@ func main() {
 		}
 	}))).Methods(http.MethodPost)
 
+	r.HandleFunc("/admin/stat", rateLimiter(limiter, corsMiddleware(func(w http.ResponseWriter, r *http.Request) {
+		if r.Method == http.MethodGet {
+			err := database.QueryStat(db, w)
+			if err != nil {
+				http.Error(w, "Failed to query stat", http.StatusInternalServerError)
+				return
+			}
+		} else {
+			http.Error(w, "Unsupported method", http.StatusMethodNotAllowed)
+		}
+	}))).Methods(http.MethodGet)
+
 	port := getPort()
 	fmt.Printf("Server is listening on port %s\n", port)
 	log.Fatal(http.ListenAndServe(port, r))

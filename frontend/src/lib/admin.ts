@@ -291,3 +291,53 @@ export async function UpdateOrderStatus(orderID: string, status: string): Promis
     throw error;
   }
 }
+
+export interface Admin_TopProduct {
+  productName: string;
+  totalQuantity: number;
+  totalPrice: number;
+}
+
+export interface Admin_StatResponse {
+  totalOrder: number;
+  totalProduct: number;
+  unfinishedOrder: number;
+  finishedOrder: number;
+  totalMonthMoney: number;
+  totalMoney: number;
+  totalCustomer: number;
+  topProduct: Admin_TopProduct;
+}
+
+export async function FetchStats(): Promise<Admin_StatResponse> {
+  // Construct the URL for the GET request
+  const url = process.env.API_ENDPOINT
+    ? `${process.env.API_ENDPOINT}/admin/stat`
+    : `${connectString}/admin/stat`;
+
+  try {
+    const response = await fetch(url, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+      credentials: "include",
+      mode: "cors",
+      cache: "no-cache",
+    });
+
+    if (!response.ok) {
+      // Handle HTTP errors
+      throw new Error(`Failed to fetch statistics: ${response.statusText}`);
+    }
+
+    // Parse the response JSON
+    const data: Admin_StatResponse = await response.json();
+    return data;
+  } catch (error) {
+    // Handle network or other errors
+    console.error("Error fetching statistics:", error);
+    throw error;
+  }
+}
+
