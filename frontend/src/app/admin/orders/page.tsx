@@ -19,12 +19,11 @@ export default function AdminOrderPage() {
   const [hasMoreOrders, setHasMoreOrders] = useState<boolean>(true);
   const modalRef = useRef<HTMLDialogElement | null>(null);
 
-  // Define valid transitions
   const statusTransitions: Record<string, string[]> = {
     prepared: ["sent"],
     sent: ["processed"],
-    processed: [], // No further status changes
-    finished: [], // No further status changes
+    processed: [],
+    finished: [],
   };
 
   useEffect(() => {
@@ -64,10 +63,8 @@ export default function AdminOrderPage() {
     if (selectedOrder) {
       try {
         const currentStatus = selectedOrder.status;
-        // Check if the current status allows the desired status transition
         if (statusTransitions[currentStatus]?.includes(status)) {
           await UpdateOrderStatus(selectedOrder.orderID, status);
-          // Refresh the page or reload orders after updating status
           setOrders((prevOrders) =>
             prevOrders.map((order) =>
               order.orderID === selectedOrder.orderID
@@ -101,7 +98,6 @@ export default function AdminOrderPage() {
     setStatus(e.target.value);
   };
 
-  // Determine if status change is allowed
   const canChangeStatus = !["processed", "finished"].includes(selectedOrder?.status || "");
 
   const statusOptions = selectedOrder
@@ -117,7 +113,7 @@ export default function AdminOrderPage() {
       <h1 className="text-5xl text-base-content font-semibold mt-12 ml-20">Orders</h1>
       <div className="border-black w-full border-[0.5px] border-opacity-50 my-8"></div>
       <div className="mx-auto overflow-auto max-w-[65%] rounded-lg mt-4 shadow-xl shadow-indigo-300/40">
-        <div className="tabBar w-full flex justify-start relative">
+        <div className="tabBar w-full flex justify-start relative pl-6">
           {["all", "prepared", "sent", "processed", "finished"].map((tab) => (
             <button
               key={tab}
