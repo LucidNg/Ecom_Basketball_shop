@@ -76,8 +76,6 @@ export async function FetchAllOrders(method: string, offset: number): Promise<Ar
   const url = process.env.API_ENDPOINT
     ? `${process.env.API_ENDPOINT}/admin/order/${method}/${offset}`
     : `${connectString}/admin/order/${method}/${offset}`;
-
-  console.log(url);
   try {
     const response = await fetch(url, {
       method: "GET",
