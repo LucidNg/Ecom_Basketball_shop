@@ -57,7 +57,7 @@ func QueryAllOrders(db *sqlitecloud.SQCloud, w http.ResponseWriter, r *http.Requ
 
 	// Determine the SQL query based on the method
 	switch method {
-	case "sent", "processed", "finished":
+	case "prepared", "sent", "processed", "finished":
 		sql = `SELECT o.orderID, o.userID, o.date, o.shippingAddress, o.billingAddress, o.price, o.status, o.payStatus, o.method,
 		              ud.fullName, COALESCE(ud.phoneNumber, 'null') AS phoneNumber
 		       FROM orders o
@@ -215,5 +215,21 @@ func DeleteProduct(db *sqlitecloud.SQCloud, productID string) error {
 
 	// Optionally, log or handle the success case
 	fmt.Println("All sizes of the product have been set to 0 stock successfully.")
+	return nil
+}
+
+func UpdateOrderStatus(db *sqlitecloud.SQCloud, orderID string, status string) error {
+	// SQL statement to update all sizes of the specified product to set stock to 0
+	updateStockSQL := "UPDATE orders SET status = ? WHERE orderID = ?"
+
+	// Execute the SQL update statement
+	err := db.ExecuteArray(updateStockSQL, []interface{}{status, orderID})
+	if err != nil {
+		fmt.Println("Error:", err)
+		return err
+	}
+
+	// Optionally, log or handle the success case
+	fmt.Println("Update order status successfully")
 	return nil
 }
