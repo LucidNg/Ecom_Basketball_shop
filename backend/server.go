@@ -2,6 +2,7 @@ package main
 
 import (
 	"backend/database"
+	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
@@ -377,11 +378,16 @@ func main() {
 			price := r.FormValue("price")
 			status := r.FormValue("status")
 			payStatus := r.FormValue("payStatus")
-			err := database.CreateOrder(db, userID, date, shippingAdress, billingAddress, price, status, payStatus)
+			orderID, err := database.CreateOrder(db, userID, date, shippingAdress, billingAddress, price, status, payStatus)
 			if err != nil {
 				http.Error(w, "Failed to create cart item", http.StatusInternalServerError)
 				return
 			}
+			w.Header().Set("Content-Type", "application/json")
+			w.WriteHeader(http.StatusCreated)
+			response := map[string]string{"orderID": orderID}
+			json.NewEncoder(w).Encode(response)
+
 		} else {
 			http.Error(w, "Unsupported method", http.StatusMethodNotAllowed)
 		}

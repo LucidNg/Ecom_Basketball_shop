@@ -246,7 +246,7 @@ type OrdersByUserID = {
 };
 
 // Function to create an order
-export async function CreateOrder(order: OrderRequest): Promise<void> {
+export async function CreateOrder(order: OrderRequest): Promise<string> {
   let url = process.env.API_ENDPOINT
     ? `${process.env.API_ENDPOINT}/createOrder`
     : `${connectString}/createOrder`;
@@ -273,6 +273,9 @@ export async function CreateOrder(order: OrderRequest): Promise<void> {
   if (!response.ok) {
     throw new Error("Failed to create order");
   }
+
+  const data = await response.json();
+  return data.orderID;
 }
 
 // Function to create order items

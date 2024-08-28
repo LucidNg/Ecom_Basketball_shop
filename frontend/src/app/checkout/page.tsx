@@ -19,6 +19,7 @@ import {
 } from "@/lib/order";
 import ProductCard from "../appComoponent/ProductCard";
 import { OrderItem } from "@/lib/productItem";
+import router from "next/router";
 
 export default function CheckoutPage() {
   const [selectedDelivery, setSelectedDelivery] = useState("standard");
@@ -29,7 +30,7 @@ export default function CheckoutPage() {
   const { cart, selectCart, removeCheckedOutItems } = useCart();
   const { orders, getOrder, addOrder } = useOrders();
 
-  const orderID = getNewOrderID(); // Replace with actual generated orderID
+  //const orderID = getNewOrderID(); // Replace with actual generated orderID
 
   const handleCheckboxDeliChange = (
     event: React.ChangeEvent<HTMLInputElement>
@@ -229,71 +230,69 @@ export default function CheckoutPage() {
             </h4>
           </div>
 
-          <Link href={`/checkout/success/${orderID}`} className="self-center">
-            <button
-              className="btn font-semibold text-4xl h-20 w-96 self-center my-20 transition transition-duration-300 transition-property:scale,box-shadow,background-color hover:scale-105 hover:drop-shadow-xl hover:bg-secondary outline-none border-none"
-              onClick={() => {
-                const newOrderItems: OrderItem[] | null = [];
-                const newOrder = {
-                  orderID: orderID,
-                  userID: "60629436-da35-401c-9bf8-6e8e3aed90ed", // Replace with the actual user ID
-                  orderDate: getToday(),
-                  shipDate: getNext5Days(),
-                  paymentMethod: selectedPayment,
-                  paymentStatus:
-                    selectedPayment === "cod"
-                      ? PaymentStatus.Unpaid
-                      : PaymentStatus.Paid,
-                  shippingMethod: selectedDelivery,
-                  shippingStatus: ShippingStatus.Pending,
-                  shippingAddress: "123 Main St, City A, Country X",
-                  billingAddress: "123 Main St, City A, Country X",
-                  coupon: "None",
-                  totalBill: totalPrice,
-                  quantity: selectCart.length,
-                  orderItems: newOrderItems,
-                };
+          <button
+            className="btn font-semibold text-4xl h-20 w-96 self-center my-20 transition transition-duration-300 transition-property:scale,box-shadow,background-color hover:scale-105 hover:drop-shadow-xl hover:bg-secondary outline-none border-none"
+            onClick={async () => {
+              const newOrderItems: OrderItem[] | null = [];
+              const newOrder = {
+                orderID: "",
+                userID: "60629436-da35-401c-9bf8-6e8e3aed90ed", // Replace with the actual user ID
+                orderDate: getToday(),
+                shipDate: getNext5Days(),
+                paymentMethod: selectedPayment,
+                paymentStatus:
+                  selectedPayment === "cod"
+                    ? PaymentStatus.Unpaid
+                    : PaymentStatus.Paid,
+                shippingMethod: selectedDelivery,
+                shippingStatus: ShippingStatus.Pending,
+                shippingAddress: "123 Main St, City A, Country X",
+                billingAddress: "123 Main St, City A, Country X",
+                coupon: "None",
+                totalBill: totalPrice,
+                quantity: selectCart.length,
+                orderItems: newOrderItems,
+              };
 
-                // add the new order to order context
-                addOrder(newOrder);
+              const newOrderRequest = convertOrderToOrderRequest(newOrder);
 
-                const newOrderRequest = convertOrderToOrderRequest(newOrder);
+              // create and add the new order to DB (return the new order ID)
+              const newOrderID = await CreateOrder(newOrderRequest);
 
-                const newOrderItemRequests = newOrderRequest.items
-                  ? newOrderRequest.items
-                  : [];
+              // convert from selected cart items to order items
 
-                // create and add the new order to DB
-                CreateOrder(newOrderRequest);
+              const newOrderItemRequests = newOrderRequest.items
+                ? newOrderRequest.items
+                : [];
 
-                // create and add the new order items to DB
-                CreateOrderItems(newOrderItemRequests);
+              // create and add the new order items to DB
+              CreateOrderItems(newOrderItemRequests);
 
-                // remove the items in cart context
-                removeCheckedOutItems();
+              // add the new order to order context
+              addOrder(newOrder);
 
-                // remove the items in cart table in database
-                const _orderRemove = getOrder(orderID);
-                const _orderItemRequestsRemove = _orderRemove
-                  ? _orderRemove.orderItems.map((item) => {
-                      return convertOrderItemToOrderItemRequest(item);
-                    })
-                  : [];
-                removeCartItemsFromOrder({
-                  orderID: orderID,
-                  items: newOrderItemRequests,
-                });
+              // remove the items in cart context
+              removeCheckedOutItems();
 
-                // update products stock in DB
-                updateStock({
-                  orderID: orderID,
-                  items: newOrderItemRequests,
-                });
-              }}
-            >
-              Check out
-            </button>
-          </Link>
+              // remove the items in cart table in database
+
+              removeCartItemsFromOrder({
+                orderID: newOrderID,
+                items: newOrderItemRequests,
+              });
+
+              // update products stock in DB
+              updateStock({
+                orderID: newOrderID,
+                items: newOrderItemRequests,
+              });
+
+              // Redirect to the success page with the new order ID
+              router.push(`/checkout/success/${newOrderID}`);
+            }}
+          >
+            Check out
+          </button>
         </div>
       </div>
     </main>

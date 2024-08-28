@@ -24,13 +24,13 @@ type OrderRequest struct {
 	Products []OrderProduct `json:"products"`
 }
 
-func CreateOrder(db *sqlitecloud.SQCloud, userID string, date string, shippingAdress string, billingAddress string, price string, status string, payStatus string) error {
+func CreateOrder(db *sqlitecloud.SQCloud, userID string, date string, shippingAdress string, billingAddress string, price string, status string, payStatus string) (string, error) {
 	var id string
 	for {
 		id = uuid.New().String()
 		exists, err := recordExists(db, "orders", "orderID", id)
 		if err != nil {
-			return err
+			return "",err
 		}
 		if !exists {
 			break
@@ -40,14 +40,18 @@ func CreateOrder(db *sqlitecloud.SQCloud, userID string, date string, shippingAd
 	priceValue, err := strconv.ParseFloat(price, 64)
 	if err != nil {
 		fmt.Println("Error:", err)
-		return err
+		return "",err
 	}
 
 	createOrderSQL := "INSERT INTO orders (orderID, userID, date, shippingAddress, billingAddress, price, status, payStatus) VALUES (?, ?, ?, ?, ?, ?, ?, ?)"
 	values := []interface{}{id, userID, date, shippingAdress, billingAddress, priceValue, status, payStatus}
 
 	err = db.ExecuteArray(createOrderSQL, values)
-	return err
+	if err != nil {
+		return "", err
+	}
+
+	return id, nil
 }
 
 // CreateOrderItems handles the creation of order items in the database
