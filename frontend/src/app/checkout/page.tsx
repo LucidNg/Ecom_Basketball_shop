@@ -8,7 +8,6 @@ import {
   convertOrderItemToOrderItemRequest,
   convertOrderToOrderRequest,
   convertOrderToShippingRequest,
-  getNewOrderID,
   PaymentStatus,
   removeCartItemsFromOrder,
   ShippingStatus,
@@ -30,8 +29,6 @@ export default function CheckoutPage() {
   const [couponPrice, setCouponPrice] = useState(0);
   const { cart, selectCart, removeCheckedOutItems } = useCart();
   const { orders, getOrder, addOrder } = useOrders();
-
-  //const orderID = getNewOrderID(); // Replace with actual generated orderID
 
   const handleCheckboxDeliChange = (
     event: React.ChangeEvent<HTMLInputElement>
@@ -116,22 +113,18 @@ export default function CheckoutPage() {
     CreateOrderItems(newOrderItemRequests);
 
     /* Contexts handling */
-    // add the new order to order context
-    addOrder(newOrder);
-    // remove the items in cart context
-    removeCheckedOutItems();
+    addOrder(newOrder); // add the new order to order context
+    removeCheckedOutItems(); // remove the items in cart context
 
-    // remove the items in cart table in database
+    /* Other handling in DB */
     removeCartItemsFromOrder({
       orderID: newOrderID,
       items: newOrderItemRequests,
-    });
-
-    // update products stock in DB
+    }); // remove the items in cart table in database
     updateStock({
       orderID: newOrderID,
       items: newOrderItemRequests,
-    });
+    }); // update products stock in DB
 
     // Redirect to the success page with the new order ID
     router.push(`/checkout/success/${newOrderID}`);
