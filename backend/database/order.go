@@ -83,7 +83,7 @@ func CreateOrderItems(db *sqlitecloud.SQCloud, w http.ResponseWriter, r *http.Re
 }
 
 func RemoveCartItemsFromOrder(db *sqlitecloud.SQCloud, w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodDelete {
+	if r.Method != http.MethodPost {
 		http.Error(w, "Unsupported method", http.StatusMethodNotAllowed)
 		return
 	}
