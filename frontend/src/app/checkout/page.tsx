@@ -27,8 +27,25 @@ export default function CheckoutPage() {
   const [deliveryPrice, setDeliveryPrice] = useState(4);
   const [totalPrice, setTotalPrice] = useState(0);
   const [couponPrice, setCouponPrice] = useState(0);
+  const [fullName, setFullName] = useState("");
+  const [phoneNumber, setPhoneNumber] = useState("");
+  const [address, setAddress] = useState("");
   const { cart, selectCart, removeCheckedOutItems } = useCart();
   const { orders, getOrder, addOrder } = useOrders();
+
+  const handleFullNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setFullName(event.target.value);
+  };
+
+  const handlePhoneNumberChange = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    setPhoneNumber(event.target.value);
+  };
+
+  const handleAddressChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setAddress(event.target.value);
+  };
 
   const handleCheckboxDeliChange = (
     event: React.ChangeEvent<HTMLInputElement>
@@ -141,16 +158,19 @@ export default function CheckoutPage() {
                 className="bg-transparent border-b-2 border-base-content text-2xl text-base-content w-10/12 mb-4 pl-5 
                 placeholder:text-base-content placeholder:text-opacity-30 focus:outline-none"
                 placeholder="Full name"
+                onChange={handleFullNameChange}
               />
               <input
                 className="bg-transparent border-b-2 border-base-content text-2xl text-base-content w-10/12 my-6 pl-5
                 placeholder:text-base-content placeholder:text-opacity-30 focus:outline-none"
                 placeholder="Phone's number"
+                onChange={handlePhoneNumberChange}
               />
               <input
                 className="bg-transparent border-b-2 border-base-content text-2xl text-base-content w-10/12 my-4 pl-5
                 placeholder:text-base-content placeholder:text-opacity-30 focus:outline-none"
                 placeholder="Address"
+                onChange={handleAddressChange}
               />
             </form>
           </div>
