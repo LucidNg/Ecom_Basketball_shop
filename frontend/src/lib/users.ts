@@ -13,6 +13,9 @@ export async function RegisterUser(
 
     const response = await fetch(url, {
         method: "POST",
+        headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
+          },
         credentials: "include",
         mode: "cors",
         cache: "no-cache",
@@ -29,6 +32,9 @@ export async function RegisterUser(
 
     const createCartResponse = await fetch(createCartUrl, {
         method: "POST",
+        headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
+          },
         credentials: "include",
         mode: "cors",
         cache: "no-cache",
@@ -54,6 +60,9 @@ export async function LoginUser(
 
     const response = await fetch(url, {
         method: "POST",
+        headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
+          },
         credentials: "include",
         mode: "cors",
         cache: "no-cache",
@@ -78,6 +87,9 @@ export async function CheckPassword(
 
     const response = await fetch(url, {
         method: "POST",
+        headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
+          },
         credentials: "include",
         mode: "cors",
         cache: "no-cache",
@@ -111,6 +123,9 @@ export async function UpdateUserDetail(
     
     const response = await fetch(url, {
         method: "POST",
+        headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
+          },
         credentials: "include",
         mode: "cors",
         cache: "no-cache",
@@ -134,6 +149,9 @@ export async function UpdateUserPassword(
     console.log(url)
     const response = await fetch(url, {
         method: "POST",
+        headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
+          },
         credentials: "include",
         mode: "cors",
         cache: "no-cache",
@@ -159,6 +177,9 @@ export async function QueryUserDetail(userID: string): Promise<UserDetail[]> {
   
     const response = await fetch(url, {
         method: "GET",
+        headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
+          },
         credentials: "include",
         mode: "cors",
         cache: "no-cache",

@@ -40,6 +40,9 @@ export async function FetchAllProducts(offset: number): Promise<Array<Admin_Prod
   try {
     const response = await fetch(url, {
       method: "GET",
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
       credentials: "include",
       mode: "cors",
       cache: "no-cache",
@@ -70,6 +73,9 @@ export async function FetchAllOrders(method: string, offset: number): Promise<Ar
   try {
     const response = await fetch(url, {
       method: "GET",
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
       credentials: "include",
       mode: "cors",
       cache: "no-cache",
@@ -99,6 +105,9 @@ export async function FetchOrderItemsByOrderID(orderID: string): Promise<Array<A
   try {
     const response = await fetch(url, {
       method: "GET",
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
       credentials: "include",
       mode: "cors",
       cache: "no-cache",

@@ -72,6 +72,9 @@ export interface RatingCount {
   
     const response = await fetch(url, {
       method: "GET",
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
       credentials: "include",
       mode: "cors",
       cache: "no-cache",

@@ -354,7 +354,7 @@ export async function removeCartItemsFromOrder(
   const response = await fetch(url, {
     method: "POST",
     headers: {
-      "Content-Type": "application/json",
+      "Content-Type": "application/x-www-form-urlencoded",
     },
     body: JSON.stringify(order),
     credentials: "include",
@@ -375,7 +375,7 @@ export async function updateStock(order: RemoveCartItemRequest): Promise<void> {
   const response = await fetch(url, {
     method: "POST",
     headers: {
-      "Content-Type": "application/json",
+      "Content-Type": "application/x-www-form-urlencoded",
     },
     body: JSON.stringify(order),
     credentials: "include",
@@ -391,15 +391,15 @@ export async function updateStock(order: RemoveCartItemRequest): Promise<void> {
 export async function FetchOrdersByUserID(
   userID: string
 ): Promise<OrdersByUserID | null> {
-  // let url = process.env.API_ENDPOINT
-  //   ? `${process.env.API_ENDPOINT}/queryOrders/${userID}`
-  //   : `${connectString}/queryOrders/${userID}`;
+  let url = process.env.API_ENDPOINT
+    ? `${process.env.API_ENDPOINT}/queryOrders/${userID}`
+    : `${connectString}/queryOrders/${userID}`;
 
   // try {
   //   const response = await fetch(url, {
   //     method: "GET",
   //     headers: {
-  //       "Content-Type": "application/json",
+  //       "Content-Type": "application/x-www-form-urlencoded",
   //     },
   //   });
 
@@ -619,7 +619,7 @@ export async function FetchShippingByOrderID(
     const response = await fetch(url, {
       method: "GET",
       headers: {
-        "Content-Type": "application/json",
+        "Content-Type": "application/x-www-form-urlencoded",
       },
       credentials: "include",
       mode: "cors",
