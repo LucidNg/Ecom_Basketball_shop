@@ -133,8 +133,9 @@ export default function CheckoutPage() {
       // convert Order to OrderRequest to fit the database
       const newOrderRequest = convertOrderToOrderRequest(newOrder);
       // create and add the new orderdetails to DB (return the new order ID)
-      const newOrderID = await CreateOrder(newOrderRequest);
-      //const newOrderID = getNewOrderID();
+      //const newOrderID = await CreateOrder(newOrderRequest);
+      const newOrderID = getNewOrderID();
+      // const newOrderID = "cee3fcbe-0d91-40be-ba60-110a5b532167";
 
       // set the new order id for variable newOrder
       newOrder.orderID = newOrderID;
@@ -160,7 +161,7 @@ export default function CheckoutPage() {
         return convertOrderItemToOrderItemRequest(item);
       });
       // create and add the new order items to DB
-      CreateOrderItems(newOrderItemRequests);
+      //CreateOrderItems(newOrderItemRequests);
 
       /* Contexts handling */
       console.log(orders);
@@ -169,10 +170,10 @@ export default function CheckoutPage() {
       console.log(orders);
 
       /* Other handling in DB */
-      await removeCartItemsFromOrder({
-        orderID: newOrderID,
-        items: newOrderItemRequests,
-      }); // remove the items in cart table in database
+      // await removeCartItemsFromOrder({
+      //   orderID: newOrderID,
+      //   items: newOrderItemRequests,
+      // }); // remove the items in cart table in database
       await updateStock({
         orderID: newOrderID,
         items: newOrderItemRequests,

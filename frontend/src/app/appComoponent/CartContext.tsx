@@ -163,7 +163,12 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
         return [...prevCart, product];
       }
     });
+    alert(`product ${product.cartID} is added to shopping cart`);
   };
+
+  useEffect(() => {
+    console.log("Updated cart: ", cart);
+  }, [cart]); // This useEffect will run every time 'cart' changes
 
   const removeFromCart = (product: CartItem) => {
     if (product) {

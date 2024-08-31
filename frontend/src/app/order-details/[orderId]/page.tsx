@@ -17,6 +17,8 @@ import { decryptToken } from "@/lib/decrypt";
 
 export default function OrderDetails() {
   const { orderId } = useParams();
+  //const orderId = "cee3fcbe-0d91-40be-ba60-110a5b532167";
+
   const { getOrder, updateShippingStatus } = useOrders();
   const [order, setOrder] = useState<Order>();
   //const [order.shippingStatus, setShippingStatus] = useState("delivered");
@@ -52,8 +54,8 @@ export default function OrderDetails() {
 
     const fetchOrder = async () => {
       try {
-        const normalizedOrderId = Array.isArray(orderId) ? orderId[0] : orderId;
-        const order = await getOrder(normalizedOrderId);
+        // const normalizedOrderId = Array.isArray(orderId) ? orderId[0] : orderId;
+        const order = await getOrder(orderId.toString());
         setOrder(order);
 
         // // Fetch orders by user ID
