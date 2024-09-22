@@ -19,6 +19,14 @@ const ProductCard = ({
   //const [quantity, setQuantity] = useState<number>(product.quantity);
   const { increaseQuantity, decreaseQuantity } = useCart();
 
+  function convertInvalidJsonStringToArray(invalidJsonString: string) {
+    const cleanedString = invalidJsonString.slice(1, -1);
+    const elements = cleanedString.split(",").map((element) => element.trim());
+    const validJsonArray = elements.map((element) => `"${element}"`);
+    const jsonArray = JSON.parse(`[${validJsonArray.join(",")}]`);
+    return jsonArray;
+  }
+
   const _decreaseQuantity = () => {
     //if (quantity > 1) setQuantity(quantity - 1);
     //console.log(`decrease quantity button clicked!`);
@@ -35,7 +43,7 @@ const ProductCard = ({
     <div className="flex items-center gap-12 w-full ">
       <div className="min-w-52 size-52">
         <Image
-          src={product.url}
+          src={convertInvalidJsonStringToArray(product.url)}
           width={206}
           height={206}
           alt="product image"

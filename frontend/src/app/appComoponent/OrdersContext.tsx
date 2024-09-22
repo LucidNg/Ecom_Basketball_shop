@@ -40,7 +40,7 @@ export const useOrders = () => {
 
 export const OrdersProvider = ({ children }: { children: ReactNode }) => {
   const [orders, setOrders] = useState<Order[]>([]);
-  //const userID = "60629436-da35-401c-9bf8-6e8e3aed90ed"; // Replace with the actual user ID
+  const userID = "60629436-da35-401c-9bf8-6e8e3aed90ed"; // Replace with the actual user ID
   const [tokenAvailable, setTokenAvailable] = useState(false);
 
   useEffect(() => {
@@ -69,7 +69,7 @@ export const OrdersProvider = ({ children }: { children: ReactNode }) => {
     if (token) {
       const decrypted = decryptToken(token);
       const payload = JSON.parse(atob(decrypted.split(".")[1]));
-      const userID = payload.userID;
+      //const userID = payload.userID;
 
       const fetchOrders = async () => {
         try {
@@ -81,17 +81,17 @@ export const OrdersProvider = ({ children }: { children: ReactNode }) => {
               }
             );
             const _orders = await Promise.all(_ordersPromises);
-            setOrders(_orders);
+            if (_orders) setOrders(_orders);
           }
         } catch (error) {
-          console.error("Failed to fetch cart items:", error);
+          console.error("Failed to fetch order items:", error);
         }
       };
       fetchOrders();
     } else {
-      setOrders([]);
+      //setOrders([]);
     }
-  }, [tokenAvailable]);
+  }, [userID]);
 
   const addOrder = (order: Order) => {
     setOrders((prevOrders) => {
